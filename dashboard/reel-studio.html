@@ -1,0 +1,843 @@
+<title>Reel Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Anton&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: left "control rail" (clock, weekly target, stage counts) + main deck (KPI tiles, schedule strip,
+   pipeline board, detail drawer). Warm-charcoal studio, copper accent from the Clasy reference;
+   the user's own brand yellow appears only where it documents their reel style. Single dark look by choice. */
+:root {
+  color-scheme: dark;
+  --bg: #0d0b0a;
+  --bg-glow: #2a1a10;
+  --panel: #171412;
+  --panel-2: #1f1b18;
+  --line: #2e2824;
+  --fg: #f3ede7;
+  --sub: #a89d94;
+  --dim: #6f655d;
+  --accent: #d98a5b;
+  --accent-ink: #1c0f07;
+  --accent-soft: #d98a5b26;
+  --brand-yellow: #ffd21f;
+  --good: #5fc98f;
+  --warn: #e8b44c;
+  --bad: #ef6b5b;
+  --info: #6fa8e8;
+  --font-ui: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Anton", "Impact", "Arial Narrow", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --r-lg: 22px;
+  --r-md: 14px;
+  --r-sm: 10px;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body {
+  margin: 0;
+  background: radial-gradient(1200px 700px at 70% -10%, var(--bg-glow), transparent 60%), var(--bg);
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: 18px;
+}
+
+/* top bar */
+.top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 12px; margin-right: auto; }
+.brand-mark {
+  width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
+  background: linear-gradient(145deg, #e9a074, #b8643a); color: var(--accent-ink);
+  font-family: var(--font-display); font-size: 22px; letter-spacing: .5px;
+}
+.brand h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -.3px; }
+.brand small { display: block; color: var(--dim); font-size: 12px; font-weight: 500; }
+.tabs {
+  display: flex; gap: 4px; padding: 5px; border-radius: 999px; background: var(--panel);
+  border: 1px solid var(--line); overflow-x: auto; max-width: 100%;
+}
+.tab {
+  border: 0; background: transparent; color: var(--sub); padding: 9px 18px; border-radius: 999px;
+  font-weight: 600; white-space: nowrap;
+}
+.tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+.tab:not([aria-selected="true"]):hover { color: var(--fg); }
+.btn {
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--fg); border-radius: 999px;
+  padding: 9px 16px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn:hover { border-color: #4a3f38; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn.ghost { background: transparent; }
+.btn.small { padding: 6px 12px; font-size: 12.5px; }
+.btn.danger { color: var(--bad); }
+
+/* shell */
+.shell { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 1080px) { .shell { grid-template-columns: minmax(0, 1fr); } }
+
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); }
+.rail { display: grid; gap: 14px; }
+.clock { padding: 22px 22px 18px; text-align: center; }
+.clock-time { font-weight: 800; font-size: 64px; letter-spacing: -3px; line-height: 1; font-variant-numeric: tabular-nums; }
+.clock-date { margin-top: 8px; color: var(--sub); letter-spacing: 3px; font-size: 12px; text-transform: uppercase; font-weight: 600; }
+.target { padding: 18px 20px; display: grid; grid-template-columns: 96px 1fr; gap: 16px; align-items: center; }
+.ring { width: 96px; height: 96px; }
+.ring text { font-family: var(--font-ui); }
+.eyebrow { color: var(--dim); font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; font-weight: 700; }
+.target h3 { margin: 4px 0 6px; font-size: 16px; }
+.target p { margin: 0; color: var(--sub); font-size: 12.5px; }
+.stepper { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; }
+.stepper button { width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); }
+.stepper span { min-width: 24px; text-align: center; font-family: var(--font-mono); }
+.stage-list { padding: 8px; display: grid; gap: 2px; }
+.stage-row {
+  display: grid; grid-template-columns: 10px 1fr auto; gap: 10px; align-items: center; padding: 10px 12px;
+  border-radius: var(--r-sm); border: 0; background: transparent; text-align: left; color: var(--fg);
+}
+.stage-row:hover { background: var(--panel-2); }
+.stage-row .dot { width: 8px; height: 8px; border-radius: 50%; }
+.stage-row b { font-family: var(--font-mono); font-weight: 600; color: var(--sub); }
+.specs { padding: 16px 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+.spec { background: var(--panel-2); border-radius: var(--r-md); padding: 12px 6px; }
+.spec strong { display: block; font-family: var(--font-mono); font-size: 15px; }
+.spec span { color: var(--dim); font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
+
+.main { display: grid; gap: 18px; min-width: 0; }
+.main > *, .shell > *, .view-grid > * { min-width: 0; }
+
+/* KPI tiles with the notched corner from the reference */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kpi { position: relative; padding: 18px 20px 16px; min-width: 0; }
+.kpi::after {
+  content: ""; position: absolute; top: -1px; right: -1px; width: 58px; height: 58px;
+  background: var(--bg); border-left: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  border-bottom-left-radius: 20px;
+}
+.kpi-jump {
+  position: absolute; top: 4px; right: 4px; z-index: 1; width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--panel); display: grid; place-items: center; color: var(--sub);
+}
+.kpi-jump:hover { color: var(--accent); border-color: var(--accent); }
+.kpi-head { display: flex; align-items: center; gap: 10px; color: var(--sub); font-weight: 600; padding-right: 48px; }
+.kpi-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--panel-2); display: grid; place-items: center; color: var(--accent); flex: none; }
+.kpi-num { font-weight: 800; font-size: 44px; letter-spacing: -1.5px; margin: 14px 0 12px; font-variant-numeric: tabular-nums; line-height: 1; }
+.kpi-foot { border-top: 1px solid var(--line); padding-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.kpi-foot span { display: block; color: var(--dim); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi-foot b { font-size: 16px; font-variant-numeric: tabular-nums; }
+
+/* week strip */
+.week { padding: 16px 18px; }
+.sec-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.sec-head h2 { margin: 0; font-size: 17px; font-weight: 700; }
+.sec-head p { margin: 2px 0 0; color: var(--dim); font-size: 12.5px; }
+.days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 700px) { .days { grid-template-columns: repeat(7, minmax(92px, 1fr)); overflow-x: auto; } .days-scroll { overflow-x: auto; } }
+.day { background: var(--panel-2); border-radius: var(--r-md); padding: 10px; min-height: 92px; display: grid; align-content: start; gap: 6px; border: 1px solid transparent; }
+.day.today { border-color: var(--accent); }
+.day-label { display: flex; justify-content: space-between; color: var(--sub); font-size: 11.5px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
+.day-label b { color: var(--fg); font-family: var(--font-mono); }
+.day-item { font-size: 12px; padding: 5px 7px; border-radius: 7px; background: var(--panel); border-left: 3px solid var(--accent); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-top: 0; border-right: 0; border-bottom: 0; text-align: left; color: var(--fg); }
+
+/* board */
+.board-wrap { padding: 16px 18px 18px; }
+.board { display: grid; grid-template-columns: repeat(6, minmax(210px, 1fr)); gap: 10px; overflow-x: auto; padding-bottom: 6px; }
+.col { background: var(--panel-2); border-radius: var(--r-md); padding: 10px; display: grid; align-content: start; gap: 8px; min-height: 180px; }
+.col.drop { outline: 2px dashed var(--accent); outline-offset: -4px; }
+.col-head { display: flex; align-items: center; gap: 8px; padding: 2px 4px 4px; font-weight: 700; font-size: 13px; }
+.col-head .dot { width: 8px; height: 8px; border-radius: 50%; }
+.col-head small { margin-left: auto; color: var(--dim); font-family: var(--font-mono); }
+.col-hint { color: var(--dim); font-size: 12px; padding: 4px 6px; }
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px;
+  display: grid; gap: 8px; text-align: left; color: var(--fg); width: 100%;
+}
+.card:hover { border-color: #4b3f37; }
+.card.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.card-title { font-weight: 700; font-size: 13.5px; overflow-wrap: anywhere; }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip { font-size: 10.5px; font-weight: 700; letter-spacing: .5px; padding: 3px 8px; border-radius: 999px; background: var(--panel-2); color: var(--sub); text-transform: uppercase; }
+.chip.fmt { color: var(--accent); background: var(--accent-soft); }
+.chip.ex { color: var(--dim); border: 1px dashed var(--dim); background: transparent; }
+.chip.late { color: var(--bad); background: #ef6b5b1f; }
+.card-meta { display: flex; justify-content: space-between; color: var(--dim); font-size: 11.5px; gap: 8px; }
+.progress { height: 4px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.progress i { display: block; height: 100%; background: var(--accent); }
+
+/* drawer */
+.drawer { padding: 18px 20px 20px; display: grid; gap: 16px; }
+.drawer-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 900px) { .drawer-grid { grid-template-columns: minmax(0, 1fr); } }
+.field { display: grid; gap: 5px; min-width: 0; }
+.field label { color: var(--sub); font-size: 12px; font-weight: 600; }
+.input, .select, textarea.input {
+  width: 100%; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; color: var(--fg);
+}
+textarea.input { resize: vertical; min-height: 64px; }
+.input:focus, .select:focus { border-color: var(--accent); outline: none; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 520px) { .row2, .row3 { grid-template-columns: 1fr; } }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { border: 1px solid var(--line); background: var(--panel-2); color: var(--sub); padding: 7px 12px; border-radius: 999px; font-weight: 600; font-size: 12.5px; }
+.seg button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.checks { display: grid; gap: 6px; }
+.check { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: start; padding: 9px 10px; border-radius: var(--r-sm); background: var(--panel-2); cursor: pointer; }
+.check input { width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--accent); }
+.check span { font-size: 13px; }
+.check small { display: block; color: var(--dim); font-size: 11.5px; }
+.check.done span { color: var(--dim); text-decoration: line-through; }
+.prompt-box { background: #0b0908; border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px; font-family: var(--font-mono); font-size: 12.5px; white-space: pre-wrap; overflow-wrap: anywhere; color: #f2d9c8; }
+.drawer-foot { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); padding-top: 14px; }
+.drawer-foot .left, .drawer-foot .right { display: flex; gap: 8px; flex-wrap: wrap; }
+.note { color: var(--dim); font-size: 12px; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+@media (max-width: 520px) { .stats { grid-template-columns: 1fr 1fr; } }
+
+/* hooks + style views */
+.view-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 900px) { .view-grid { grid-template-columns: minmax(0, 1fr); } }
+.block { padding: 18px 20px; display: grid; gap: 12px; align-content: start; }
+.formula { display: grid; gap: 4px; padding: 12px 14px; background: var(--panel-2); border-radius: var(--r-md); }
+.formula b { font-size: 13.5px; }
+.formula code { font-family: var(--font-mono); font-size: 12px; color: #f2d9c8; overflow-wrap: anywhere; }
+.formula .ex-line { color: var(--sub); font-size: 12.5px; }
+.formula-actions { display: flex; justify-content: flex-end; }
+.hook { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 12px 14px; background: var(--panel-2); border-radius: var(--r-md); }
+.hook p { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.hook small { color: var(--dim); }
+.hook-actions { display: flex; gap: 6px; }
+.empty { border: 1px dashed var(--line); border-radius: var(--r-md); padding: 22px; text-align: center; color: var(--sub); font-size: 13px; }
+.style-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 620px) { .style-cols { grid-template-columns: 1fr; } }
+.style-card { background: var(--panel-2); border-radius: var(--r-md); padding: 16px; display: grid; gap: 10px; align-content: start; }
+.style-sample { border-radius: 12px; aspect-ratio: 9 / 7; max-width: 100%; display: grid; place-items: center; text-align: center; background: linear-gradient(160deg, #26303a, #12161b); padding: 12px; }
+.sample-a { font-weight: 800; font-size: 17px; color: #fff; text-shadow: 0 2px 8px #000a; line-height: 1.15; }
+.sample-a em { display: block; font-style: normal; color: var(--brand-yellow); font-size: 30px; text-transform: uppercase; }
+.sample-b { color: var(--brand-yellow); }
+.sample-b i { display: block; font-family: Georgia, "Times New Roman", serif; font-size: 17px; }
+.sample-b strong { display: block; font-family: var(--font-display); font-size: 44px; line-height: .95; letter-spacing: .5px; }
+.rules { margin: 0; padding-left: 18px; color: var(--sub); display: grid; gap: 5px; font-size: 13px; }
+.swatches { display: flex; gap: 10px; flex-wrap: wrap; }
+.sw { display: grid; gap: 6px; justify-items: center; font-size: 11px; color: var(--sub); font-family: var(--font-mono); }
+.sw i { width: 46px; height: 46px; border-radius: 12px; border: 1px solid var(--line); }
+.timeline { display: grid; gap: 6px; }
+.tl-row { display: grid; grid-template-columns: 70px 1fr; gap: 10px; font-size: 13px; padding: 8px 10px; background: var(--panel-2); border-radius: var(--r-sm); }
+.tl-row b { font-family: var(--font-mono); color: var(--accent); font-size: 12px; }
+
+.status { font-size: 12.5px; color: var(--sub); display: flex; align-items: center; gap: 8px; }
+.status i { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); }
+.status.ok i { background: var(--good); }
+.status.off i { background: var(--bad); }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-weight: 700; font-size: 13px; z-index: 20; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+@media (prefers-reduced-motion: no-preference) {
+  .card, .btn, .tab, .kpi-jump { transition: border-color .15s, background .15s, color .15s, filter .15s; }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">RS</div>
+      <div><h1>Reel Studio</h1><small>Idea → CapCut → Post, dalam satu skrin</small></div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Bahagian">
+      <button class="tab" role="tab" id="tab-pipeline" aria-selected="true" data-view="pipeline">Pipeline</button>
+      <button class="tab" role="tab" id="tab-hooks" aria-selected="false" data-view="hooks">Hook Bank</button>
+      <button class="tab" role="tab" id="tab-style" aria-selected="false" data-view="style">Gaya &amp; Format</button>
+    </nav>
+    <div class="status" id="status"><i></i><span>Menyambung ke storan…</span></div>
+    <button class="btn primary" id="btn-new" type="button">+ Video baru</button>
+  </header>
+
+  <div class="shell">
+    <aside class="rail">
+      <section class="panel clock" aria-label="Masa">
+        <div class="clock-time" id="clock">--:--</div>
+        <div class="clock-date" id="date"></div>
+      </section>
+      <section class="panel target" aria-label="Sasaran minggu ni">
+        <svg class="ring" viewBox="0 0 96 96" role="img" aria-labelledby="ring-label">
+          <title id="ring-label">Posted minggu ni berbanding sasaran</title>
+          <circle cx="48" cy="48" r="40" fill="none" stroke="var(--line)" stroke-width="9"></circle>
+          <circle id="ring-arc" cx="48" cy="48" r="40" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="0 251.3" transform="rotate(-90 48 48)"></circle>
+          <text id="ring-text" x="48" y="54" text-anchor="middle" fill="var(--fg)" font-size="19" font-weight="800">0/4</text>
+        </svg>
+        <div>
+          <div class="eyebrow">Minggu ni</div>
+          <h3 id="target-title">Posted</h3>
+          <p id="target-sub">Sasaran reel seminggu</p>
+          <div class="stepper">
+            <button type="button" id="tgt-minus" aria-label="Kurangkan sasaran">−</button>
+            <span id="tgt-val">4</span>
+            <button type="button" id="tgt-plus" aria-label="Tambah sasaran">+</button>
+          </div>
+        </div>
+      </section>
+      <section class="panel" aria-label="Peringkat">
+        <div class="stage-list" id="stage-list"></div>
+      </section>
+      <section class="panel specs" aria-label="Spesifikasi export">
+        <div class="spec"><strong>9:16</strong><span>1080×1920</span></div>
+        <div class="spec"><strong>−14</strong><span>LUFS</span></div>
+        <div class="spec"><strong>30</strong><span>FPS</span></div>
+      </section>
+    </aside>
+
+    <main class="main">
+      <!-- PIPELINE VIEW -->
+      <div id="view-pipeline" class="main" role="tabpanel" aria-labelledby="tab-pipeline">
+        <section class="kpis" id="kpis"></section>
+
+        <section class="panel week">
+          <div class="sec-head">
+            <div><h2>7 hari akan datang</h2><p>Ikut tarikh post. Klik untuk buka.</p></div>
+          </div>
+          <div class="days-scroll"><div class="days" id="days"></div></div>
+        </section>
+
+        <section class="panel board-wrap">
+          <div class="sec-head">
+            <div><h2>Pipeline video</h2><p>Seret kad ke peringkat lain, atau klik untuk edit.</p></div>
+            <div class="seg" id="filter" aria-label="Tapis format"></div>
+          </div>
+          <div class="board" id="board"></div>
+        </section>
+
+        <section class="panel drawer" id="drawer" hidden aria-label="Butiran video"></section>
+      </div>
+
+      <!-- HOOK BANK VIEW -->
+      <div id="view-hooks" class="view-grid" role="tabpanel" aria-labelledby="tab-hooks" hidden>
+        <section class="panel block">
+          <div class="sec-head"><div><h2>Formula hook</h2><p>Saat 0–2 tentukan orang stay atau scroll.</p></div></div>
+          <div id="formulas" class="block" style="padding:0"></div>
+        </section>
+        <section class="panel block">
+          <div class="sec-head"><div><h2>Hook kau</h2><p>Simpan idea hook, guna terus dalam video baru.</p></div></div>
+          <form id="hook-form" class="row2" style="grid-template-columns:1fr auto;align-items:end">
+            <div class="field"><label for="hook-text">Hook baru</label><input class="input" id="hook-text" placeholder="Contoh: 3 sebab customer kata mahal…" maxlength="160"></div>
+            <button class="btn primary" type="submit">Simpan</button>
+          </form>
+          <div id="hooks" class="block" style="padding:0"></div>
+        </section>
+      </div>
+
+      <!-- STYLE VIEW -->
+      <div id="view-style" class="main" role="tabpanel" aria-labelledby="tab-style" hidden>
+        <section class="panel block">
+          <div class="sec-head"><div><h2>Dua gaya kau</h2><p>Diukur dari 5 reel rujukan. Agent reel-editor ikut ni.</p></div></div>
+          <div class="style-cols">
+            <div class="style-card">
+              <div class="eyebrow">Gaya A · Authority</div>
+              <div class="style-sample"><div class="sample-a">talking about is<em>budget</em></div></div>
+              <ul class="rules">
+                <li>Caption 2–4 perkataan, tengah frame, putih tebal</li>
+                <li>1 kata kunci kuning, besar, setiap 1–2 ayat</li>
+                <li>Header nombor untuk listicle (kiri atas)</li>
+                <li>Cutaway setiap 3–5 s, punch-in pada penekanan</li>
+                <li>Untuk: Education, Do &amp; Don't, Before/After</li>
+              </ul>
+            </div>
+            <div class="style-card">
+              <div class="eyebrow">Gaya B · Cinematic Story</div>
+              <div class="style-sample"><div class="sample-b"><i>Do you wanna make</i><strong>BETTER</strong></div></div>
+              <ul class="rules">
+                <li>Tajuk condensed kuning besar + serif italic kecil</li>
+                <li>Subtitle serif kecil di lower third</li>
+                <li>B-roll sinematik, potong setiap ~2 s</li>
+                <li>Whip / zoom-blur, segmen hitam-putih</li>
+                <li>Untuk: Vlog, cerita, launch</li>
+              </ul>
+            </div>
+          </div>
+          <div class="eyebrow">Palet</div>
+          <div class="swatches">
+            <div class="sw"><i style="background:#FFD21F"></i>#FFD21F</div>
+            <div class="sw"><i style="background:#FFFFFF"></i>#FFFFFF</div>
+            <div class="sw"><i style="background:#0A0A0A"></i>#0A0A0A</div>
+            <div class="sw"><i style="background:#8A8A8A"></i>#8A8A8A</div>
+            <div class="sw"><i style="background:#FF3B30"></i>DON'T</div>
+            <div class="sw"><i style="background:#34C759"></i>DO</div>
+          </div>
+        </section>
+        <section class="view-grid" id="formats"></section>
+      </div>
+    </main>
+  </div>
+</div>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+(() => {
+  "use strict";
+  const STAGES = [
+    { id: "idea",   name: "Idea",          color: "#8f8378" },
+    { id: "skrip",  name: "Skrip",         color: "#6fa8e8" },
+    { id: "rakam",  name: "Rakam",         color: "#b08be0" },
+    { id: "edit",   name: "Edit (agent)",  color: "#d98a5b" },
+    { id: "semak",  name: "Semak",         color: "#e8b44c" },
+    { id: "posted", name: "Posted",        color: "#5fc98f" },
+  ];
+  const FORMATS = {
+    education: { name: "Education", style: "A", cmd: "education" },
+    vlog:      { name: "Vlog", style: "B", cmd: "vlog" },
+    dos:       { name: "Do & Don't", style: "A", cmd: "dos-donts" },
+    ba:        { name: "Before/After", style: "A", cmd: "before-after" },
+  };
+  const PLATFORMS = { ig: "Instagram", tiktok: "TikTok", yt: "YouTube Shorts" };
+  const CHECKS = {
+    skrip: [
+      ["hook", "Hook kuat dalam ayat pertama", "Janji, angka, atau soalan yang sakit"],
+      ["struktur", "Struktur ikut format", "Education: hook → poin → CTA"],
+      ["cta", "CTA ditulis", "Follow / comment kata kunci / save"],
+    ],
+    rakam: [
+      ["frame", "Rakam 9:16, 1080×1920, 30 fps", "Muka di 1/3 atas, ruang untuk caption"],
+      ["cahaya", "Cahaya depan muka, latar tak terlalu terang", ""],
+      ["mic", "Mic dekat, bilik senyap", "Elak noise kipas / aircond"],
+      ["take", "Hook dirakam 2–3 take", "Agent simpan take terakhir yang lengkap"],
+      ["capcut", "Footage dah masuk project CapCut", "Namakan project, kemudian quit CapCut"],
+    ],
+    semak: [
+      ["h2s", "Hook dalam 2 saat pertama", ""],
+      ["filler", "Tiada senyap / \"erm\" yang tertinggal", ""],
+      ["cap", "Caption betul ejaan, kata kunci kuning tepat", ""],
+      ["broll", "B-roll kena dengan apa yang disebut", ""],
+      ["audio", "Suara jelas, muzik tak tenggelamkan suara", "Suara −14 LUFS, muzik ~15 dB bawah"],
+      ["safe", "Teks dalam safe zone", "Bukan di 20% bawah (UI IG/TikTok)"],
+      ["thumb", "Thumbnail + caption post + hashtag siap", ""],
+    ],
+  };
+  const FORMULAS = [
+    { name: "Angka + janji", tpl: "[N] [benda] dalam [masa]", ex: "6 objection customer dalam 60 saat" },
+    { name: "Kesilapan biasa", tpl: "Kalau kau [buat X], kau sedang [rugi Y]", ex: "Kalau kau jawab \"murah je\", kau sedang bunuh value produk kau" },
+    { name: "Soalan sakit", tpl: "Apa kau jawab bila [situasi]?", ex: "Apa kau jawab bila customer kata mahal?" },
+    { name: "Before / After", tpl: "Dari [keadaan teruk] ke [hasil] — ni caranya", ex: "Dari 200 view ke 20k view, ni caranya" },
+    { name: "Jangan buat ni", tpl: "Stop [buat X]. Buat [Y] sebaliknya.", ex: "Stop terangkan produk. Jual perasaan." },
+    { name: "Rahsia / behind the scene", tpl: "Benda yang [orang dalam] tak bagitahu pasal [topik]", ex: "Benda yang editor tak bagitahu pasal reel viral" },
+  ];
+  const FORMAT_GUIDE = [
+    { f: "education", rows: [["0–2s", "Hook: janji / angka"], ["2–5s", "Kenapa penting + B-roll"], ["5–50s", "Poin 1…N, header kiri atas"], ["Hujung", "CTA + butang Follow"]] },
+    { f: "dos", rows: [["0–2s", "\"Jangan buat ni…\""], ["DON'T", "Label merah, grade pudar"], ["Turn", "Riser + punch-in + whoosh"], ["DO", "Label hijau, grade normal → CTA"]] },
+    { f: "ba", rows: [["0–2s", "Tunjuk AFTER 1 s dulu"], ["BEFORE", "Label, B-roll keadaan asal"], ["Turn", "Wipe kiri→kanan + pop"], ["AFTER", "Label kuning, kata kunci besar"]] },
+    { f: "vlog", rows: [["0–2s", "Tajuk besar atas shot terbaik"], ["Cerita", "B-roll setiap ~2 s, subtitle serif"], ["Beat", "Tajuk perkataan untuk bab"], ["Hujung", "Satu perkataan besar + hit muzik"]] },
+  ];
+
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const pad = (n) => String(n).padStart(2, "0");
+  const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const HARI = ["Ahad", "Isnin", "Selasa", "Rabu", "Khamis", "Jumaat", "Sabtu"];
+  const BULAN = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogo", "Sep", "Okt", "Nov", "Dis"];
+  const icon = {
+    film: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4"/></svg>',
+    eye: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+    send: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>',
+    chart: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg>',
+    arrow: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>',
+  };
+
+  // ---- state
+  let db = null;
+  let projects = [];      // [{id, ...data}]
+  let hooks = [];
+  let settings = { weeklyTarget: 4 };
+  let selectedId = null;
+  let draft = null;       // working copy of the selected project
+  let fmtFilter = "all";
+  let readOnly = false;
+  let memId = 0;
+
+  // ---- clock
+  function tick() {
+    const d = new Date();
+    $("#clock").textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    $("#date").textContent = `${HARI[d.getDay()]}, ${d.getDate()} ${BULAN[d.getMonth()]}`;
+  }
+  tick(); setInterval(tick, 15000);
+
+  // ---- toast
+  let toastT;
+  function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (t.hidden = true), 2200); }
+  function setStatus(kind, msg) { const s = $("#status"); s.className = "status " + kind; s.querySelector("span").textContent = msg; }
+
+  // ---- derived
+  const startOfWeek = () => { const d = new Date(); d.setHours(0, 0, 0, 0); const k = (d.getDay() + 6) % 7; d.setDate(d.getDate() - k); return d.getTime(); };
+  const checkPct = (p) => {
+    const list = CHECKS[p.stage] || [];
+    if (!list.length) return null;
+    const c = p.checks || {};
+    return Math.round(100 * list.filter(([k]) => c[`${p.stage}.${k}`]).length / list.length);
+  };
+  const isLate = (p) => p.due && p.stage !== "posted" && p.due < ymd(new Date());
+
+  // ---- render: rail
+  function renderRail() {
+    const wk = startOfWeek();
+    const postedWeek = projects.filter((p) => p.stage === "posted" && (p.postedAt || 0) >= wk).length;
+    const tgt = settings.weeklyTarget || 4;
+    const frac = Math.min(1, postedWeek / tgt);
+    $("#ring-arc").setAttribute("stroke-dasharray", `${(frac * 251.3).toFixed(1)} 251.3`);
+    $("#ring-text").textContent = `${postedWeek}/${tgt}`;
+    $("#tgt-val").textContent = tgt;
+    $("#target-title").textContent = postedWeek >= tgt ? "Sasaran tercapai" : `${tgt - postedWeek} lagi untuk sasaran`;
+    $("#stage-list").innerHTML = STAGES.map((s) => {
+      const n = projects.filter((p) => p.stage === s.id).length;
+      return `<button class="stage-row" type="button" data-jump="${s.id}"><span class="dot" style="background:${s.color}"></span><span>${s.name}</span><b>${n}</b></button>`;
+    }).join("");
+  }
+
+  // ---- render: KPIs
+  function renderKpis() {
+    const active = projects.filter((p) => p.stage !== "posted");
+    const review = projects.filter((p) => p.stage === "semak");
+    const since = Date.now() - 30 * 864e5;
+    const posted30 = projects.filter((p) => p.stage === "posted" && (p.postedAt || 0) >= since);
+    const withViews = projects.filter((p) => p.stage === "posted" && p.stats && Number(p.stats.views) > 0);
+    const avgViews = withViews.length ? Math.round(withViews.reduce((a, p) => a + Number(p.stats.views), 0) / withViews.length) : 0;
+    const best = withViews.slice().sort((a, b) => b.stats.views - a.stats.views)[0];
+    const fmtNum = (n) => n >= 1e6 ? (n / 1e6).toFixed(1) + "M" : n >= 1e3 ? (n / 1e3).toFixed(1) + "k" : String(n);
+    const late = active.filter(isLate).length;
+    const tiles = [
+      { ic: icon.film, label: "Dalam pipeline", num: active.length, a: ["Lewat", late], b: ["Dalam edit", projects.filter((p) => p.stage === "edit").length], jump: "edit" },
+      { ic: icon.eye, label: "Tunggu semak", num: review.length, a: ["Checklist siap", review.filter((p) => checkPct(p) === 100).length], b: ["Belum", review.filter((p) => checkPct(p) !== 100).length], jump: "semak" },
+      { ic: icon.send, label: "Posted 30 hari", num: posted30.length, a: ["Minggu ni", projects.filter((p) => p.stage === "posted" && (p.postedAt || 0) >= startOfWeek()).length], b: ["Sasaran", settings.weeklyTarget + "/mg"], jump: "posted" },
+      { ic: icon.chart, label: "Purata views", num: fmtNum(avgViews), a: ["Terbaik", best ? fmtNum(best.stats.views) : "—"], b: ["Diukur", withViews.length + " video"], jump: "posted" },
+    ];
+    $("#kpis").innerHTML = tiles.map((t) => `
+      <article class="panel kpi">
+        <button class="kpi-jump" type="button" data-jump="${t.jump}" aria-label="Pergi ke ${esc(t.label)}">${icon.arrow}</button>
+        <div class="kpi-head"><span class="kpi-icon">${t.ic}</span>${esc(t.label)}</div>
+        <div class="kpi-num">${esc(t.num)}</div>
+        <div class="kpi-foot"><div><span>${esc(t.a[0])}</span><b>${esc(t.a[1])}</b></div><div><span>${esc(t.b[0])}</span><b>${esc(t.b[1])}</b></div></div>
+      </article>`).join("");
+  }
+
+  // ---- render: week strip
+  function renderWeek() {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    let html = "";
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(today.getTime() + i * 864e5);
+      const key = ymd(d);
+      const items = projects.filter((p) => p.due === key);
+      html += `<div class="day ${i === 0 ? "today" : ""}">
+        <div class="day-label"><span>${i === 0 ? "Hari ni" : HARI[d.getDay()].slice(0, 3)}</span><b>${d.getDate()}</b></div>
+        ${items.map((p) => `<button type="button" class="day-item" data-open="${p.id}" style="border-left-color:${STAGES.find((s) => s.id === p.stage)?.color}">${esc(p.title)}</button>`).join("")}
+      </div>`;
+    }
+    $("#days").innerHTML = html;
+  }
+
+  // ---- render: board
+  function renderFilter() {
+    const opts = [["all", "Semua"], ...Object.entries(FORMATS).map(([k, v]) => [k, v.name])];
+    $("#filter").innerHTML = opts.map(([k, n]) => `<button type="button" data-filter="${k}" aria-pressed="${fmtFilter === k}">${esc(n)}</button>`).join("");
+  }
+  function renderBoard() {
+    const list = projects.filter((p) => fmtFilter === "all" || p.format === fmtFilter);
+    $("#board").innerHTML = STAGES.map((s) => {
+      const items = list.filter((p) => p.stage === s.id).sort((a, b) => (a.due || "9999").localeCompare(b.due || "9999"));
+      const cards = items.map((p) => {
+        const pct = checkPct(p);
+        const f = FORMATS[p.format] || FORMATS.education;
+        const dueTxt = p.due ? (() => { const d = new Date(p.due + "T00:00"); return `${d.getDate()} ${BULAN[d.getMonth()]}`; })() : "Tiada tarikh";
+        return `<button type="button" class="card ${p.id === selectedId ? "sel" : ""}" draggable="${!readOnly}" data-open="${p.id}" data-id="${p.id}">
+          <div class="card-title">${esc(p.title || "Tanpa tajuk")}</div>
+          <div class="chips"><span class="chip fmt">${esc(f.name)}</span><span class="chip">Gaya ${esc(p.style || f.style)}</span>${p.example ? '<span class="chip ex">Contoh</span>' : ""}${isLate(p) ? '<span class="chip late">Lewat</span>' : ""}</div>
+          ${pct !== null ? `<div class="progress" title="Checklist ${pct}%"><i style="width:${pct}%"></i></div>` : ""}
+          <div class="card-meta"><span>${esc(dueTxt)}</span><span>${(p.platforms || []).map((k) => ({ ig: "IG", tiktok: "TT", yt: "YT" }[k])).join(" · ") || "—"}</span></div>
+        </button>`;
+      }).join("");
+      const hint = !items.length ? `<div class="col-hint">${s.id === "idea" ? "Tekan “+ Video baru” untuk mula." : "Kosong"}</div>` : "";
+      return `<div class="col" data-stage="${s.id}">
+        <div class="col-head"><span class="dot" style="background:${s.color}"></span>${s.name}<small>${items.length}</small></div>
+        ${cards}${hint}
+      </div>`;
+    }).join("");
+  }
+
+  // ---- render: drawer
+  function agentPrompt(p) {
+    const f = FORMATS[p.format] || FORMATS.education;
+    const broll = p.broll ? `B-roll dalam folder ${p.broll}` : "B-roll guna stok Pixabay";
+    const lines = [`Guna skill reel-editor. Edit project CapCut "${p.capcut || "NAMA PROJECT"}", format ${f.cmd}, ${broll}. Aku guna Windows.`];
+    if (p.hook) lines.push(`Hook yang aku nak: "${p.hook}".`);
+    if ((p.style || f.style) !== f.style) lines.push(`Guna Gaya ${p.style}.`);
+    if (p.notes) lines.push(`Nota: ${p.notes}`);
+    if ((p.platforms || []).length) lines.push(`Lepas aku approve, sediakan caption post untuk ${(p.platforms).map((k) => PLATFORMS[k]).join(", ")}.`);
+    return lines.join("\n");
+  }
+  function renderDrawer() {
+    const el = $("#drawer");
+    if (!draft) { el.hidden = true; el.innerHTML = ""; return; }
+    el.hidden = false;
+    const p = draft;
+    const f = FORMATS[p.format] || FORMATS.education;
+    const checks = CHECKS[p.stage] || [];
+    const c = p.checks || {};
+    const dis = readOnly ? "disabled" : "";
+    el.innerHTML = `
+      <div class="sec-head">
+        <div><div class="eyebrow">${p.isNew ? "Video baru" : "Butiran video"}${p.example ? " · contoh" : ""}</div><h2 style="margin-top:4px">${esc(p.title || "Tanpa tajuk")}</h2></div>
+        <button class="btn ghost small" type="button" data-act="close">Tutup</button>
+      </div>
+      <div class="drawer-grid">
+        <div style="display:grid;gap:12px;align-content:start;min-width:0">
+          <div class="field"><label for="f-title">Tajuk video</label><input class="input" id="f-title" data-k="title" value="${esc(p.title)}" placeholder="Contoh: Customer kata mahal" ${dis}></div>
+          <div class="field"><label>Format</label><div class="seg">${Object.entries(FORMATS).map(([k, v]) => `<button type="button" data-fmt="${k}" aria-pressed="${p.format === k}" ${dis}>${esc(v.name)}</button>`).join("")}</div></div>
+          <div class="row2">
+            <div class="field"><label for="f-stage">Peringkat</label><select class="select" id="f-stage" data-k="stage" ${dis}>${STAGES.map((s) => `<option value="${s.id}" ${p.stage === s.id ? "selected" : ""}>${s.name}</option>`).join("")}</select></div>
+            <div class="field"><label for="f-due">Tarikh post</label><input class="input" type="date" id="f-due" data-k="due" value="${esc(p.due)}" ${dis}></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label for="f-capcut">Nama project CapCut</label><input class="input" id="f-capcut" data-k="capcut" value="${esc(p.capcut)}" placeholder="claude test" ${dis}></div>
+            <div class="field"><label for="f-style">Gaya</label><select class="select" id="f-style" data-k="style" ${dis}><option value="A" ${(p.style || f.style) === "A" ? "selected" : ""}>A · Authority</option><option value="B" ${(p.style || f.style) === "B" ? "selected" : ""}>B · Cinematic</option></select></div>
+          </div>
+          <div class="field"><label for="f-hook">Hook (saat 0–2)</label><input class="input" id="f-hook" data-k="hook" value="${esc(p.hook)}" placeholder="Apa kau jawab bila customer kata mahal?" list="hook-list" ${dis}>
+            <datalist id="hook-list">${hooks.map((h) => `<option value="${esc(h.text)}"></option>`).join("")}</datalist></div>
+          <div class="field"><label for="f-broll">Folder B-roll sendiri (kosongkan untuk stok Pixabay)</label><input class="input" id="f-broll" data-k="broll" value="${esc(p.broll)}" placeholder="D:\\B-roll" ${dis}></div>
+          <div class="field"><label>Platform</label><div class="seg">${Object.entries(PLATFORMS).map(([k, v]) => `<button type="button" data-plat="${k}" aria-pressed="${(p.platforms || []).includes(k)}" ${dis}>${esc(v)}</button>`).join("")}</div></div>
+          <div class="field"><label for="f-notes">Nota untuk agent</label><textarea class="input" id="f-notes" data-k="notes" placeholder="Contoh: potong bahagian aku sebut harga lama" ${dis}>${esc(p.notes)}</textarea></div>
+          ${p.stage === "posted" ? `
+          <div class="field"><label>Prestasi (isi lepas 48 jam)</label>
+            <div class="stats">${[["views", "Views"], ["saves", "Saves"], ["shares", "Shares"], ["watch", "Tonton %"]].map(([k, n]) => `<div class="field"><label for="s-${k}">${n}</label><input class="input" type="number" min="0" id="s-${k}" data-stat="${k}" value="${esc(p.stats?.[k] ?? "")}" ${dis}></div>`).join("")}</div>
+          </div>` : ""}
+        </div>
+        <div style="display:grid;gap:12px;align-content:start;min-width:0">
+          <div class="field"><label>Arahan untuk agent reel-editor</label>
+            <div class="prompt-box" id="prompt">${esc(agentPrompt(p))}</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary small" type="button" data-act="copy">Salin arahan</button><span class="note" style="align-self:center">Paste dalam chat baru di Claude desktop app.</span></div>
+          </div>
+          ${checks.length ? `<div class="field"><label>Checklist · ${esc(STAGES.find((s) => s.id === p.stage).name)}</label>
+            <div class="checks">${checks.map(([k, t, sub]) => { const key = `${p.stage}.${k}`; const on = !!c[key]; return `<label class="check ${on ? "done" : ""}"><input type="checkbox" data-check="${key}" ${on ? "checked" : ""} ${dis}><span>${esc(t)}${sub ? `<small>${esc(sub)}</small>` : ""}</span></label>`; }).join("")}</div></div>`
+          : `<div class="note">${p.stage === "edit" ? "Agent sedang edit. Bila preview sampai, pindah ke Semak." : p.stage === "posted" ? "Isi prestasi supaya kau nampak hook dan format mana yang menang." : "Tiada checklist untuk peringkat ni."}</div>`}
+        </div>
+      </div>
+      <div class="drawer-foot">
+        <div class="left">${!p.isNew && !readOnly ? `<button class="btn ghost small danger" type="button" data-act="delete">Padam</button>` : ""}</div>
+        <div class="right">
+          ${!readOnly && p.stage !== "posted" ? `<button class="btn small" type="button" data-act="advance">Pindah ke ${esc(STAGES[STAGES.findIndex((s) => s.id === p.stage) + 1]?.name || "")} →</button>` : ""}
+          ${!readOnly ? `<button class="btn primary small" type="button" data-act="save">${p.isNew ? "Tambah video" : "Simpan"}</button>` : `<span class="note">Paparan baca sahaja</span>`}
+        </div>
+      </div>`;
+  }
+
+  // ---- render: hooks + style
+  function renderHooks() {
+    $("#formulas").innerHTML = FORMULAS.map((f, i) => `<div class="formula"><b>${esc(f.name)}</b><code>${esc(f.tpl)}</code><span class="ex-line">${esc(f.ex)}</span>
+      <div class="formula-actions"><button class="btn small ghost" type="button" data-usef="${i}">Guna formula ni</button></div></div>`).join("");
+    $("#hooks").innerHTML = hooks.length ? hooks.map((h) => `<div class="hook"><div><p>${esc(h.text)}</p><small>${h.used ? `Dah guna ${h.used}×` : "Belum guna"}</small></div>
+      <div class="hook-actions"><button class="btn small" type="button" data-usehook="${h.id}">Video baru</button>${readOnly ? "" : `<button class="btn small ghost danger" type="button" data-delhook="${h.id}" aria-label="Padam hook">×</button>`}</div></div>`).join("")
+      : `<div class="empty">Belum ada hook disimpan. Tulis satu di atas, atau tekan “Guna formula ni” untuk mula dari templat.</div>`;
+  }
+  function renderFormats() {
+    $("#formats").innerHTML = FORMAT_GUIDE.map((g) => `<div class="panel block"><div class="sec-head"><div><h2>${esc(FORMATS[g.f].name)}</h2><p>Gaya ${FORMATS[g.f].style}</p></div></div>
+      <div class="timeline">${g.rows.map(([a, b]) => `<div class="tl-row"><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join("")}</div></div>`).join("");
+  }
+
+  function renderAll() { renderRail(); renderKpis(); renderWeek(); renderFilter(); renderBoard(); renderDrawer(); renderHooks(); }
+
+  // ---- data ops (db when available, memory otherwise)
+  const clean = (p) => { const o = { ...p }; delete o.id; delete o.isNew; return o; };
+  async function saveProject(p) {
+    const body = clean(p);
+    body.updated = Date.now();
+    if (body.stage === "posted" && !body.postedAt) body.postedAt = Date.now();
+    if (body.stage !== "posted") delete body.postedAt;
+    if (!db) {
+      if (p.isNew) { const id = "m" + ++memId; projects.push({ id, ...body }); return id; }
+      projects = projects.map((x) => (x.id === p.id ? { id: p.id, ...body } : x)); return p.id;
+    }
+    if (p.isNew) { body.created = Date.now(); const ref = await db.collection("projects").add(body); return ref.id; }
+    await db.doc("projects/" + p.id).set(body); return p.id;
+  }
+  async function deleteProject(id) { if (!db) { projects = projects.filter((p) => p.id !== id); return; } await db.doc("projects/" + id).delete(); }
+  async function saveSettings() { if (db) await db.doc("settings/main").set(settings); }
+  async function addHook(text) {
+    if (!db) { hooks.unshift({ id: "h" + ++memId, text, used: 0, created: Date.now() }); return; }
+    await db.collection("hooks").add({ text, used: 0, created: Date.now() });
+  }
+  async function bumpHook(text) {
+    const h = hooks.find((x) => x.text === text); if (!h) return;
+    if (!db) { h.used = (h.used || 0) + 1; return; }
+    await db.doc("hooks/" + h.id).update({ used: (h.used || 0) + 1 });
+  }
+  async function deleteHook(id) { if (!db) { hooks = hooks.filter((h) => h.id !== id); return; } await db.doc("hooks/" + id).delete(); }
+
+  function fail(e) {
+    if (e && e.code === "invalid_argument") { readOnly = true; renderAll(); toast("Kau tak boleh ubah data di paparan ni"); return; }
+    if (e && e.code === "quota_exceeded") { toast("Storan penuh. Padam projek lama dulu."); return; }
+    toast("Tak dapat simpan. Cuba lagi sekejap.");
+  }
+
+  // ---- actions
+  function openProject(id) {
+    const p = projects.find((x) => x.id === id); if (!p) return;
+    selectedId = id; draft = JSON.parse(JSON.stringify(p));
+    renderBoard(); renderDrawer();
+    $("#drawer").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  }
+  function newProject(seed = {}) {
+    showView("pipeline");
+    selectedId = null;
+    draft = { isNew: true, title: "", format: "education", style: "A", stage: "idea", capcut: "", hook: "", broll: "", notes: "", platforms: ["ig", "tiktok"], due: "", checks: {}, ...seed };
+    renderBoard(); renderDrawer();
+    $("#drawer").scrollIntoView({ behavior: "auto", block: "start" });
+    setTimeout(() => $("#f-title")?.focus(), 0);
+  }
+  async function commit(closeAfter) {
+    if (!draft.title.trim()) { toast("Isi tajuk video dulu"); $("#f-title")?.focus(); return; }
+    try {
+      const wasNew = draft.isNew;
+      if (draft.hook) await bumpHook(draft.hook).catch(() => {});
+      const id = await saveProject(draft);
+      toast(wasNew ? "Video ditambah" : "Disimpan");
+      if (closeAfter) { draft = null; selectedId = null; }
+      else { selectedId = id; draft = { ...draft, id, isNew: false }; }
+      if (!db) renderAll(); else { renderBoard(); renderDrawer(); }
+    } catch (e) { fail(e); }
+  }
+  async function moveTo(id, stage) {
+    const p = projects.find((x) => x.id === id); if (!p || p.stage === stage) return;
+    try { await saveProject({ ...p, stage }); if (!db) renderAll(); toast(`Dipindah ke ${STAGES.find((s) => s.id === stage).name}`); }
+    catch (e) { fail(e); }
+  }
+
+  function showView(v) {
+    for (const t of document.querySelectorAll(".tab")) t.setAttribute("aria-selected", String(t.dataset.view === v));
+    $("#view-pipeline").hidden = v !== "pipeline";
+    $("#view-hooks").hidden = v !== "hooks";
+    $("#view-style").hidden = v !== "style";
+    try { localStorage.setItem("rs-view", v); } catch (_) {}
+  }
+
+  document.addEventListener("click", async (ev) => {
+    const t = ev.target.closest("button, [data-open]");
+    if (!t) return;
+    if (t.dataset.view) return showView(t.dataset.view);
+    if (t.id === "btn-new") return newProject();
+    if (t.dataset.jump) {
+      showView("pipeline");
+      const col = document.querySelector(`.col[data-stage="${t.dataset.jump}"]`);
+      col?.scrollIntoView({ behavior: "auto", block: "nearest", inline: "center" });
+      return;
+    }
+    if (t.dataset.open) return openProject(t.dataset.open);
+    if (t.dataset.filter) { fmtFilter = t.dataset.filter; renderFilter(); renderBoard(); return; }
+    if (t.id === "tgt-minus" || t.id === "tgt-plus") {
+      if (readOnly) return;
+      settings.weeklyTarget = Math.max(1, Math.min(21, (settings.weeklyTarget || 4) + (t.id === "tgt-plus" ? 1 : -1)));
+      renderRail(); renderKpis();
+      clearTimeout(window.__tgtT); window.__tgtT = setTimeout(() => saveSettings().catch(fail), 600);
+      return;
+    }
+    if (t.dataset.usef !== undefined) { const f = FORMULAS[+t.dataset.usef]; $("#hook-text").value = f.tpl; $("#hook-text").focus(); return; }
+    if (t.dataset.usehook) { const h = hooks.find((x) => x.id === t.dataset.usehook); return newProject({ hook: h?.text || "" }); }
+    if (t.dataset.delhook) { try { await deleteHook(t.dataset.delhook); if (!db) renderHooks(); } catch (e) { fail(e); } return; }
+    if (!draft) return;
+    if (t.dataset.fmt) { draft.format = t.dataset.fmt; draft.style = FORMATS[t.dataset.fmt].style; return renderDrawer(); }
+    if (t.dataset.plat) { const s = new Set(draft.platforms || []); s.has(t.dataset.plat) ? s.delete(t.dataset.plat) : s.add(t.dataset.plat); draft.platforms = [...s]; return renderDrawer(); }
+    const act = t.dataset.act;
+    if (act === "close") { draft = null; selectedId = null; renderBoard(); renderDrawer(); }
+    else if (act === "save") commit(false);
+    else if (act === "advance") { const i = STAGES.findIndex((s) => s.id === draft.stage); draft.stage = STAGES[Math.min(STAGES.length - 1, i + 1)].id; await commit(false); }
+    else if (act === "delete") {
+      if (t.dataset.confirm !== "1") { t.dataset.confirm = "1"; t.textContent = "Tekan sekali lagi untuk padam"; return; }
+      try { await deleteProject(draft.id); draft = null; selectedId = null; if (!db) renderAll(); else { renderBoard(); renderDrawer(); } toast("Dipadam"); } catch (e) { fail(e); }
+    } else if (act === "copy") {
+      const text = agentPrompt(draft);
+      try { await navigator.clipboard.writeText(text); toast("Arahan disalin"); }
+      catch (_) { const r = document.createRange(); r.selectNodeContents($("#prompt")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Tekan Ctrl+C untuk salin"); }
+    }
+  });
+
+  document.addEventListener("input", (ev) => {
+    if (!draft) return;
+    const el = ev.target;
+    if (el.dataset.k) {
+      draft[el.dataset.k] = el.value;
+      if (el.dataset.k === "stage") return renderDrawer();
+      const pb = $("#prompt"); if (pb) pb.textContent = agentPrompt(draft);
+    } else if (el.dataset.stat) {
+      draft.stats = { ...(draft.stats || {}), [el.dataset.stat]: el.value === "" ? "" : Number(el.value) };
+    }
+  });
+  document.addEventListener("change", (ev) => {
+    const el = ev.target;
+    if (!draft || !el.dataset.check) return;
+    draft.checks = { ...(draft.checks || {}), [el.dataset.check]: el.checked };
+    el.closest(".check").classList.toggle("done", el.checked);
+    if (!draft.isNew) commit(false);
+  });
+
+  $("#hook-form").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const v = $("#hook-text").value.trim();
+    if (!v) return;
+    if (readOnly) return toast("Paparan baca sahaja");
+    try { await addHook(v); $("#hook-text").value = ""; if (!db) renderHooks(); toast("Hook disimpan"); } catch (e) { fail(e); }
+  });
+
+  // drag & drop between columns
+  let dragId = null;
+  document.addEventListener("dragstart", (e) => { const c = e.target.closest?.(".card"); if (!c || readOnly) return; dragId = c.dataset.id; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", dragId); });
+  document.addEventListener("dragover", (e) => { const col = e.target.closest?.(".col"); if (!col || !dragId) return; e.preventDefault(); document.querySelectorAll(".col.drop").forEach((x) => x !== col && x.classList.remove("drop")); col.classList.add("drop"); });
+  document.addEventListener("dragleave", (e) => { const col = e.target.closest?.(".col"); if (col && !col.contains(e.relatedTarget)) col.classList.remove("drop"); });
+  document.addEventListener("drop", (e) => { const col = e.target.closest?.(".col"); document.querySelectorAll(".col.drop").forEach((x) => x.classList.remove("drop")); if (!col || !dragId) return; e.preventDefault(); const id = dragId; dragId = null; moveTo(id, col.dataset.stage); });
+  document.addEventListener("dragend", () => { dragId = null; document.querySelectorAll(".col.drop").forEach((x) => x.classList.remove("drop")); });
+
+  // ---- boot
+  try { const v = localStorage.getItem("rs-view"); if (v === "hooks" || v === "style") showView(v); } catch (_) {}
+  renderFormats();
+  renderAll();
+
+  (async () => {
+    let timer = setTimeout(() => setStatus("", "Storan lambat menjawab…"), 10000);
+    db = window.claude?.use ? await window.claude.use("db").catch(() => null) : null;
+    if (!db) {
+      clearTimeout(timer);
+      setStatus("off", "Mod sementara: data tak disimpan");
+      return;
+    }
+    let pending = 3;
+    const ready = (fromCache) => { if (fromCache) return; if (--pending <= 0) { clearTimeout(timer); setStatus("ok", "Tersimpan"); } };
+    const err = () => { clearTimeout(timer); setStatus("off", "Storan terputus. Muat semula halaman."); };
+    db.collection("projects").onSnapshot((snap) => {
+      projects = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      if (selectedId && !projects.find((p) => p.id === selectedId)) { selectedId = null; draft = null; }
+      renderRail(); renderKpis(); renderWeek(); renderBoard();
+      if (!draft) renderDrawer();
+      ready(snap.metadata.fromCache);
+    }, err);
+    db.collection("hooks").orderBy("created", "desc").onSnapshot((snap) => {
+      hooks = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      renderHooks(); ready(snap.metadata.fromCache);
+    }, err);
+    db.doc("settings/main").onSnapshot((snap) => {
+      if (snap.exists) settings = { weeklyTarget: 4, ...snap.data() };
+      renderRail(); renderKpis(); ready(snap.metadata.fromCache);
+    }, err);
+  })();
+})();
+</script>
