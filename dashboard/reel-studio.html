@@ -475,10 +475,27 @@ textarea.input { resize: vertical; min-height: 66px; }
     { id: "semak", name: "Semak", color: "#f0b955" }, { id: "siap", name: "Siap", color: "#5fd39a" },
   ];
   const FORMATS = {
-    education: { name: "Education", style: "A", cmd: "education" }, vlog: { name: "Vlog", style: "B", cmd: "vlog" },
-    dos: { name: "Do & Don't", style: "A", cmd: "dos-donts" }, ba: { name: "Before/After", style: "A", cmd: "before-after" },
+    education: { name: "Education", style: "authority", cmd: "education" }, vlog: { name: "Vlog / cerita", style: "omgadrian", cmd: "vlog" },
+    dos: { name: "Do & Don't", style: "authority", cmd: "dos-donts" }, ba: { name: "Before/After", style: "authority", cmd: "before-after" },
   };
   const PLATFORMS = { ig: "Instagram", tiktok: "TikTok", yt: "YouTube Shorts" };
+  // Mirrors skills/reel-editor/modes/ and styles/. Adding a style pack there = one entry here.
+  const MODES = {
+    "talking-head": { name: "Talking head", desc: "Kau cakap depan kamera" },
+    vlog: { name: "Vlog", desc: "Banyak klip lokasi + suara" },
+    faceless: { name: "Faceless", desc: "Voiceover + visual campur, tiada muka" },
+  };
+  const STYLES = {
+    authority: { name: "Authority", ref: "wolfofwallst · personalbrandlaunch", sample: "a",
+      rules: ["Caption 2–4 perkataan, tengah frame (~55%), putih tebal", "1 kata kunci kuning 1.5×, UPPERCASE 2× untuk 1–2 perkataan terbesar", "Header nombor kiri atas untuk listicle", "Potongan keras + punch-in 1.12× setiap jump cut", "Grade bersih, kulit natural"],
+      measured: [["Purata shot", "6.0 s"], ["Teks kuning", "61% tengah"], ["Loudness", "−14.7 LUFS"], ["Saturation", "0.42"]] },
+    omgadrian: { name: "omgadrian", ref: "omgadrian (Cinematic Story)", sample: "b",
+      rules: ["Tajuk Anton kuning besar + lead-in serif italic kecil, sepertiga atas", "Subtitle serif kecil di lower third, tiada kata kunci", "B-roll mendahului, potong setiap 1.5–3 s", "Whip / zoom-blur bila tukar lokasi, segmen hitam-putih", "Grade hangat filmic: hitam diangkat, highlight hangat, grain"],
+      measured: [["Purata shot", "2.2 s"], ["Teks kuning", "64% atas"], ["Kontras", "0.20 (rendah)"], ["Hitam-putih", "6% frame"]] },
+  };
+  const VOICES = { own: "Rakaman aku", "ai-capcut": "Suara AI (CapCut TTS)", "ai-eleven": "Suara AI (ElevenLabs)" };
+  const normStyle = (v, fmt) => (STYLES[v] ? v : v === "B" ? "omgadrian" : v === "A" ? "authority" : (FORMATS[fmt] || FORMATS.education).style);
+  const normMode = (v) => (MODES[v] ? v : "talking-head");
   const VCHECKS = {
     skrip: [["hook", "Hook kuat dalam ayat pertama", "Janji, angka, atau soalan yang sakit"], ["struktur", "Struktur ikut format", "Education: hook → poin → CTA"], ["cta", "CTA ditulis", "Follow / comment kata kunci / save"]],
     rakam: [["frame", "Rakam 9:16, 1080×1920, 30 fps", "Muka di 1/3 atas, ruang untuk caption"], ["cahaya", "Cahaya depan muka", ""], ["mic", "Mic dekat, bilik senyap", ""], ["take", "Hook dirakam 2–3 take", "Agent simpan take terakhir yang lengkap"], ["capcut", "Footage dah masuk project CapCut", "Namakan project, kemudian quit CapCut"]],
@@ -594,23 +611,24 @@ textarea.input { resize: vertical; min-height: 66px; }
               <button class="btn primary" type="submit">Simpan</button></form>
             <div class="list" id="hooks"></div></div></section>`;
     } else if (view === "style") {
-      page.innerHTML = banner({ icon: "palette", title: "Gaya & Brand", sub: "Diukur dari 5 reel rujukan. Semua agent ikut panduan ni." }) +
-        `<section class="glass block"><div class="style-cols">
-          <div class="style-card"><div class="eyebrow">Gaya A · Authority</div><div class="style-sample"><div class="sample-a">talking about is<em>budget</em></div></div>
-            <ul class="rules"><li>Caption 2–4 perkataan, tengah frame, putih tebal</li><li>1 kata kunci kuning, besar, setiap 1–2 ayat</li><li>Header nombor untuk listicle</li><li>Cutaway setiap 3–5 s, punch-in pada penekanan</li><li>Untuk: Education, Do &amp; Don't, Before/After</li></ul></div>
-          <div class="style-card"><div class="eyebrow">Gaya B · Cinematic Story</div><div class="style-sample"><div class="sample-b"><i>Do you wanna make</i><strong>BETTER</strong></div></div>
-            <ul class="rules"><li>Tajuk condensed kuning + serif italic kecil</li><li>Subtitle serif kecil di lower third</li><li>B-roll sinematik, potong setiap ~2 s</li><li>Whip / zoom-blur, segmen hitam-putih</li><li>Untuk: Vlog, cerita, launch</li></ul></div></div>
+      page.innerHTML = banner({ icon: "palette", title: "Gaya & Brand", sub: "Style pack untuk Video Agent, diukur dari reel rujukan. Format = struktur isi." }) +
+        `<section class="glass block"><div class="sec-head"><div><h2>Style pack</h2><p>Setiap style = satu folder dalam skill reel-editor (styles/&lt;nama&gt;) + satu template CapCut "STYLE &lt;nama&gt;".</p></div><a class="btn small" href="#agent-baru">+ Style baru</a></div>
+          <div class="style-cols">${Object.entries(STYLES).map(([k, st]) => `<div class="style-card"><div class="eyebrow">${esc(st.name)} · ${esc(st.ref)}</div>
+            <div class="style-sample">${st.sample === "a" ? '<div class="sample-a">talking about is<em>budget</em></div>' : '<div class="sample-b"><i>Do you wanna make</i><strong>BETTER</strong></div>'}</div>
+            <ul class="rules">${st.rules.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
+            <div class="chips">${st.measured.map(([n, v]) => `<span class="chip">${esc(n)}: ${esc(v)}</span>`).join("")}</div></div>`).join("")}</div>
           <div class="eyebrow" style="margin:16px 0 10px">Palet brand</div>
           <div class="swatches">${[["#FFD21F", "#FFD21F"], ["#FFFFFF", "#FFFFFF"], ["#0A0A0A", "#0A0A0A"], ["#8A8A8A", "#8A8A8A"], ["#FF3B30", "DON'T"], ["#34C759", "DO"]].map(([c, n]) => `<div class="sw"><i style="background:${c}"></i>${n}</div>`).join("")}</div>
           <div class="eyebrow" style="margin:16px 0 10px">Spesifikasi export</div>
           <div class="chips"><span class="chip">9:16 · 1080×1920</span><span class="chip">30 fps</span><span class="chip">Suara −14 LUFS</span><span class="chip">Muzik ~15 dB bawah suara</span></div></section>
-         <section class="grid2">${FORMAT_GUIDE.map((g) => `<div class="glass block"><div class="sec-head"><div><h2>${esc(FORMATS[g.f].name)}</h2><p>Gaya ${FORMATS[g.f].style}</p></div></div><div class="timeline">${g.rows.map(([a, b]) => `<div class="tl-row"><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join("")}</div></div>`).join("")}</section>`;
+         <section class="grid2">${FORMAT_GUIDE.map((g) => `<div class="glass block"><div class="sec-head"><div><h2>${esc(FORMATS[g.f].name)}</h2><p>Style default: ${esc(STYLES[FORMATS[g.f].style].name)}</p></div></div><div class="timeline">${g.rows.map(([a, b]) => `<div class="tl-row"><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join("")}</div></div>`).join("")}</section>`;
     } else if (view === "agent-baru") {
       const ideas = [["Thumbnail Agent", "Cover reel & thumbnail YouTube dari frame terbaik"], ["Caption & Hashtag Agent", "Caption post + hashtag ikut platform, terus dari transkrip video"], ["Content Calendar Agent", "Rancang 30 hari konten dari satu topik"], ["Analytics Agent", "Baca prestasi post & ads, cadang apa nak buat seterusnya"]];
       page.innerHTML = banner({ icon: "plus", title: "Tambah agent", sub: "Setiap agent = satu skill Claude + satu ruang kerja di sini." }) +
         `<section class="two"><div class="glass block"><div class="sec-head"><div><h2>Cara tambah</h2></div></div>
           <ol class="steps"><li>Minta Claude <b>bina skill</b> untuk kerja tu (contoh: poster-agent).</li><li>Upload skill ke <b>Claude desktop app</b> (Settings → Skills) dan push ke repo VIDEOEDITOR.</li><li>Minta Claude <b>tambah agent ke Agent Studio</b>. Agent baru muncul di menu kiri dengan brief, papan tugas dan checklist sendiri.</li></ol>
-          <div class="field" style="margin-top:14px"><span class="lbl">Arahan untuk Claude</span><div class="copy-line"><code id="add-cmd">Bina skill poster-agent, kemudian tambah ke Agent Studio.</code><button class="btn small" type="button" data-copy="add-cmd">Salin</button></div></div></div>
+          <div class="field" style="margin-top:14px"><span class="lbl">Arahan untuk Claude</span><div class="copy-line"><code id="add-cmd">Bina skill poster-agent, kemudian tambah ke Agent Studio.</code><button class="btn small" type="button" data-copy="add-cmd">Salin</button></div></div>
+          <div class="field" style="margin-top:14px"><span class="lbl">Tambah style video baru (hantar 3–5 reel rujukan sekali)</span><div class="copy-line"><code id="add-style">Buat style pack baru nama NAMA-STYLE dari reel rujukan ni, kemudian tambah ke Agent Studio.</code><button class="btn small" type="button" data-copy="add-style">Salin</button></div></div></div>
           <div class="glass block"><div class="sec-head"><div><h2>Idea agent seterusnya</h2><p>Sesuai dengan workflow konten kau.</p></div></div>
           <div class="list">${ideas.map(([n, d]) => `<div class="li" style="--lc:var(--accent)"><span class="li-ic">${svg("spark", 16)}</span><div><b>${n}</b><small>${d}</small></div><span class="tag neutral">Idea</span></div>`).join("")}</div></div></section>
          <section><div class="sec-head"><div><h2>Status agent</h2></div></div><div class="agents" id="ov-agents"></div></section>`;
@@ -691,7 +709,7 @@ textarea.input { resize: vertical; min-height: 66px; }
     $("#v-stages").innerHTML = VSTAGES.map((s) => `<button type="button" class="stage-tile" data-jumpcol="${s.id}"><span><i style="background:${s.color}"></i>${s.name}</span><b>${projects.filter((p) => p.stage === s.id).length}</b></button>`).join("");
   }
   function renderFilter() {
-    const opts = [["all", "Semua"], ...Object.entries(FORMATS).map(([k, v]) => [k, v.name])];
+    const opts = [["all", "Semua"], ...Object.entries(MODES).map(([k, v]) => [k, v.name])];
     $("#v-filter").innerHTML = opts.map(([k, n]) => `<button type="button" data-filter="${k}" aria-pressed="${fmtFilter === k}">${esc(n)}</button>`).join("");
   }
   function cardHtml(x, chipsHtml, pct, meta) {
@@ -708,10 +726,10 @@ textarea.input { resize: vertical; min-height: 66px; }
     }).join("");
   }
   function renderVideoBoard() {
-    const list = projects.filter((p) => fmtFilter === "all" || p.format === fmtFilter).map((p) => ({ ...p, kind: "video", agent: "video" }));
+    const list = projects.filter((p) => fmtFilter === "all" || normMode(p.mode) === fmtFilter).map((p) => ({ ...p, kind: "video", agent: "video" }));
     $("#board").innerHTML = boardHtml(VSTAGES, list, (p) => {
       const f = FORMATS[p.format] || FORMATS.education;
-      return cardHtml(p, `<span class="chip k" style="--kc:var(--c-video)">${esc(f.name)}</span><span class="chip">Gaya ${esc(p.style || f.style)}</span>`, vCheckPct(p), (p.platforms || []).map((k) => ({ ig: "IG", tiktok: "TT", yt: "YT" }[k])).join(" · ") || "—");
+      return cardHtml(p, `<span class="chip k" style="--kc:var(--c-video)">${esc(MODES[normMode(p.mode)].name)}</span><span class="chip">${esc(f.name)}</span><span class="chip">${esc(STYLES[normStyle(p.style, p.format)].name)}</span>`, vCheckPct(p), (p.platforms || []).map((k) => ({ ig: "IG", tiktok: "TT", yt: "YT" }[k])).join(" · ") || "—");
     }, "Tekan “+ Video baru” untuk mula.");
   }
   function renderTaskBoard() {
@@ -726,9 +744,10 @@ textarea.input { resize: vertical; min-height: 66px; }
   // ---- drawer
   function videoPrompt(p) {
     const f = FORMATS[p.format] || FORMATS.education;
-    const lines = [`Guna skill reel-editor. Edit project CapCut "${p.capcut || "NAMA PROJECT"}", format ${f.cmd}, ${p.broll ? `B-roll dalam folder ${p.broll}` : "B-roll guna stok Pixabay"}. Aku guna Windows.`];
+    const mode = normMode(p.mode), style = normStyle(p.style, p.format);
+    const lines = [`Guna skill reel-editor. Edit project CapCut "${p.capcut || "NAMA PROJECT"}", mode ${mode}, style ${style}, format ${f.cmd}, ${p.broll ? `B-roll dalam folder ${p.broll}` : "B-roll guna stok Pixabay"}. Aku guna Windows.`];
+    if (mode === "faceless") lines.push(p.voice === "own" || !p.voice ? "Suara: rakaman aku sendiri dalam project tu, bersihkan dan potong jeda." : p.voice === "ai-capcut" ? "Suara: AI guna Text-to-speech CapCut (aku dah letak dalam project)." : "Suara: AI guna ElevenLabs (key dalam ELEVENLABS_API_KEY). Skrip ada dalam nota.");
     if (p.hook) lines.push(`Hook yang aku nak: "${p.hook}".`);
-    if ((p.style || f.style) !== f.style) lines.push(`Guna Gaya ${p.style}.`);
     if (p.notes) lines.push(`Nota: ${p.notes}`);
     if ((p.platforms || []).length) lines.push(`Lepas aku approve, sediakan caption post untuk ${p.platforms.map((k) => PLATFORMS[k]).join(", ")}.`);
     return lines.join("\n");
@@ -750,9 +769,12 @@ textarea.input { resize: vertical; min-height: 66px; }
     let checks = [], ckey = (k) => k;
     if (d.kind === "video") {
       const f = FORMATS[d.format] || FORMATS.education;
-      left += `<div class="field"><span class="lbl">Format</span><div class="seg">${Object.entries(FORMATS).map(([k, v]) => `<button type="button" data-fmt="${k}" aria-pressed="${d.format === k}" ${dis}>${esc(v.name)}</button>`).join("")}</div></div>
+      const md = normMode(d.mode), sd = normStyle(d.style, d.format);
+      left += `<div class="field"><span class="lbl">Mode</span><div class="seg">${Object.entries(MODES).map(([k, v]) => `<button type="button" data-seg="mode" data-val="${k}" aria-pressed="${md === k}" title="${esc(v.desc)}" ${dis}>${esc(v.name)}</button>`).join("")}</div></div>
+        ${md === "faceless" ? `<div class="field"><span class="lbl">Suara</span><div class="seg">${Object.entries(VOICES).map(([k, v]) => `<button type="button" data-seg="voice" data-val="${k}" aria-pressed="${(d.voice || "own") === k}" ${dis}>${esc(v)}</button>`).join("")}</div></div>` : ""}
+        <div class="field"><span class="lbl">Format</span><div class="seg">${Object.entries(FORMATS).map(([k, v]) => `<button type="button" data-fmt="${k}" aria-pressed="${d.format === k}" ${dis}>${esc(v.name)}</button>`).join("")}</div></div>
         <div class="row2"><div class="field"><label for="f-capcut">Nama project CapCut</label><input class="input" id="f-capcut" data-k="capcut" value="${esc(d.capcut)}" placeholder="claude test" ${dis}></div>
-          <div class="field"><label for="f-style">Gaya</label><select class="select" id="f-style" data-k="style" ${dis}><option value="A" ${(d.style || f.style) === "A" ? "selected" : ""}>A · Authority</option><option value="B" ${(d.style || f.style) === "B" ? "selected" : ""}>B · Cinematic</option></select></div></div>
+          <div class="field"><label for="f-style">Style</label><select class="select" id="f-style" data-k="style" ${dis}>${Object.entries(STYLES).map(([k, st]) => `<option value="${k}" ${sd === k ? "selected" : ""}>${esc(st.name)}</option>`).join("")}</select></div></div>
         <div class="field"><label for="f-hook">Hook (saat 0–2)</label><input class="input" id="f-hook" data-k="hook" value="${esc(d.hook)}" placeholder="Apa kau jawab bila customer kata mahal?" list="hook-list" ${dis}><datalist id="hook-list">${hooks.map((h) => `<option value="${esc(h.text)}"></option>`).join("")}</datalist></div>
         <div class="field"><label for="f-broll">Folder B-roll sendiri (kosongkan untuk stok Pixabay)</label><input class="input" id="f-broll" data-k="broll" value="${esc(d.broll)}" placeholder="D:\\B-roll" ${dis}></div>
         <div class="field"><span class="lbl">Platform</span><div class="seg">${Object.entries(PLATFORMS).map(([k, v]) => `<button type="button" data-multi="platforms" data-val="${k}" aria-pressed="${(d.platforms || []).includes(k)}" ${dis}>${esc(v)}</button>`).join("")}</div></div>`;
@@ -838,7 +860,7 @@ textarea.input { resize: vertical; min-height: 66px; }
   function newItem(agent, seed = {}) {
     if (view !== agent) go(agent);
     selectedKey = null;
-    if (agent === "video") draft = { isNew: true, kind: "video", agent: "video", title: "", format: "education", style: "A", stage: "idea", capcut: "", hook: "", broll: "", notes: "", platforms: ["ig", "tiktok"], due: "", checks: {}, ...seed };
+    if (agent === "video") draft = { isNew: true, kind: "video", agent: "video", title: "", mode: "talking-head", format: "education", style: "authority", voice: "own", stage: "idea", capcut: "", hook: "", broll: "", notes: "", platforms: ["ig", "tiktok"], due: "", checks: {}, ...seed };
     else { draft = { isNew: true, kind: "task", agent, title: "", stage: "brief", due: "", notes: "", checks: {}, ...seed }; for (const f of AGENTS[agent].fields) if (f.def !== undefined && draft[f.k] === undefined) draft[f.k] = f.def; }
     update(); renderDrawer();
     $("#drawer")?.scrollIntoView({ behavior: "auto", block: "start" });
