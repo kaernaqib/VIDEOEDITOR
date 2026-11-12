@@ -1,235 +1,322 @@
-<title>Reel Studio</title>
+<title>Agent Studio</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Anton&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* Layout: left "control rail" (clock, weekly target, stage counts) + main deck (KPI tiles, schedule strip,
-   pipeline board, detail drawer). Warm-charcoal studio, copper accent from the Clasy reference;
-   the user's own brand yellow appears only where it documents their reel style. Single dark look by choice. */
+/* Layout: app shell. Fixed glass sidebar (nav grouped Utama / Agent / Sumber) + top bar (search, alerts)
+   + per-view banner (title, period, refresh) + view body. Every agent shares one registry, so a new agent
+   is one entry. Glass panels float over #0E0F17 with soft colour fields behind them. Single dark look by choice. */
 :root {
   color-scheme: dark;
-  --bg: #0d0b0a;
-  --bg-glow: #2a1a10;
-  --panel: #171412;
-  --panel-2: #1f1b18;
-  --line: #2e2824;
-  --fg: #f3ede7;
-  --sub: #a89d94;
-  --dim: #6f655d;
-  --accent: #d98a5b;
-  --accent-ink: #1c0f07;
-  --accent-soft: #d98a5b26;
+  --bg: #0e0f17;
+  --glass: rgba(255, 255, 255, 0.045);
+  --glass-2: rgba(255, 255, 255, 0.075);
+  --glass-strong: rgba(22, 24, 36, 0.72);
+  --stroke: rgba(255, 255, 255, 0.085);
+  --stroke-2: rgba(255, 255, 255, 0.16);
+  --fg: #eef0f7;
+  --sub: #a4a9bd;
+  --dim: #6c7189;
+  --accent: #e58e5e;
+  --accent-ink: #1b0e07;
+  --accent-soft: rgba(229, 142, 94, 0.16);
+  --c-video: #e58e5e;
+  --c-poster: #a98bf0;
+  --c-copy: #4cc9b0;
+  --c-ads: #6aa6f4;
   --brand-yellow: #ffd21f;
-  --good: #5fc98f;
-  --warn: #e8b44c;
-  --bad: #ef6b5b;
-  --info: #6fa8e8;
+  --good: #5fd39a;
+  --warn: #f0b955;
+  --bad: #f2705f;
   --font-ui: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "Anton", "Impact", "Arial Narrow", sans-serif;
+  --font-display: "Anton", Impact, "Arial Narrow", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
-  --r-lg: 22px;
+  --r-xl: 22px;
+  --r-lg: 18px;
   --r-md: 14px;
   --r-sm: 10px;
+  --side-w: 248px;
+  --blur: blur(22px) saturate(145%);
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { min-height: 100%; }
 body {
-  margin: 0;
-  background: radial-gradient(1200px 700px at 70% -10%, var(--bg-glow), transparent 60%), var(--bg);
-  background-color: var(--bg);
-  color: var(--fg);
-  font-family: var(--font-ui);
-  font-size: 14px;
-  line-height: 1.45;
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 14px; line-height: 1.45;
   -webkit-font-smoothing: antialiased;
 }
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(520px 420px at 12% 8%, rgba(229, 142, 94, 0.20), transparent 70%),
+    radial-gradient(620px 520px at 88% 14%, rgba(106, 104, 244, 0.17), transparent 70%),
+    radial-gradient(560px 480px at 62% 96%, rgba(76, 201, 176, 0.11), transparent 70%),
+    var(--bg);
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.wrap {
-  max-width: 1480px;
-  margin: 0 auto;
-  padding-block: 20px 48px;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
-  display: grid;
-  gap: 18px;
+.glass {
+  background: var(--glass); border: 1px solid var(--stroke); border-radius: var(--r-xl);
+  -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 40px -24px rgba(0, 0, 0, 0.7);
 }
 
-/* top bar */
-.top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-.brand { display: flex; align-items: center; gap: 12px; margin-right: auto; }
-.brand-mark {
-  width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
-  background: linear-gradient(145deg, #e9a074, #b8643a); color: var(--accent-ink);
-  font-family: var(--font-display); font-size: 22px; letter-spacing: .5px;
+/* ---------- shell ---------- */
+.app { display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); min-height: 100vh; }
+.side {
+  position: sticky; top: env(safe-area-inset-top, 0px); height: calc(100vh - env(safe-area-inset-top, 0px));
+  display: flex; flex-direction: column; border-right: 1px solid var(--stroke);
+  background: rgba(14, 15, 23, 0.55); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
+  padding: 16px 12px 14px max(12px, env(safe-area-inset-left, 0px)); z-index: 20;
 }
-.brand h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -.3px; }
-.brand small { display: block; color: var(--dim); font-size: 12px; font-weight: 500; }
-.tabs {
-  display: flex; gap: 4px; padding: 5px; border-radius: 999px; background: var(--panel);
-  border: 1px solid var(--line); overflow-x: auto; max-width: 100%;
+.side-top { display: flex; align-items: center; gap: 10px; padding: 2px 6px 16px; }
+.logo { display: flex; align-items: center; gap: 10px; margin-right: auto; font-weight: 800; letter-spacing: -.2px; font-size: 15.5px; }
+.logo-mark {
+  width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-family: var(--font-display);
+  font-size: 15px; color: var(--accent-ink); background: linear-gradient(145deg, #f2a77b, #c4683b);
+  box-shadow: 0 6px 18px -6px rgba(229, 142, 94, .7);
 }
-.tab {
-  border: 0; background: transparent; color: var(--sub); padding: 9px 18px; border-radius: 999px;
-  font-weight: 600; white-space: nowrap;
+.logo small { display: block; color: var(--dim); font-weight: 600; font-size: 11px; letter-spacing: .2px; }
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; color: var(--sub);
+  background: var(--glass); border: 1px solid var(--stroke); position: relative; flex: none;
 }
-.tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
-.tab:not([aria-selected="true"]):hover { color: var(--fg); }
+.icon-btn:hover { color: var(--fg); border-color: var(--stroke-2); }
+.icon-btn .badge {
+  position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+  background: var(--bad); color: #fff; font-size: 10.5px; font-weight: 800; display: grid; place-items: center;
+}
+.nav { flex: 1; overflow-y: auto; display: grid; align-content: start; gap: 2px; padding-right: 2px; }
+.nav-label { color: var(--dim); font-size: 10.5px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; padding: 14px 12px 6px; }
+.nav a {
+  display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px;
+  color: var(--sub); text-decoration: none; font-weight: 600; border: 1px solid transparent;
+}
+.nav a:hover { color: var(--fg); background: var(--glass); }
+.nav a[aria-current="page"] { color: var(--fg); background: var(--glass-2); border-color: var(--stroke); }
+.nav a[aria-current="page"] svg { color: var(--nav-c, var(--accent)); }
+.nav a .count { font-family: var(--font-mono); font-size: 11.5px; color: var(--dim); }
+.nav a .soon { font-size: 9.5px; font-weight: 800; letter-spacing: .6px; padding: 2px 6px; border-radius: 6px; color: var(--dim); border: 1px dashed var(--dim); }
+.nav .dotc { width: 8px; height: 8px; border-radius: 50%; justify-self: center; }
+.side-foot { border-top: 1px solid var(--stroke); padding: 12px 8px 0; display: grid; gap: 8px; }
+.status { font-size: 12px; color: var(--sub); display: flex; align-items: center; gap: 8px; }
+.status i { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); flex: none; }
+.status.ok i { background: var(--good); }
+.status.off i { background: var(--bad); }
+
+.content { min-width: 0; display: grid; align-content: start; }
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; display: flex; align-items: center; gap: 10px;
+  padding-block: 12px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px));
+  border-bottom: 1px solid var(--stroke); background: rgba(14, 15, 23, 0.6); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
+}
+.menu-btn { display: none; }
+.search { position: relative; flex: 1; max-width: 420px; }
+.search input {
+  width: 100%; height: 40px; border-radius: 12px; border: 1px solid var(--stroke); background: var(--glass);
+  padding: 0 14px 0 38px; color: var(--fg);
+}
+.search input:focus { outline: none; border-color: var(--accent); }
+.search svg { position: absolute; left: 12px; top: 11px; color: var(--dim); }
+.results {
+  position: absolute; left: 0; right: 0; top: 46px; border-radius: var(--r-md); padding: 6px; display: grid; gap: 2px;
+  background: var(--glass-strong); border: 1px solid var(--stroke-2); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
+  max-height: 340px; overflow-y: auto;
+}
+.results button { text-align: left; display: grid; grid-template-columns: 10px 1fr auto; gap: 10px; align-items: center; padding: 9px 10px; border-radius: 9px; border: 0; background: transparent; }
+.results button:hover, .results button:focus-visible { background: var(--glass-2); }
+.results small { color: var(--dim); }
+.top-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.me { display: flex; align-items: center; gap: 10px; padding-left: 8px; border-left: 1px solid var(--stroke); }
+.avatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; background: linear-gradient(145deg, #3a3f5c, #23263a); border: 1px solid var(--stroke-2); }
+.me b { display: block; font-size: 13px; }
+.me small { color: var(--dim); font-size: 11px; }
+
+.page {
+  display: grid; gap: 18px; padding-block: 22px 56px;
+  padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px));
+  max-width: 1500px; width: 100%;
+}
+.page > * { min-width: 0; }
+
+/* banner, as in the reference: icon tile + title + sub on the left, period + refresh on the right */
+.banner {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 20px 22px; position: relative; overflow: hidden;
+  background: linear-gradient(110deg, color-mix(in srgb, var(--bc, var(--accent)) 26%, transparent), rgba(255, 255, 255, 0.03) 55%, rgba(255, 255, 255, 0.02));
+}
+.banner-icon {
+  width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; flex: none;
+  color: var(--bc, var(--accent)); background: rgba(255, 255, 255, 0.06); border: 1px solid var(--stroke-2);
+}
+.banner h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -.4px; text-wrap: balance; }
+.banner p { margin: 2px 0 0; color: var(--sub); }
+.banner-text { flex: 1; min-width: 200px; }
+.banner-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.pill { font-size: 10.5px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--stroke-2); color: var(--sub); vertical-align: middle; margin-left: 8px; }
+.pill.live { color: var(--good); border-color: rgba(95, 211, 154, .4); background: rgba(95, 211, 154, .08); }
+.pill.plan { color: var(--warn); border-color: rgba(240, 185, 85, .4); background: rgba(240, 185, 85, .08); }
+
 .btn {
-  border: 1px solid var(--line); background: var(--panel-2); color: var(--fg); border-radius: 999px;
-  padding: 9px 16px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--stroke); background: var(--glass); color: var(--fg); border-radius: 12px; padding: 9px 15px;
+  font-weight: 700; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
 }
-.btn:hover { border-color: #4a3f38; }
-.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
-.btn.primary:hover { filter: brightness(1.06); }
+.btn:hover { border-color: var(--stroke-2); background: var(--glass-2); }
+a.btn { text-decoration: none; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; box-shadow: 0 8px 22px -10px rgba(229, 142, 94, .8); }
+.btn.primary:hover { filter: brightness(1.07); }
+.btn.small { padding: 6px 11px; font-size: 12.5px; border-radius: 10px; }
 .btn.ghost { background: transparent; }
-.btn.small { padding: 6px 12px; font-size: 12.5px; }
 .btn.danger { color: var(--bad); }
-
-/* shell */
-.shell { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 18px; align-items: start; }
-@media (max-width: 1080px) { .shell { grid-template-columns: minmax(0, 1fr); } }
-
-.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); }
-.rail { display: grid; gap: 14px; }
-.clock { padding: 22px 22px 18px; text-align: center; }
-.clock-time { font-weight: 800; font-size: 64px; letter-spacing: -3px; line-height: 1; font-variant-numeric: tabular-nums; }
-.clock-date { margin-top: 8px; color: var(--sub); letter-spacing: 3px; font-size: 12px; text-transform: uppercase; font-weight: 600; }
-.target { padding: 18px 20px; display: grid; grid-template-columns: 96px 1fr; gap: 16px; align-items: center; }
-.ring { width: 96px; height: 96px; }
-.ring text { font-family: var(--font-ui); }
-.eyebrow { color: var(--dim); font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; font-weight: 700; }
-.target h3 { margin: 4px 0 6px; font-size: 16px; }
-.target p { margin: 0; color: var(--sub); font-size: 12.5px; }
-.stepper { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; }
-.stepper button { width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); }
-.stepper span { min-width: 24px; text-align: center; font-family: var(--font-mono); }
-.stage-list { padding: 8px; display: grid; gap: 2px; }
-.stage-row {
-  display: grid; grid-template-columns: 10px 1fr auto; gap: 10px; align-items: center; padding: 10px 12px;
-  border-radius: var(--r-sm); border: 0; background: transparent; text-align: left; color: var(--fg);
+.select, .input, textarea.input {
+  width: 100%; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--stroke); border-radius: var(--r-sm); padding: 10px 12px; color: var(--fg);
 }
-.stage-row:hover { background: var(--panel-2); }
-.stage-row .dot { width: 8px; height: 8px; border-radius: 50%; }
-.stage-row b { font-family: var(--font-mono); font-weight: 600; color: var(--sub); }
-.specs { padding: 16px 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
-.spec { background: var(--panel-2); border-radius: var(--r-md); padding: 12px 6px; }
-.spec strong { display: block; font-family: var(--font-mono); font-size: 15px; }
-.spec span { color: var(--dim); font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
+.select option { background: #181a26; }
+textarea.input { resize: vertical; min-height: 66px; }
+.input:focus, .select:focus { outline: none; border-color: var(--accent); }
+.banner .select { width: auto; height: 40px; padding: 0 12px; }
 
-.main { display: grid; gap: 18px; min-width: 0; }
-.main > *, .shell > *, .view-grid > * { min-width: 0; }
-
-/* KPI tiles with the notched corner from the reference */
-.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-@media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.kpi { position: relative; padding: 18px 20px 16px; min-width: 0; }
-.kpi::after {
-  content: ""; position: absolute; top: -1px; right: -1px; width: 58px; height: 58px;
-  background: var(--bg); border-left: 1px solid var(--line); border-bottom: 1px solid var(--line);
-  border-bottom-left-radius: 20px;
-}
-.kpi-jump {
-  position: absolute; top: 4px; right: 4px; z-index: 1; width: 44px; height: 44px; border-radius: 50%;
-  border: 1px solid var(--line); background: var(--panel); display: grid; place-items: center; color: var(--sub);
-}
-.kpi-jump:hover { color: var(--accent); border-color: var(--accent); }
-.kpi-head { display: flex; align-items: center; gap: 10px; color: var(--sub); font-weight: 600; padding-right: 48px; }
-.kpi-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--panel-2); display: grid; place-items: center; color: var(--accent); flex: none; }
-.kpi-num { font-weight: 800; font-size: 44px; letter-spacing: -1.5px; margin: 14px 0 12px; font-variant-numeric: tabular-nums; line-height: 1; }
-.kpi-foot { border-top: 1px solid var(--line); padding-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.kpi-foot span { display: block; color: var(--dim); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.kpi-foot b { font-size: 16px; font-variant-numeric: tabular-nums; }
-
-/* week strip */
-.week { padding: 16px 18px; }
 .sec-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
-.sec-head h2 { margin: 0; font-size: 17px; font-weight: 700; }
+.sec-head h2 { margin: 0; font-size: 16.5px; font-weight: 700; }
 .sec-head p { margin: 2px 0 0; color: var(--dim); font-size: 12.5px; }
+.block { padding: 18px 20px; }
+.eyebrow { color: var(--dim); font-size: 10.5px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 800; }
+.note { color: var(--dim); font-size: 12px; }
+.empty { border: 1px dashed var(--stroke-2); border-radius: var(--r-md); padding: 20px; text-align: center; color: var(--sub); font-size: 13px; }
+
+/* KPI tiles */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 1100px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kpi { padding: 18px 20px 16px; min-width: 0; }
+.kpi-head { display: flex; align-items: center; gap: 10px; color: var(--sub); font-weight: 600; }
+.kpi-icon { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; background: rgba(255, 255, 255, .06); color: var(--accent); flex: none; border: 1px solid var(--stroke); }
+.kpi-num { font-weight: 800; font-size: 40px; letter-spacing: -1.4px; margin: 14px 0 12px; line-height: 1; font-variant-numeric: tabular-nums; }
+.kpi-foot { border-top: 1px solid var(--stroke); padding-top: 11px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.kpi-foot span { display: block; color: var(--dim); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi-foot b { font-size: 15.5px; font-variant-numeric: tabular-nums; }
+
+/* agent cards */
+.agents { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 1250px) { .agents { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .agents { grid-template-columns: minmax(0, 1fr); } }
+.agent-card { padding: 18px; display: grid; gap: 12px; align-content: start; position: relative; overflow: hidden; }
+.agent-card::before { content: ""; position: absolute; inset: -40% -30% auto auto; width: 180px; height: 180px; border-radius: 50%; background: var(--ac); opacity: .16; filter: blur(30px); pointer-events: none; }
+.agent-top { display: flex; align-items: center; gap: 12px; }
+.agent-ic { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; color: var(--ac); background: rgba(255, 255, 255, .06); border: 1px solid var(--stroke-2); flex: none; }
+.agent-card h3 { margin: 0; font-size: 15px; }
+.agent-card p { margin: 0; color: var(--sub); font-size: 12.5px; }
+.agent-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.agent-stats div { background: rgba(255, 255, 255, .04); border: 1px solid var(--stroke); border-radius: 11px; padding: 8px 10px; }
+.agent-stats b { display: block; font-size: 17px; font-variant-numeric: tabular-nums; }
+.agent-stats span { color: var(--dim); font-size: 11px; }
+.agent-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.agent-card.add { border-style: dashed; place-content: center; text-align: center; color: var(--sub); min-height: 200px; }
+
+.two { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 1000px) { .two { grid-template-columns: minmax(0, 1fr); } }
+.list { display: grid; gap: 6px; }
+.li {
+  display: grid; grid-template-columns: 34px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 13px;
+  background: rgba(255, 255, 255, .035); border: 1px solid var(--stroke); text-align: left; width: 100%;
+}
+.li:hover { border-color: var(--stroke-2); }
+.li-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: var(--lc); background: rgba(255, 255, 255, .06); }
+.li b { display: block; font-size: 13.5px; overflow-wrap: anywhere; }
+.li small { color: var(--dim); font-size: 12px; }
+.li .tag { font-size: 10.5px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.tag.late { color: var(--bad); background: rgba(242, 112, 95, .12); }
+.tag.review { color: var(--warn); background: rgba(240, 185, 85, .12); }
+.tag.done { color: var(--good); background: rgba(95, 211, 154, .12); }
+.tag.neutral { color: var(--sub); background: rgba(255, 255, 255, .06); }
+
 .days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
-@media (max-width: 700px) { .days { grid-template-columns: repeat(7, minmax(92px, 1fr)); overflow-x: auto; } .days-scroll { overflow-x: auto; } }
-.day { background: var(--panel-2); border-radius: var(--r-md); padding: 10px; min-height: 92px; display: grid; align-content: start; gap: 6px; border: 1px solid transparent; }
-.day.today { border-color: var(--accent); }
-.day-label { display: flex; justify-content: space-between; color: var(--sub); font-size: 11.5px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
+.days-scroll { overflow-x: auto; }
+@media (max-width: 760px) { .days { grid-template-columns: repeat(7, minmax(96px, 1fr)); } }
+.day { background: rgba(255, 255, 255, .035); border: 1px solid var(--stroke); border-radius: var(--r-md); padding: 10px; min-height: 96px; display: grid; align-content: start; gap: 6px; }
+.day.today { border-color: var(--accent); background: var(--accent-soft); }
+.day-label { display: flex; justify-content: space-between; color: var(--sub); font-size: 11px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; }
 .day-label b { color: var(--fg); font-family: var(--font-mono); }
-.day-item { font-size: 12px; padding: 5px 7px; border-radius: 7px; background: var(--panel); border-left: 3px solid var(--accent); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-top: 0; border-right: 0; border-bottom: 0; text-align: left; color: var(--fg); }
+.day-item { font-size: 12px; padding: 5px 7px; border-radius: 7px; background: rgba(255, 255, 255, .06); border: 0; border-left: 3px solid var(--ic, var(--accent)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; color: var(--fg); }
 
 /* board */
-.board-wrap { padding: 16px 18px 18px; }
-.board { display: grid; grid-template-columns: repeat(6, minmax(210px, 1fr)); gap: 10px; overflow-x: auto; padding-bottom: 6px; }
-.col { background: var(--panel-2); border-radius: var(--r-md); padding: 10px; display: grid; align-content: start; gap: 8px; min-height: 180px; }
+.board { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(214px, 1fr); gap: 10px; overflow-x: auto; padding-bottom: 6px; }
+.col { background: rgba(255, 255, 255, .03); border: 1px solid var(--stroke); border-radius: var(--r-lg); padding: 10px; display: grid; align-content: start; gap: 8px; min-height: 190px; }
 .col.drop { outline: 2px dashed var(--accent); outline-offset: -4px; }
 .col-head { display: flex; align-items: center; gap: 8px; padding: 2px 4px 4px; font-weight: 700; font-size: 13px; }
 .col-head .dot { width: 8px; height: 8px; border-radius: 50%; }
 .col-head small { margin-left: auto; color: var(--dim); font-family: var(--font-mono); }
 .col-hint { color: var(--dim); font-size: 12px; padding: 4px 6px; }
 .card {
-  background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px;
+  background: rgba(255, 255, 255, .055); border: 1px solid var(--stroke); border-radius: 13px; padding: 11px 12px;
   display: grid; gap: 8px; text-align: left; color: var(--fg); width: 100%;
 }
-.card:hover { border-color: #4b3f37; }
+.card:hover { border-color: var(--stroke-2); }
 .card.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
 .card-title { font-weight: 700; font-size: 13.5px; overflow-wrap: anywhere; }
 .chips { display: flex; flex-wrap: wrap; gap: 5px; }
-.chip { font-size: 10.5px; font-weight: 700; letter-spacing: .5px; padding: 3px 8px; border-radius: 999px; background: var(--panel-2); color: var(--sub); text-transform: uppercase; }
-.chip.fmt { color: var(--accent); background: var(--accent-soft); }
-.chip.ex { color: var(--dim); border: 1px dashed var(--dim); background: transparent; }
-.chip.late { color: var(--bad); background: #ef6b5b1f; }
+.chip { font-size: 10.5px; font-weight: 800; letter-spacing: .5px; padding: 3px 8px; border-radius: 999px; background: rgba(255, 255, 255, .06); color: var(--sub); text-transform: uppercase; }
+.chip.k { color: var(--kc, var(--accent)); background: color-mix(in srgb, var(--kc, var(--accent)) 16%, transparent); }
+.chip.late { color: var(--bad); background: rgba(242, 112, 95, .12); }
 .card-meta { display: flex; justify-content: space-between; color: var(--dim); font-size: 11.5px; gap: 8px; }
-.progress { height: 4px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.progress { height: 4px; border-radius: 4px; background: rgba(255, 255, 255, .08); overflow: hidden; }
 .progress i { display: block; height: 100%; background: var(--accent); }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { border: 1px solid var(--stroke); background: rgba(255, 255, 255, .04); color: var(--sub); padding: 7px 12px; border-radius: 999px; font-weight: 700; font-size: 12.5px; }
+.seg button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+/* video top row */
+.vtop { display: grid; grid-template-columns: minmax(250px, .9fr) minmax(0, 2fr); gap: 14px; }
+@media (max-width: 1000px) { .vtop { grid-template-columns: minmax(0, 1fr); } }
+.target { padding: 16px 18px; display: grid; grid-template-columns: 92px 1fr; gap: 16px; align-items: center; }
+.ring { width: 92px; height: 92px; }
+.target h3 { margin: 4px 0 6px; font-size: 15px; }
+.stepper { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; }
+.stepper button { width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--stroke); background: var(--glass); }
+.stepper span { min-width: 24px; text-align: center; font-family: var(--font-mono); }
+.stages { padding: 14px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 700px) { .stages { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.stage-tile { background: rgba(255, 255, 255, .04); border: 1px solid var(--stroke); border-radius: 13px; padding: 10px 12px; text-align: left; color: var(--fg); }
+.stage-tile:hover { border-color: var(--stroke-2); }
+.stage-tile span { display: flex; align-items: center; gap: 6px; color: var(--sub); font-size: 11.5px; font-weight: 700; }
+.stage-tile i { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.stage-tile b { display: block; font-size: 22px; margin-top: 4px; font-variant-numeric: tabular-nums; }
 
 /* drawer */
 .drawer { padding: 18px 20px 20px; display: grid; gap: 16px; }
 .drawer-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; }
-@media (max-width: 900px) { .drawer-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 1000px) { .drawer-grid { grid-template-columns: minmax(0, 1fr); } }
+.stack { display: grid; gap: 12px; align-content: start; min-width: 0; }
 .field { display: grid; gap: 5px; min-width: 0; }
-.field label { color: var(--sub); font-size: 12px; font-weight: 600; }
-.input, .select, textarea.input {
-  width: 100%; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; color: var(--fg);
-}
-textarea.input { resize: vertical; min-height: 64px; }
-.input:focus, .select:focus { border-color: var(--accent); outline: none; }
+.field > label, .field > .lbl { color: var(--sub); font-size: 12px; font-weight: 700; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-@media (max-width: 520px) { .row2, .row3 { grid-template-columns: 1fr; } }
-.seg { display: flex; flex-wrap: wrap; gap: 6px; }
-.seg button { border: 1px solid var(--line); background: var(--panel-2); color: var(--sub); padding: 7px 12px; border-radius: 999px; font-weight: 600; font-size: 12.5px; }
-.seg button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+@media (max-width: 560px) { .row2 { grid-template-columns: 1fr; } }
 .checks { display: grid; gap: 6px; }
-.check { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: start; padding: 9px 10px; border-radius: var(--r-sm); background: var(--panel-2); cursor: pointer; }
+.check { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: start; padding: 9px 10px; border-radius: var(--r-sm); background: rgba(255, 255, 255, .04); border: 1px solid var(--stroke); cursor: pointer; }
 .check input { width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--accent); }
 .check span { font-size: 13px; }
 .check small { display: block; color: var(--dim); font-size: 11.5px; }
 .check.done span { color: var(--dim); text-decoration: line-through; }
-.prompt-box { background: #0b0908; border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px; font-family: var(--font-mono); font-size: 12.5px; white-space: pre-wrap; overflow-wrap: anywhere; color: #f2d9c8; }
-.drawer-foot { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); padding-top: 14px; }
-.drawer-foot .left, .drawer-foot .right { display: flex; gap: 8px; flex-wrap: wrap; }
-.note { color: var(--dim); font-size: 12px; }
+.prompt-box { background: rgba(5, 6, 12, .6); border: 1px solid var(--stroke); border-radius: var(--r-md); padding: 14px; font-family: var(--font-mono); font-size: 12.5px; white-space: pre-wrap; overflow-wrap: anywhere; color: #f4dccb; }
+.warn-box { border: 1px solid rgba(240, 185, 85, .35); background: rgba(240, 185, 85, .07); color: #f5d9a2; border-radius: var(--r-md); padding: 10px 12px; font-size: 12.5px; }
+.drawer-foot { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; align-items: center; border-top: 1px solid var(--stroke); padding-top: 14px; }
+.drawer-foot > div { display: flex; gap: 8px; flex-wrap: wrap; }
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-@media (max-width: 520px) { .stats { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .stats { grid-template-columns: 1fr 1fr; } }
 
-/* hooks + style views */
-.view-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
-@media (max-width: 900px) { .view-grid { grid-template-columns: minmax(0, 1fr); } }
-.block { padding: 18px 20px; display: grid; gap: 12px; align-content: start; }
-.formula { display: grid; gap: 4px; padding: 12px 14px; background: var(--panel-2); border-radius: var(--r-md); }
-.formula b { font-size: 13.5px; }
-.formula code { font-family: var(--font-mono); font-size: 12px; color: #f2d9c8; overflow-wrap: anywhere; }
+/* resources */
+.formula { display: grid; gap: 4px; padding: 12px 14px; background: rgba(255, 255, 255, .04); border: 1px solid var(--stroke); border-radius: var(--r-md); }
+.formula code { font-family: var(--font-mono); font-size: 12px; color: #f4dccb; overflow-wrap: anywhere; }
 .formula .ex-line { color: var(--sub); font-size: 12.5px; }
 .formula-actions { display: flex; justify-content: flex-end; }
-.hook { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 12px 14px; background: var(--panel-2); border-radius: var(--r-md); }
+.hook { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 12px 14px; background: rgba(255, 255, 255, .04); border: 1px solid var(--stroke); border-radius: var(--r-md); }
 .hook p { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
 .hook small { color: var(--dim); }
-.hook-actions { display: flex; gap: 6px; }
-.empty { border: 1px dashed var(--line); border-radius: var(--r-md); padding: 22px; text-align: center; color: var(--sub); font-size: 13px; }
 .style-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-@media (max-width: 620px) { .style-cols { grid-template-columns: 1fr; } }
-.style-card { background: var(--panel-2); border-radius: var(--r-md); padding: 16px; display: grid; gap: 10px; align-content: start; }
-.style-sample { border-radius: 12px; aspect-ratio: 9 / 7; max-width: 100%; display: grid; place-items: center; text-align: center; background: linear-gradient(160deg, #26303a, #12161b); padding: 12px; }
+@media (max-width: 640px) { .style-cols { grid-template-columns: 1fr; } }
+.style-card { background: rgba(255, 255, 255, .04); border: 1px solid var(--stroke); border-radius: var(--r-lg); padding: 16px; display: grid; gap: 10px; align-content: start; }
+.style-sample { border-radius: 12px; aspect-ratio: 9 / 6; max-width: 100%; display: grid; place-items: center; text-align: center; background: linear-gradient(160deg, #283043, #11141d); padding: 12px; }
 .sample-a { font-weight: 800; font-size: 17px; color: #fff; text-shadow: 0 2px 8px #000a; line-height: 1.15; }
 .sample-a em { display: block; font-style: normal; color: var(--brand-yellow); font-size: 30px; text-transform: uppercase; }
 .sample-b { color: var(--brand-yellow); }
@@ -238,606 +325,649 @@ textarea.input { resize: vertical; min-height: 64px; }
 .rules { margin: 0; padding-left: 18px; color: var(--sub); display: grid; gap: 5px; font-size: 13px; }
 .swatches { display: flex; gap: 10px; flex-wrap: wrap; }
 .sw { display: grid; gap: 6px; justify-items: center; font-size: 11px; color: var(--sub); font-family: var(--font-mono); }
-.sw i { width: 46px; height: 46px; border-radius: 12px; border: 1px solid var(--line); }
+.sw i { width: 46px; height: 46px; border-radius: 12px; border: 1px solid var(--stroke-2); }
 .timeline { display: grid; gap: 6px; }
-.tl-row { display: grid; grid-template-columns: 70px 1fr; gap: 10px; font-size: 13px; padding: 8px 10px; background: var(--panel-2); border-radius: var(--r-sm); }
+.tl-row { display: grid; grid-template-columns: 72px 1fr; gap: 10px; font-size: 13px; padding: 8px 10px; background: rgba(255, 255, 255, .04); border-radius: var(--r-sm); }
 .tl-row b { font-family: var(--font-mono); color: var(--accent); font-size: 12px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
+.steps { margin: 0; padding-left: 20px; display: grid; gap: 8px; color: var(--sub); }
+.steps b { color: var(--fg); }
+.copy-line { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.copy-line code { font-family: var(--font-mono); font-size: 12.5px; background: rgba(5, 6, 12, .6); border: 1px solid var(--stroke); border-radius: 9px; padding: 8px 10px; color: #f4dccb; overflow-wrap: anywhere; flex: 1; min-width: 0; }
 
-.status { font-size: 12.5px; color: var(--sub); display: flex; align-items: center; gap: 8px; }
-.status i { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); }
-.status.ok i { background: var(--good); }
-.status.off i { background: var(--bad); }
-.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-weight: 700; font-size: 13px; z-index: 20; }
-.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-weight: 800; font-size: 13px; z-index: 50; }
+.scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, .5); z-index: 19; }
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .side { position: fixed; left: 0; top: 0; bottom: 0; height: auto; width: min(290px, 86vw); transform: translateX(-102%); padding-top: calc(16px + env(safe-area-inset-top, 0px)); background: rgba(14, 15, 23, .92); }
+  .side.open { transform: none; }
+  .menu-btn { display: grid; }
+  .me div { display: none; }
+  .search { max-width: none; }
+}
+@media (max-width: 560px) { #quick-new .lbl-long { display: none; } #quick-new { padding: 9px 13px; } .me { display: none; } }
 @media (prefers-reduced-motion: no-preference) {
-  .card, .btn, .tab, .kpi-jump { transition: border-color .15s, background .15s, color .15s, filter .15s; }
+  .side { transition: transform .22s ease; }
+  .card, .btn, .li, .nav a, .icon-btn { transition: border-color .15s, background .15s, color .15s, filter .15s; }
 }
 </style>
 
-<div class="wrap">
-  <header class="top">
-    <div class="brand">
-      <div class="brand-mark" aria-hidden="true">RS</div>
-      <div><h1>Reel Studio</h1><small>Idea → CapCut → Post, dalam satu skrin</small></div>
+<div class="app">
+  <aside class="side" id="side" aria-label="Navigasi">
+    <div class="side-top">
+      <div class="logo"><span class="logo-mark" aria-hidden="true">AS</span><div>Agent Studio<small>Content &amp; ads</small></div></div>
+      <button class="icon-btn" type="button" id="close-side" aria-label="Tutup menu" hidden>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
     </div>
-    <nav class="tabs" role="tablist" aria-label="Bahagian">
-      <button class="tab" role="tab" id="tab-pipeline" aria-selected="true" data-view="pipeline">Pipeline</button>
-      <button class="tab" role="tab" id="tab-hooks" aria-selected="false" data-view="hooks">Hook Bank</button>
-      <button class="tab" role="tab" id="tab-style" aria-selected="false" data-view="style">Gaya &amp; Format</button>
-    </nav>
-    <div class="status" id="status"><i></i><span>Menyambung ke storan…</span></div>
-    <button class="btn primary" id="btn-new" type="button">+ Video baru</button>
-  </header>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">
+      <div class="status" id="status"><i></i><span>Menyambung ke storan…</span></div>
+    </div>
+  </aside>
 
-  <div class="shell">
-    <aside class="rail">
-      <section class="panel clock" aria-label="Masa">
-        <div class="clock-time" id="clock">--:--</div>
-        <div class="clock-date" id="date"></div>
-      </section>
-      <section class="panel target" aria-label="Sasaran minggu ni">
-        <svg class="ring" viewBox="0 0 96 96" role="img" aria-labelledby="ring-label">
-          <title id="ring-label">Posted minggu ni berbanding sasaran</title>
-          <circle cx="48" cy="48" r="40" fill="none" stroke="var(--line)" stroke-width="9"></circle>
-          <circle id="ring-arc" cx="48" cy="48" r="40" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="0 251.3" transform="rotate(-90 48 48)"></circle>
-          <text id="ring-text" x="48" y="54" text-anchor="middle" fill="var(--fg)" font-size="19" font-weight="800">0/4</text>
-        </svg>
-        <div>
-          <div class="eyebrow">Minggu ni</div>
-          <h3 id="target-title">Posted</h3>
-          <p id="target-sub">Sasaran reel seminggu</p>
-          <div class="stepper">
-            <button type="button" id="tgt-minus" aria-label="Kurangkan sasaran">−</button>
-            <span id="tgt-val">4</span>
-            <button type="button" id="tgt-plus" aria-label="Tambah sasaran">+</button>
-          </div>
-        </div>
-      </section>
-      <section class="panel" aria-label="Peringkat">
-        <div class="stage-list" id="stage-list"></div>
-      </section>
-      <section class="panel specs" aria-label="Spesifikasi export">
-        <div class="spec"><strong>9:16</strong><span>1080×1920</span></div>
-        <div class="spec"><strong>−14</strong><span>LUFS</span></div>
-        <div class="spec"><strong>30</strong><span>FPS</span></div>
-      </section>
-    </aside>
-
-    <main class="main">
-      <!-- PIPELINE VIEW -->
-      <div id="view-pipeline" class="main" role="tabpanel" aria-labelledby="tab-pipeline">
-        <section class="kpis" id="kpis"></section>
-
-        <section class="panel week">
-          <div class="sec-head">
-            <div><h2>7 hari akan datang</h2><p>Ikut tarikh post. Klik untuk buka.</p></div>
-          </div>
-          <div class="days-scroll"><div class="days" id="days"></div></div>
-        </section>
-
-        <section class="panel board-wrap">
-          <div class="sec-head">
-            <div><h2>Pipeline video</h2><p>Seret kad ke peringkat lain, atau klik untuk edit.</p></div>
-            <div class="seg" id="filter" aria-label="Tapis format"></div>
-          </div>
-          <div class="board" id="board"></div>
-        </section>
-
-        <section class="panel drawer" id="drawer" hidden aria-label="Butiran video"></section>
+  <div class="content">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" type="button" id="open-side" aria-label="Buka menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <label class="visually-hidden" for="q" hidden>Cari tugas</label>
+        <input id="q" type="search" placeholder="Cari tugas, video, poster…" autocomplete="off">
+        <div class="results" id="results" hidden></div>
       </div>
-
-      <!-- HOOK BANK VIEW -->
-      <div id="view-hooks" class="view-grid" role="tabpanel" aria-labelledby="tab-hooks" hidden>
-        <section class="panel block">
-          <div class="sec-head"><div><h2>Formula hook</h2><p>Saat 0–2 tentukan orang stay atau scroll.</p></div></div>
-          <div id="formulas" class="block" style="padding:0"></div>
-        </section>
-        <section class="panel block">
-          <div class="sec-head"><div><h2>Hook kau</h2><p>Simpan idea hook, guna terus dalam video baru.</p></div></div>
-          <form id="hook-form" class="row2" style="grid-template-columns:1fr auto;align-items:end">
-            <div class="field"><label for="hook-text">Hook baru</label><input class="input" id="hook-text" placeholder="Contoh: 3 sebab customer kata mahal…" maxlength="160"></div>
-            <button class="btn primary" type="submit">Simpan</button>
-          </form>
-          <div id="hooks" class="block" style="padding:0"></div>
-        </section>
+      <div class="top-right">
+        <button class="icon-btn" type="button" id="bell" aria-label="Perlu perhatian">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+          <span class="badge" id="bell-n" hidden>0</span>
+        </button>
+        <button class="btn primary" type="button" id="quick-new" aria-label="Tugas baru">+<span class="lbl-long"> Tugas baru</span></button>
+        <div class="me"><span class="avatar" aria-hidden="true">A</span><div><b>Anda</b><small>Pemilik studio</small></div></div>
       </div>
-
-      <!-- STYLE VIEW -->
-      <div id="view-style" class="main" role="tabpanel" aria-labelledby="tab-style" hidden>
-        <section class="panel block">
-          <div class="sec-head"><div><h2>Dua gaya kau</h2><p>Diukur dari 5 reel rujukan. Agent reel-editor ikut ni.</p></div></div>
-          <div class="style-cols">
-            <div class="style-card">
-              <div class="eyebrow">Gaya A · Authority</div>
-              <div class="style-sample"><div class="sample-a">talking about is<em>budget</em></div></div>
-              <ul class="rules">
-                <li>Caption 2–4 perkataan, tengah frame, putih tebal</li>
-                <li>1 kata kunci kuning, besar, setiap 1–2 ayat</li>
-                <li>Header nombor untuk listicle (kiri atas)</li>
-                <li>Cutaway setiap 3–5 s, punch-in pada penekanan</li>
-                <li>Untuk: Education, Do &amp; Don't, Before/After</li>
-              </ul>
-            </div>
-            <div class="style-card">
-              <div class="eyebrow">Gaya B · Cinematic Story</div>
-              <div class="style-sample"><div class="sample-b"><i>Do you wanna make</i><strong>BETTER</strong></div></div>
-              <ul class="rules">
-                <li>Tajuk condensed kuning besar + serif italic kecil</li>
-                <li>Subtitle serif kecil di lower third</li>
-                <li>B-roll sinematik, potong setiap ~2 s</li>
-                <li>Whip / zoom-blur, segmen hitam-putih</li>
-                <li>Untuk: Vlog, cerita, launch</li>
-              </ul>
-            </div>
-          </div>
-          <div class="eyebrow">Palet</div>
-          <div class="swatches">
-            <div class="sw"><i style="background:#FFD21F"></i>#FFD21F</div>
-            <div class="sw"><i style="background:#FFFFFF"></i>#FFFFFF</div>
-            <div class="sw"><i style="background:#0A0A0A"></i>#0A0A0A</div>
-            <div class="sw"><i style="background:#8A8A8A"></i>#8A8A8A</div>
-            <div class="sw"><i style="background:#FF3B30"></i>DON'T</div>
-            <div class="sw"><i style="background:#34C759"></i>DO</div>
-          </div>
-        </section>
-        <section class="view-grid" id="formats"></section>
-      </div>
-    </main>
+    </header>
+    <main class="page" id="page"></main>
   </div>
 </div>
+<div class="scrim" id="scrim" hidden></div>
 <div class="toast" id="toast" hidden role="status"></div>
 
 <script>
 (() => {
   "use strict";
-  const STAGES = [
-    { id: "idea",   name: "Idea",          color: "#8f8378" },
-    { id: "skrip",  name: "Skrip",         color: "#6fa8e8" },
-    { id: "rakam",  name: "Rakam",         color: "#b08be0" },
-    { id: "edit",   name: "Edit (agent)",  color: "#d98a5b" },
-    { id: "semak",  name: "Semak",         color: "#e8b44c" },
-    { id: "posted", name: "Posted",        color: "#5fc98f" },
+  // ------------------------------------------------------------------ registry
+  const I = {
+    home: '<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/>',
+    video: '<rect x="3" y="5" width="13" height="14" rx="3"/><path d="m16 10 5-3v10l-5-3"/>',
+    poster: '<rect x="4" y="3" width="16" height="18" rx="3"/><circle cx="10" cy="9" r="2"/><path d="m4 17 5-4 4 3 3-2 4 3"/>',
+    copy: '<path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13 7 4 4"/>',
+    ads: '<path d="M3 11v2a2 2 0 0 0 2 2h2l5 4V5L7 9H5a2 2 0 0 0-2 2z"/><path d="M16 8a5 5 0 0 1 0 8M19 5a9 9 0 0 1 0 14"/>',
+    hook: '<path d="M12 3v10a4 4 0 1 1-4-4"/><path d="M12 3h5"/>',
+    palette: '<circle cx="12" cy="12" r="9"/><circle cx="8" cy="10" r="1.3"/><circle cx="12" cy="7.5" r="1.3"/><circle cx="16" cy="10" r="1.3"/><path d="M12 21a3 3 0 0 1 0-6h2a3 3 0 0 0 3-3"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>',
+    eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    check: '<path d="m5 12 5 5L20 7"/>',
+    refresh: '<path d="M20 11a8 8 0 0 0-14.9-3M4 13a8 8 0 0 0 14.9 3"/><path d="M4 4v4h4M20 20v-4h-4"/>',
+    alert: '<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  };
+  const svg = (k, s = 18) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg>`;
+
+  const AGENTS = {
+    video: {
+      name: "Video Agent", short: "Video", color: "var(--c-video)", icon: "video", skill: "reel-editor", live: true,
+      desc: "Edit reel 9:16 terus dalam CapCut: potong, caption, B-roll, muzik, thumbnail.",
+    },
+    poster: {
+      name: "Poster Agent", short: "Poster", color: "var(--c-poster)", icon: "poster", skill: "poster-agent", live: false,
+      desc: "Poster feed, story dan ad ikut brand kau, dengan beberapa variasi untuk A/B test.",
+      fields: [
+        { k: "size", label: "Saiz", type: "seg", options: [["feed", "Feed 1080×1350"], ["story", "Story 1080×1920"], ["fbad", "FB Ad 1200×628"], ["square", "1:1 1080×1080"]], def: "feed" },
+        { k: "headline", label: "Mesej utama (tajuk besar)", type: "text", ph: "Customer kata mahal? Ni cara jawab." },
+        { k: "sub", label: "Teks sokongan", type: "text", ph: "Kelas live 3 jam, Sabtu ni" },
+        { k: "cta", label: "CTA", type: "text", ph: "Comment KELAS" },
+        { k: "look", label: "Gaya", type: "seg", options: [["A", "Authority (bold, kuning)"], ["B", "Cinematic (filmic)"], ["clean", "Clean / minimal"]], def: "A" },
+        { k: "variants", label: "Bilangan variasi", type: "number", def: 3 },
+      ],
+      prompt: (t) => `Guna skill poster-agent. Buat ${t.variants || 3} variasi poster "${t.title}", saiz ${lab("poster", "size", t.size)}.\nTajuk: ${t.headline || "-"}\nTeks sokongan: ${t.sub || "-"}\nCTA: ${t.cta || "-"}\nGaya: ${lab("poster", "look", t.look)}. Ikut brand: kuning #FFD21F, putih, hitam.`,
+      checks: [["read", "Tajuk boleh dibaca dalam 1 saat", "Uji pada skrin telefon"], ["brand", "Warna & logo ikut brand", ""], ["cta", "Satu CTA yang jelas", ""], ["size", "Saiz betul untuk platform", ""], ["text", "Teks tak sesak, ejaan betul", ""]],
+    },
+    copy: {
+      name: "Copywriting Agent", short: "Copywriting", color: "var(--c-copy)", icon: "copy", skill: "copywriting-agent", live: false,
+      desc: "Caption, ad copy dan skrip ikut framework (AIDA, PAS, BAB) dalam BM atau rojak.",
+      fields: [
+        { k: "channel", label: "Untuk", type: "seg", options: [["fbad", "FB / IG Ad"], ["caption", "Caption IG/TikTok"], ["script", "Skrip reel"], ["wa", "WhatsApp broadcast"], ["lp", "Landing page"]], def: "fbad" },
+        { k: "product", label: "Produk / offer", type: "text", ph: "Kelas closing sales 3 jam" },
+        { k: "audience", label: "Siapa audience", type: "text", ph: "Peniaga online 25–40, susah closing" },
+        { k: "framework", label: "Framework", type: "seg", options: [["AIDA", "AIDA"], ["PAS", "PAS"], ["BAB", "Before-After-Bridge"], ["auto", "Agent pilih"]], def: "PAS" },
+        { k: "tone", label: "Tone", type: "seg", options: [["santai", "Santai"], ["tegas", "Tegas / authority"], ["kelakar", "Kelakar"]], def: "tegas" },
+        { k: "lang", label: "Bahasa", type: "seg", options: [["rojak", "Rojak"], ["bm", "BM"], ["en", "English"]], def: "rojak" },
+      ],
+      prompt: (t) => `Guna skill copywriting-agent. Tulis ${lab("copy", "channel", t.channel)} untuk "${t.product || t.title}".\nAudience: ${t.audience || "-"}\nFramework: ${lab("copy", "framework", t.framework)}, tone ${lab("copy", "tone", t.tone)}, bahasa ${lab("copy", "lang", t.lang)}.\nBagi 3 versi, setiap satu dengan hook berbeza, dan satu CTA sahaja.`,
+      checks: [["hook", "Baris pertama buat orang berhenti", ""], ["one", "Satu mesej, satu CTA", ""], ["fw", "Ikut framework yang dipilih", ""], ["policy", "Tiada janji melampau / claim kesihatan", "Polisi iklan Meta"], ["len", "Panjang sesuai platform", ""]],
+    },
+    ads: {
+      name: "FB Ads Agent", short: "FB Ads", color: "var(--c-ads)", icon: "ads", skill: "fb-ads-agent", live: false,
+      desc: "Sediakan kempen Meta: objektif, audience, bajet, kreatif. Publish hanya lepas kau approve.",
+      fields: [
+        { k: "objective", label: "Objektif", type: "seg", options: [["leads", "Leads"], ["sales", "Sales"], ["messages", "Messages (WhatsApp)"], ["traffic", "Traffic"], ["awareness", "Awareness"]], def: "messages" },
+        { k: "budget", label: "Bajet sehari (RM)", type: "number", def: 50 },
+        { k: "days", label: "Berapa hari", type: "number", def: 7 },
+        { k: "audience", label: "Audience", type: "text", ph: "Malaysia, 25–45, minat bisnes online" },
+        { k: "creative", label: "Kreatif (dari agent lain)", type: "creative" },
+      ],
+      prompt: (t) => `Guna skill fb-ads-agent. Sediakan draf kempen Facebook/Instagram "${t.title}".\nObjektif: ${lab("ads", "objective", t.objective)}\nBajet: RM${t.budget || 0}/hari selama ${t.days || 0} hari (jumlah RM${(Number(t.budget) || 0) * (Number(t.days) || 0)})\nAudience: ${t.audience || "-"}\nKreatif: ${t.creative || "belum dipilih"}\nTunjuk draf pada aku dulu. Jangan publish atau belanja apa-apa tanpa approval aku.`,
+      checks: [["pixel", "Pixel / event conversion betul", ""], ["budget", "Bajet & tempoh disahkan", ""], ["aud", "Audience tak terlalu sempit", ""], ["creative", "Kreatif & copy dah lulus semak", ""], ["utm", "Link ada UTM", ""], ["approve", "Aku sendiri approve sebelum publish", "Agent tak boleh belanja tanpa ni"]],
+    },
+  };
+  const lab = (a, k, v) => { const f = AGENTS[a].fields.find((x) => x.k === k); const o = f && f.options ? f.options.find((x) => x[0] === v) : null; return o ? o[1] : (v || "-"); };
+
+  const VSTAGES = [
+    { id: "idea", name: "Idea", color: "#8a8fa6" }, { id: "skrip", name: "Skrip", color: "#6aa6f4" },
+    { id: "rakam", name: "Rakam", color: "#a98bf0" }, { id: "edit", name: "Edit (agent)", color: "#e58e5e" },
+    { id: "semak", name: "Semak", color: "#f0b955" }, { id: "posted", name: "Posted", color: "#5fd39a" },
+  ];
+  const TSTAGES = [
+    { id: "brief", name: "Brief", color: "#8a8fa6" }, { id: "jalan", name: "Agent jalan", color: "#e58e5e" },
+    { id: "semak", name: "Semak", color: "#f0b955" }, { id: "siap", name: "Siap", color: "#5fd39a" },
   ];
   const FORMATS = {
-    education: { name: "Education", style: "A", cmd: "education" },
-    vlog:      { name: "Vlog", style: "B", cmd: "vlog" },
-    dos:       { name: "Do & Don't", style: "A", cmd: "dos-donts" },
-    ba:        { name: "Before/After", style: "A", cmd: "before-after" },
+    education: { name: "Education", style: "A", cmd: "education" }, vlog: { name: "Vlog", style: "B", cmd: "vlog" },
+    dos: { name: "Do & Don't", style: "A", cmd: "dos-donts" }, ba: { name: "Before/After", style: "A", cmd: "before-after" },
   };
   const PLATFORMS = { ig: "Instagram", tiktok: "TikTok", yt: "YouTube Shorts" };
-  const CHECKS = {
-    skrip: [
-      ["hook", "Hook kuat dalam ayat pertama", "Janji, angka, atau soalan yang sakit"],
-      ["struktur", "Struktur ikut format", "Education: hook → poin → CTA"],
-      ["cta", "CTA ditulis", "Follow / comment kata kunci / save"],
-    ],
-    rakam: [
-      ["frame", "Rakam 9:16, 1080×1920, 30 fps", "Muka di 1/3 atas, ruang untuk caption"],
-      ["cahaya", "Cahaya depan muka, latar tak terlalu terang", ""],
-      ["mic", "Mic dekat, bilik senyap", "Elak noise kipas / aircond"],
-      ["take", "Hook dirakam 2–3 take", "Agent simpan take terakhir yang lengkap"],
-      ["capcut", "Footage dah masuk project CapCut", "Namakan project, kemudian quit CapCut"],
-    ],
-    semak: [
-      ["h2s", "Hook dalam 2 saat pertama", ""],
-      ["filler", "Tiada senyap / \"erm\" yang tertinggal", ""],
-      ["cap", "Caption betul ejaan, kata kunci kuning tepat", ""],
-      ["broll", "B-roll kena dengan apa yang disebut", ""],
-      ["audio", "Suara jelas, muzik tak tenggelamkan suara", "Suara −14 LUFS, muzik ~15 dB bawah"],
-      ["safe", "Teks dalam safe zone", "Bukan di 20% bawah (UI IG/TikTok)"],
-      ["thumb", "Thumbnail + caption post + hashtag siap", ""],
-    ],
+  const VCHECKS = {
+    skrip: [["hook", "Hook kuat dalam ayat pertama", "Janji, angka, atau soalan yang sakit"], ["struktur", "Struktur ikut format", "Education: hook → poin → CTA"], ["cta", "CTA ditulis", "Follow / comment kata kunci / save"]],
+    rakam: [["frame", "Rakam 9:16, 1080×1920, 30 fps", "Muka di 1/3 atas, ruang untuk caption"], ["cahaya", "Cahaya depan muka", ""], ["mic", "Mic dekat, bilik senyap", ""], ["take", "Hook dirakam 2–3 take", "Agent simpan take terakhir yang lengkap"], ["capcut", "Footage dah masuk project CapCut", "Namakan project, kemudian quit CapCut"]],
+    semak: [["h2s", "Hook dalam 2 saat pertama", ""], ["filler", "Tiada senyap / \"erm\" tertinggal", ""], ["cap", "Caption betul ejaan, kata kunci tepat", ""], ["broll", "B-roll kena dengan apa yang disebut", ""], ["audio", "Suara jelas, muzik tak tenggelamkan suara", "Suara −14 LUFS, muzik ~15 dB bawah"], ["safe", "Teks dalam safe zone", "Bukan di 20% bawah"], ["thumb", "Thumbnail + caption post + hashtag siap", ""]],
   };
   const FORMULAS = [
     { name: "Angka + janji", tpl: "[N] [benda] dalam [masa]", ex: "6 objection customer dalam 60 saat" },
     { name: "Kesilapan biasa", tpl: "Kalau kau [buat X], kau sedang [rugi Y]", ex: "Kalau kau jawab \"murah je\", kau sedang bunuh value produk kau" },
     { name: "Soalan sakit", tpl: "Apa kau jawab bila [situasi]?", ex: "Apa kau jawab bila customer kata mahal?" },
-    { name: "Before / After", tpl: "Dari [keadaan teruk] ke [hasil] — ni caranya", ex: "Dari 200 view ke 20k view, ni caranya" },
+    { name: "Before / After", tpl: "Dari [keadaan teruk] ke [hasil], ni caranya", ex: "Dari 200 view ke 20k view, ni caranya" },
     { name: "Jangan buat ni", tpl: "Stop [buat X]. Buat [Y] sebaliknya.", ex: "Stop terangkan produk. Jual perasaan." },
-    { name: "Rahsia / behind the scene", tpl: "Benda yang [orang dalam] tak bagitahu pasal [topik]", ex: "Benda yang editor tak bagitahu pasal reel viral" },
+    { name: "Behind the scene", tpl: "Benda yang [orang dalam] tak bagitahu pasal [topik]", ex: "Benda yang editor tak bagitahu pasal reel viral" },
   ];
   const FORMAT_GUIDE = [
     { f: "education", rows: [["0–2s", "Hook: janji / angka"], ["2–5s", "Kenapa penting + B-roll"], ["5–50s", "Poin 1…N, header kiri atas"], ["Hujung", "CTA + butang Follow"]] },
-    { f: "dos", rows: [["0–2s", "\"Jangan buat ni…\""], ["DON'T", "Label merah, grade pudar"], ["Turn", "Riser + punch-in + whoosh"], ["DO", "Label hijau, grade normal → CTA"]] },
+    { f: "dos", rows: [["0–2s", "\"Jangan buat ni…\""], ["DON'T", "Label merah, grade pudar"], ["Turn", "Riser + punch-in + whoosh"], ["DO", "Label hijau → CTA"]] },
     { f: "ba", rows: [["0–2s", "Tunjuk AFTER 1 s dulu"], ["BEFORE", "Label, B-roll keadaan asal"], ["Turn", "Wipe kiri→kanan + pop"], ["AFTER", "Label kuning, kata kunci besar"]] },
     { f: "vlog", rows: [["0–2s", "Tajuk besar atas shot terbaik"], ["Cerita", "B-roll setiap ~2 s, subtitle serif"], ["Beat", "Tajuk perkataan untuk bab"], ["Hujung", "Satu perkataan besar + hit muzik"]] },
   ];
+  const VIEWS = ["overview", "video", "poster", "copy", "ads", "hooks", "style", "agent-baru"];
 
+  // ------------------------------------------------------------------ helpers
   const $ = (s, r = document) => r.querySelector(s);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const pad = (n) => String(n).padStart(2, "0");
   const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   const HARI = ["Ahad", "Isnin", "Selasa", "Rabu", "Khamis", "Jumaat", "Sabtu"];
   const BULAN = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogo", "Sep", "Okt", "Nov", "Dis"];
-  const icon = {
-    film: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4"/></svg>',
-    eye: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
-    send: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>',
-    chart: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg>',
-    arrow: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>',
-  };
+  const fmtDate = (s) => { if (!s) return "Tiada tarikh"; const d = new Date(s + "T00:00"); return `${d.getDate()} ${BULAN[d.getMonth()]}`; };
+  const ago = (ms) => { if (!ms) return ""; const m = Math.round((Date.now() - ms) / 6e4); if (m < 1) return "baru tadi"; if (m < 60) return `${m} min lalu`; const h = Math.round(m / 60); if (h < 24) return `${h} jam lalu`; return `${Math.round(h / 24)} hari lalu`; };
+  const startOfWeek = () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.getTime(); };
+  const periodStart = () => { const d = new Date(); d.setHours(0, 0, 0, 0); if (period === "week") return startOfWeek(); if (period === "month") { d.setDate(1); return d.getTime(); } return Date.now() - 30 * 864e5; };
+  const PERIODS = { week: "Minggu ni", month: "Bulan ni", d30: "30 hari" };
 
-  // ---- state
-  let db = null;
-  let projects = [];      // [{id, ...data}]
-  let hooks = [];
-  let settings = { weeklyTarget: 4 };
-  let selectedId = null;
-  let draft = null;       // working copy of the selected project
-  let fmtFilter = "all";
-  let readOnly = false;
-  let memId = 0;
+  // ------------------------------------------------------------------ state
+  let db = null, readOnly = false, memId = 0;
+  let projects = [], tasks = [], hooks = [], settings = { weeklyTarget: 4 };
+  let view = "overview", period = "week", fmtFilter = "all";
+  let draft = null, selectedKey = null;
+  try { const p = localStorage.getItem("as-period"); if (PERIODS[p]) period = p; } catch (_) {}
 
-  // ---- clock
-  function tick() {
-    const d = new Date();
-    $("#clock").textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    $("#date").textContent = `${HARI[d.getDay()]}, ${d.getDate()} ${BULAN[d.getMonth()]}`;
-  }
-  tick(); setInterval(tick, 15000);
+  const allItems = () => [
+    ...projects.map((p) => ({ ...p, agent: "video", kind: "video", done: p.stage === "posted", review: p.stage === "semak", doneAt: p.postedAt })),
+    ...tasks.map((t) => ({ ...t, kind: "task", done: t.stage === "siap", review: t.stage === "semak" })),
+  ];
+  const isLate = (x) => x.due && !x.done && x.due < ymd(new Date());
+  const itemColor = (x) => AGENTS[x.agent]?.color || "var(--accent)";
+  const stageName = (x) => (x.kind === "video" ? VSTAGES : TSTAGES).find((s) => s.id === x.stage)?.name || x.stage;
+  const vCheckPct = (p) => { const l = VCHECKS[p.stage] || []; if (!l.length) return null; const c = p.checks || {}; return Math.round(100 * l.filter(([k]) => c[`${p.stage}.${k}`]).length / l.length); };
+  const tCheckPct = (t) => { if (t.stage !== "semak") return null; const l = AGENTS[t.agent].checks; const c = t.checks || {}; return Math.round(100 * l.filter(([k]) => c[k]).length / l.length); };
 
-  // ---- toast
+  // ------------------------------------------------------------------ ui bits
   let toastT;
-  function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (t.hidden = true), 2200); }
-  function setStatus(kind, msg) { const s = $("#status"); s.className = "status " + kind; s.querySelector("span").textContent = msg; }
+  const toast = (m) => { const t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (t.hidden = true), 2200); };
+  const setStatus = (k, m) => { const s = $("#status"); s.className = "status " + k; s.querySelector("span").textContent = m; };
 
-  // ---- derived
-  const startOfWeek = () => { const d = new Date(); d.setHours(0, 0, 0, 0); const k = (d.getDay() + 6) % 7; d.setDate(d.getDate() - k); return d.getTime(); };
-  const checkPct = (p) => {
-    const list = CHECKS[p.stage] || [];
-    if (!list.length) return null;
-    const c = p.checks || {};
-    return Math.round(100 * list.filter(([k]) => c[`${p.stage}.${k}`]).length / list.length);
-  };
-  const isLate = (p) => p.due && p.stage !== "posted" && p.due < ymd(new Date());
+  function renderNav() {
+    const items = allItems();
+    const active = (a) => items.filter((x) => x.agent === a && !x.done).length;
+    const link = (id, label, ic, extra = "", color = "") =>
+      `<a href="#${id}" ${view === id ? 'aria-current="page"' : ""} ${color ? `style="--nav-c:${color}"` : ""}>${svg(ic)}<span>${label}</span>${extra}</a>`;
+    $("#nav").innerHTML = `
+      <div class="nav-label">Utama</div>
+      ${link("overview", "Overview", "home")}
+      <div class="nav-label">Agent</div>
+      ${Object.entries(AGENTS).map(([k, a]) => link(k, a.short, a.icon, a.live ? `<span class="count">${active(k)}</span>` : `<span class="soon">BINA</span>`, a.color)).join("")}
+      ${link("agent-baru", "Tambah agent", "plus")}
+      <div class="nav-label">Sumber</div>
+      ${link("hooks", "Hook Bank", "hook", `<span class="count">${hooks.length}</span>`)}
+      ${link("style", "Gaya & Brand", "palette")}`;
+    const attn = items.filter((x) => isLate(x) || x.review).length;
+    const b = $("#bell-n"); b.hidden = !attn; b.textContent = attn;
+  }
 
-  // ---- render: rail
-  function renderRail() {
-    const wk = startOfWeek();
-    const postedWeek = projects.filter((p) => p.stage === "posted" && (p.postedAt || 0) >= wk).length;
-    const tgt = settings.weeklyTarget || 4;
-    const frac = Math.min(1, postedWeek / tgt);
-    $("#ring-arc").setAttribute("stroke-dasharray", `${(frac * 251.3).toFixed(1)} 251.3`);
-    $("#ring-text").textContent = `${postedWeek}/${tgt}`;
-    $("#tgt-val").textContent = tgt;
-    $("#target-title").textContent = postedWeek >= tgt ? "Sasaran tercapai" : `${tgt - postedWeek} lagi untuk sasaran`;
-    $("#stage-list").innerHTML = STAGES.map((s) => {
-      const n = projects.filter((p) => p.stage === s.id).length;
-      return `<button class="stage-row" type="button" data-jump="${s.id}"><span class="dot" style="background:${s.color}"></span><span>${s.name}</span><b>${n}</b></button>`;
+  function banner({ icon, color, title, sub, pill, actions }) {
+    return `<section class="glass banner" style="--bc:${color || "var(--accent)"}">
+      <div class="banner-icon">${svg(icon, 22)}</div>
+      <div class="banner-text"><h1>${esc(title)}${pill || ""}</h1><p>${esc(sub)}</p></div>
+      <div class="banner-actions">${actions || ""}</div>
+    </section>`;
+  }
+  const periodSelect = () => `<label class="visually-hidden" for="period" hidden>Tempoh</label><select class="select" id="period">${Object.entries(PERIODS).map(([k, v]) => `<option value="${k}" ${period === k ? "selected" : ""}>${v}</option>`).join("")}</select>`;
+  const refreshBtn = `<button class="btn" type="button" data-act="refresh">${svg("refresh", 16)} Refresh</button>`;
+
+  // ------------------------------------------------------------------ views
+  function mount() {
+    const page = $("#page");
+    draft = null; selectedKey = null;
+    if (view === "overview") {
+      page.innerHTML = banner({ icon: "spark", title: "Overview", sub: "Semua agent dan tugas kau dalam satu skrin", actions: periodSelect() + refreshBtn }) +
+        `<section class="kpis" id="ov-kpis"></section>
+         <section><div class="sec-head"><div><h2>Agent kau</h2><p>Buka agent untuk brief tugas baru, atau tambah agent lain.</p></div><a class="btn small" href="#agent-baru">${svg("plus", 15)} Tambah agent</a></div><div class="agents" id="ov-agents"></div></section>
+         <section class="two"><div class="glass block"><div class="sec-head"><div><h2>Perlu perhatian</h2><p>Tunggu semak atau dah lewat.</p></div></div><div class="list" id="ov-attn"></div></div>
+           <div class="glass block"><div class="sec-head"><div><h2>Aktiviti terkini</h2><p>Kemas kini terbaru merentas agent.</p></div></div><div class="list" id="ov-activity"></div></div></section>
+         <section class="glass block"><div class="sec-head"><div><h2>7 hari akan datang</h2><p>Ikut tarikh siap / post.</p></div></div><div class="days-scroll"><div class="days" id="ov-week"></div></div></section>`;
+    } else if (view === "video") {
+      page.innerHTML = banner({ icon: "video", color: AGENTS.video.color, title: "Video Agent", pill: '<span class="pill live">Aktif</span>', sub: "Skill reel-editor: edit reel terus dalam project CapCut kau", actions: refreshBtn + `<button class="btn primary" type="button" data-act="new">+ Video baru</button>` }) +
+        `<section class="vtop"><div class="glass target" id="v-target"></div><div class="glass stages" id="v-stages"></div></section>
+         <section class="glass block"><div class="sec-head"><div><h2>Pipeline video</h2><p>Seret kad ke peringkat lain, atau klik untuk edit.</p></div><div class="seg" id="v-filter"></div></div><div class="board" id="board"></div></section>
+         <section class="glass drawer" id="drawer" hidden></section>`;
+    } else if (AGENTS[view]) {
+      const a = AGENTS[view];
+      page.innerHTML = banner({ icon: a.icon, color: a.color, title: a.name, pill: a.live ? '<span class="pill live">Aktif</span>' : '<span class="pill plan">Skill belum dibina</span>', sub: a.desc, actions: refreshBtn + `<button class="btn primary" type="button" data-act="new">+ Tugas baru</button>` }) +
+        (a.live ? "" : `<div class="warn-box">Kau dah boleh brief dan susun tugas di sini. Untuk agent ni jalan, skill <b>${esc(a.skill)}</b> perlu dibina dulu. Minta Claude: <i>“Bina skill ${esc(a.skill)} untuk Agent Studio.”</i></div>`) +
+        `<section class="glass block"><div class="sec-head"><div><h2>Tugas ${esc(a.short)}</h2><p>Brief → agent jalan → semak → siap.</p></div></div><div class="board" id="board"></div></section>
+         <section class="glass drawer" id="drawer" hidden></section>`;
+    } else if (view === "hooks") {
+      page.innerHTML = banner({ icon: "hook", title: "Hook Bank", sub: "Saat 0–2 tentukan orang stay atau scroll. Simpan idea, guna terus." }) +
+        `<section class="two"><div class="glass block"><div class="sec-head"><div><h2>Formula hook</h2><p>Templat yang terbukti.</p></div></div><div class="list" id="formulas"></div></div>
+          <div class="glass block"><div class="sec-head"><div><h2>Hook kau</h2><p>Satu klik jadi video baru.</p></div></div>
+            <form id="hook-form" class="row2" style="grid-template-columns:1fr auto;align-items:end;margin-bottom:12px">
+              <div class="field"><label for="hook-text">Hook baru</label><input class="input" id="hook-text" placeholder="Contoh: 3 sebab customer kata mahal…" maxlength="160"></div>
+              <button class="btn primary" type="submit">Simpan</button></form>
+            <div class="list" id="hooks"></div></div></section>`;
+    } else if (view === "style") {
+      page.innerHTML = banner({ icon: "palette", title: "Gaya & Brand", sub: "Diukur dari 5 reel rujukan. Semua agent ikut panduan ni." }) +
+        `<section class="glass block"><div class="style-cols">
+          <div class="style-card"><div class="eyebrow">Gaya A · Authority</div><div class="style-sample"><div class="sample-a">talking about is<em>budget</em></div></div>
+            <ul class="rules"><li>Caption 2–4 perkataan, tengah frame, putih tebal</li><li>1 kata kunci kuning, besar, setiap 1–2 ayat</li><li>Header nombor untuk listicle</li><li>Cutaway setiap 3–5 s, punch-in pada penekanan</li><li>Untuk: Education, Do &amp; Don't, Before/After</li></ul></div>
+          <div class="style-card"><div class="eyebrow">Gaya B · Cinematic Story</div><div class="style-sample"><div class="sample-b"><i>Do you wanna make</i><strong>BETTER</strong></div></div>
+            <ul class="rules"><li>Tajuk condensed kuning + serif italic kecil</li><li>Subtitle serif kecil di lower third</li><li>B-roll sinematik, potong setiap ~2 s</li><li>Whip / zoom-blur, segmen hitam-putih</li><li>Untuk: Vlog, cerita, launch</li></ul></div></div>
+          <div class="eyebrow" style="margin:16px 0 10px">Palet brand</div>
+          <div class="swatches">${[["#FFD21F", "#FFD21F"], ["#FFFFFF", "#FFFFFF"], ["#0A0A0A", "#0A0A0A"], ["#8A8A8A", "#8A8A8A"], ["#FF3B30", "DON'T"], ["#34C759", "DO"]].map(([c, n]) => `<div class="sw"><i style="background:${c}"></i>${n}</div>`).join("")}</div>
+          <div class="eyebrow" style="margin:16px 0 10px">Spesifikasi export</div>
+          <div class="chips"><span class="chip">9:16 · 1080×1920</span><span class="chip">30 fps</span><span class="chip">Suara −14 LUFS</span><span class="chip">Muzik ~15 dB bawah suara</span></div></section>
+         <section class="grid2">${FORMAT_GUIDE.map((g) => `<div class="glass block"><div class="sec-head"><div><h2>${esc(FORMATS[g.f].name)}</h2><p>Gaya ${FORMATS[g.f].style}</p></div></div><div class="timeline">${g.rows.map(([a, b]) => `<div class="tl-row"><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join("")}</div></div>`).join("")}</section>`;
+    } else if (view === "agent-baru") {
+      const ideas = [["Thumbnail Agent", "Cover reel & thumbnail YouTube dari frame terbaik"], ["Caption & Hashtag Agent", "Caption post + hashtag ikut platform, terus dari transkrip video"], ["Content Calendar Agent", "Rancang 30 hari konten dari satu topik"], ["Analytics Agent", "Baca prestasi post & ads, cadang apa nak buat seterusnya"]];
+      page.innerHTML = banner({ icon: "plus", title: "Tambah agent", sub: "Setiap agent = satu skill Claude + satu ruang kerja di sini." }) +
+        `<section class="two"><div class="glass block"><div class="sec-head"><div><h2>Cara tambah</h2></div></div>
+          <ol class="steps"><li>Minta Claude <b>bina skill</b> untuk kerja tu (contoh: poster-agent).</li><li>Upload skill ke <b>Claude desktop app</b> (Settings → Skills) dan push ke repo VIDEOEDITOR.</li><li>Minta Claude <b>tambah agent ke Agent Studio</b>. Agent baru muncul di menu kiri dengan brief, papan tugas dan checklist sendiri.</li></ol>
+          <div class="field" style="margin-top:14px"><span class="lbl">Arahan untuk Claude</span><div class="copy-line"><code id="add-cmd">Bina skill poster-agent, kemudian tambah ke Agent Studio.</code><button class="btn small" type="button" data-copy="add-cmd">Salin</button></div></div></div>
+          <div class="glass block"><div class="sec-head"><div><h2>Idea agent seterusnya</h2><p>Sesuai dengan workflow konten kau.</p></div></div>
+          <div class="list">${ideas.map(([n, d]) => `<div class="li" style="--lc:var(--accent)"><span class="li-ic">${svg("spark", 16)}</span><div><b>${n}</b><small>${d}</small></div><span class="tag neutral">Idea</span></div>`).join("")}</div></div></section>
+         <section><div class="sec-head"><div><h2>Status agent</h2></div></div><div class="agents" id="ov-agents"></div></section>`;
+    }
+    update();
+  }
+
+  function update() {
+    renderNav();
+    if (view === "overview") { renderKpis(); renderAgentCards(); renderAttention(); renderActivity(); renderWeek(); }
+    else if (view === "agent-baru") renderAgentCards();
+    else if (view === "video") { renderTarget(); renderStageTiles(); renderFilter(); renderVideoBoard(); if (!draft) renderDrawer(); }
+    else if (AGENTS[view]) { renderTaskBoard(); if (!draft) renderDrawer(); }
+    else if (view === "hooks") renderHooks();
+  }
+
+  // ---- overview parts
+  function renderKpis() {
+    const items = allItems(), since = periodStart();
+    const active = items.filter((x) => !x.done), review = items.filter((x) => x.review);
+    const doneP = items.filter((x) => x.done && (x.doneAt || 0) >= since);
+    const posted = projects.filter((p) => p.stage === "posted" && (p.postedAt || 0) >= since);
+    const live = Object.values(AGENTS).filter((a) => a.live).length;
+    const tiles = [
+      { ic: "spark", label: "Tugas aktif", num: active.length, a: ["Lewat", active.filter(isLate).length], b: ["Agent jalan", items.filter((x) => x.stage === "edit" || x.stage === "jalan").length] },
+      { ic: "eye", label: "Tunggu semak", num: review.length, a: ["Video", review.filter((x) => x.kind === "video").length], b: ["Lain-lain", review.filter((x) => x.kind === "task").length] },
+      { ic: "check", label: `Siap · ${PERIODS[period].toLowerCase()}`, num: doneP.length, a: ["Video posted", posted.length], b: ["Tugas lain", doneP.filter((x) => x.kind === "task").length] },
+      { ic: "video", label: "Agent aktif", num: `${live}/${Object.keys(AGENTS).length}`, a: ["Dibina", live], b: ["Belum", Object.keys(AGENTS).length - live] },
+    ];
+    $("#ov-kpis").innerHTML = tiles.map((t) => `<article class="glass kpi"><div class="kpi-head"><span class="kpi-icon">${svg(t.ic, 17)}</span>${esc(t.label)}</div>
+      <div class="kpi-num">${esc(t.num)}</div><div class="kpi-foot"><div><span>${esc(t.a[0])}</span><b>${esc(t.a[1])}</b></div><div><span>${esc(t.b[0])}</span><b>${esc(t.b[1])}</b></div></div></article>`).join("");
+  }
+  function renderAgentCards() {
+    const items = allItems(), since = periodStart();
+    $("#ov-agents").innerHTML = Object.entries(AGENTS).map(([k, a]) => {
+      const mine = items.filter((x) => x.agent === k);
+      return `<article class="glass agent-card" style="--ac:${a.color}">
+        <div class="agent-top"><span class="agent-ic">${svg(a.icon, 20)}</span><div><h3>${esc(a.name)}</h3><span class="pill ${a.live ? "live" : "plan"}" style="margin-left:0">${a.live ? "Aktif" : "Skill belum dibina"}</span></div></div>
+        <p>${esc(a.desc)}</p>
+        <div class="agent-stats"><div><b>${mine.filter((x) => !x.done).length}</b><span>Aktif</span></div><div><b>${mine.filter((x) => x.review).length}</b><span>Semak</span></div><div><b>${mine.filter((x) => x.done && (x.doneAt || 0) >= since).length}</b><span>Siap</span></div></div>
+        <div class="agent-actions"><a class="btn small" href="#${k}">Buka</a><button class="btn small primary" type="button" data-newfor="${k}">+ ${k === "video" ? "Video" : "Tugas"}</button></div>
+      </article>`;
     }).join("");
   }
-
-  // ---- render: KPIs
-  function renderKpis() {
-    const active = projects.filter((p) => p.stage !== "posted");
-    const review = projects.filter((p) => p.stage === "semak");
-    const since = Date.now() - 30 * 864e5;
-    const posted30 = projects.filter((p) => p.stage === "posted" && (p.postedAt || 0) >= since);
-    const withViews = projects.filter((p) => p.stage === "posted" && p.stats && Number(p.stats.views) > 0);
-    const avgViews = withViews.length ? Math.round(withViews.reduce((a, p) => a + Number(p.stats.views), 0) / withViews.length) : 0;
-    const best = withViews.slice().sort((a, b) => b.stats.views - a.stats.views)[0];
-    const fmtNum = (n) => n >= 1e6 ? (n / 1e6).toFixed(1) + "M" : n >= 1e3 ? (n / 1e3).toFixed(1) + "k" : String(n);
-    const late = active.filter(isLate).length;
-    const tiles = [
-      { ic: icon.film, label: "Dalam pipeline", num: active.length, a: ["Lewat", late], b: ["Dalam edit", projects.filter((p) => p.stage === "edit").length], jump: "edit" },
-      { ic: icon.eye, label: "Tunggu semak", num: review.length, a: ["Checklist siap", review.filter((p) => checkPct(p) === 100).length], b: ["Belum", review.filter((p) => checkPct(p) !== 100).length], jump: "semak" },
-      { ic: icon.send, label: "Posted 30 hari", num: posted30.length, a: ["Minggu ni", projects.filter((p) => p.stage === "posted" && (p.postedAt || 0) >= startOfWeek()).length], b: ["Sasaran", settings.weeklyTarget + "/mg"], jump: "posted" },
-      { ic: icon.chart, label: "Purata views", num: fmtNum(avgViews), a: ["Terbaik", best ? fmtNum(best.stats.views) : "—"], b: ["Diukur", withViews.length + " video"], jump: "posted" },
-    ];
-    $("#kpis").innerHTML = tiles.map((t) => `
-      <article class="panel kpi">
-        <button class="kpi-jump" type="button" data-jump="${t.jump}" aria-label="Pergi ke ${esc(t.label)}">${icon.arrow}</button>
-        <div class="kpi-head"><span class="kpi-icon">${t.ic}</span>${esc(t.label)}</div>
-        <div class="kpi-num">${esc(t.num)}</div>
-        <div class="kpi-foot"><div><span>${esc(t.a[0])}</span><b>${esc(t.a[1])}</b></div><div><span>${esc(t.b[0])}</span><b>${esc(t.b[1])}</b></div></div>
-      </article>`).join("");
+  const liRow = (x, tag) => `<button type="button" class="li" style="--lc:${itemColor(x)}" data-open="${x.kind}:${x.id}"><span class="li-ic">${svg(AGENTS[x.agent]?.icon || "spark", 16)}</span><div><b>${esc(x.title || "Tanpa tajuk")}</b><small>${esc(AGENTS[x.agent]?.short || "")} · ${esc(stageName(x))}${x.updated ? " · " + ago(x.updated) : ""}</small></div>${tag}</button>`;
+  function renderAttention() {
+    const l = allItems().filter((x) => isLate(x) || x.review).sort((a, b) => (isLate(b) - isLate(a)) || (a.due || "9").localeCompare(b.due || "9")).slice(0, 7);
+    $("#ov-attn").innerHTML = l.length ? l.map((x) => liRow(x, isLate(x) ? `<span class="tag late">Lewat ${fmtDate(x.due)}</span>` : `<span class="tag review">Semak</span>`)).join("") : `<div class="empty">Tiada apa yang tersangkut. Bila agent hantar hasil untuk disemak, ia muncul di sini.</div>`;
   }
-
-  // ---- render: week strip
+  function renderActivity() {
+    const l = allItems().filter((x) => x.updated).sort((a, b) => b.updated - a.updated).slice(0, 7);
+    $("#ov-activity").innerHTML = l.length ? l.map((x) => liRow(x, x.done ? `<span class="tag done">Siap</span>` : `<span class="tag neutral">${esc(stageName(x))}</span>`)).join("") : `<div class="empty">Belum ada aktiviti. Tekan “+ Tugas baru” untuk mula.</div>`;
+  }
   function renderWeek() {
     const today = new Date(); today.setHours(0, 0, 0, 0);
+    const items = allItems().filter((x) => x.due && !x.done);
     let html = "";
     for (let i = 0; i < 7; i++) {
-      const d = new Date(today.getTime() + i * 864e5);
-      const key = ymd(d);
-      const items = projects.filter((p) => p.due === key);
-      html += `<div class="day ${i === 0 ? "today" : ""}">
-        <div class="day-label"><span>${i === 0 ? "Hari ni" : HARI[d.getDay()].slice(0, 3)}</span><b>${d.getDate()}</b></div>
-        ${items.map((p) => `<button type="button" class="day-item" data-open="${p.id}" style="border-left-color:${STAGES.find((s) => s.id === p.stage)?.color}">${esc(p.title)}</button>`).join("")}
-      </div>`;
+      const d = new Date(today.getTime() + i * 864e5), key = ymd(d);
+      html += `<div class="day ${i === 0 ? "today" : ""}"><div class="day-label"><span>${i === 0 ? "Hari ni" : HARI[d.getDay()].slice(0, 3)}</span><b>${d.getDate()}</b></div>
+        ${items.filter((x) => x.due === key).map((x) => `<button type="button" class="day-item" style="--ic:${itemColor(x)}" data-open="${x.kind}:${x.id}">${esc(x.title)}</button>`).join("")}</div>`;
     }
-    $("#days").innerHTML = html;
+    $("#ov-week").innerHTML = html;
   }
 
-  // ---- render: board
+  // ---- video parts
+  function renderTarget() {
+    const postedWeek = projects.filter((p) => p.stage === "posted" && (p.postedAt || 0) >= startOfWeek()).length;
+    const tgt = settings.weeklyTarget || 4, frac = Math.min(1, postedWeek / tgt);
+    $("#v-target").innerHTML = `<svg class="ring" viewBox="0 0 96 96" role="img" aria-label="${postedWeek} daripada ${tgt} video dipost minggu ni">
+        <circle cx="48" cy="48" r="40" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="9"></circle>
+        <circle cx="48" cy="48" r="40" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(frac * 251.3).toFixed(1)} 251.3" transform="rotate(-90 48 48)"></circle>
+        <text x="48" y="54" text-anchor="middle" fill="var(--fg)" font-size="19" font-weight="800" font-family="Plus Jakarta Sans, sans-serif">${postedWeek}/${tgt}</text></svg>
+      <div><div class="eyebrow">Sasaran minggu ni</div><h3>${postedWeek >= tgt ? "Sasaran tercapai" : `${tgt - postedWeek} lagi untuk sasaran`}</h3>
+        <div class="stepper"><button type="button" data-act="tgt-" aria-label="Kurangkan sasaran">−</button><span>${tgt}</span><button type="button" data-act="tgt+" aria-label="Tambah sasaran">+</button><span class="note" style="min-width:0">reel / minggu</span></div></div>`;
+  }
+  function renderStageTiles() {
+    $("#v-stages").innerHTML = VSTAGES.map((s) => `<button type="button" class="stage-tile" data-jumpcol="${s.id}"><span><i style="background:${s.color}"></i>${s.name}</span><b>${projects.filter((p) => p.stage === s.id).length}</b></button>`).join("");
+  }
   function renderFilter() {
     const opts = [["all", "Semua"], ...Object.entries(FORMATS).map(([k, v]) => [k, v.name])];
-    $("#filter").innerHTML = opts.map(([k, n]) => `<button type="button" data-filter="${k}" aria-pressed="${fmtFilter === k}">${esc(n)}</button>`).join("");
+    $("#v-filter").innerHTML = opts.map(([k, n]) => `<button type="button" data-filter="${k}" aria-pressed="${fmtFilter === k}">${esc(n)}</button>`).join("");
   }
-  function renderBoard() {
-    const list = projects.filter((p) => fmtFilter === "all" || p.format === fmtFilter);
-    $("#board").innerHTML = STAGES.map((s) => {
-      const items = list.filter((p) => p.stage === s.id).sort((a, b) => (a.due || "9999").localeCompare(b.due || "9999"));
-      const cards = items.map((p) => {
-        const pct = checkPct(p);
-        const f = FORMATS[p.format] || FORMATS.education;
-        const dueTxt = p.due ? (() => { const d = new Date(p.due + "T00:00"); return `${d.getDate()} ${BULAN[d.getMonth()]}`; })() : "Tiada tarikh";
-        return `<button type="button" class="card ${p.id === selectedId ? "sel" : ""}" draggable="${!readOnly}" data-open="${p.id}" data-id="${p.id}">
-          <div class="card-title">${esc(p.title || "Tanpa tajuk")}</div>
-          <div class="chips"><span class="chip fmt">${esc(f.name)}</span><span class="chip">Gaya ${esc(p.style || f.style)}</span>${p.example ? '<span class="chip ex">Contoh</span>' : ""}${isLate(p) ? '<span class="chip late">Lewat</span>' : ""}</div>
-          ${pct !== null ? `<div class="progress" title="Checklist ${pct}%"><i style="width:${pct}%"></i></div>` : ""}
-          <div class="card-meta"><span>${esc(dueTxt)}</span><span>${(p.platforms || []).map((k) => ({ ig: "IG", tiktok: "TT", yt: "YT" }[k])).join(" · ") || "—"}</span></div>
-        </button>`;
-      }).join("");
-      const hint = !items.length ? `<div class="col-hint">${s.id === "idea" ? "Tekan “+ Video baru” untuk mula." : "Kosong"}</div>` : "";
-      return `<div class="col" data-stage="${s.id}">
-        <div class="col-head"><span class="dot" style="background:${s.color}"></span>${s.name}<small>${items.length}</small></div>
-        ${cards}${hint}
-      </div>`;
+  function cardHtml(x, chipsHtml, pct, meta) {
+    const key = `${x.kind}:${x.id}`;
+    return `<button type="button" class="card ${key === selectedKey ? "sel" : ""}" draggable="${!readOnly}" data-open="${key}" data-key="${key}">
+      <div class="card-title">${esc(x.title || "Tanpa tajuk")}</div><div class="chips">${chipsHtml}${x.example ? '<span class="chip">Contoh</span>' : ""}${isLate(x) ? '<span class="chip late">Lewat</span>' : ""}</div>
+      ${pct !== null ? `<div class="progress" title="Checklist ${pct}%"><i style="width:${pct}%"></i></div>` : ""}<div class="card-meta"><span>${esc(fmtDate(x.due))}</span><span>${esc(meta)}</span></div></button>`;
+  }
+  function boardHtml(stages, list, cardFn, emptyFirst) {
+    return stages.map((s, i) => {
+      const items = list.filter((x) => x.stage === s.id).sort((a, b) => (a.due || "9999").localeCompare(b.due || "9999"));
+      return `<div class="col" data-stage="${s.id}"><div class="col-head"><span class="dot" style="background:${s.color}"></span>${s.name}<small>${items.length}</small></div>
+        ${items.map(cardFn).join("")}${!items.length ? `<div class="col-hint">${i === 0 ? emptyFirst : "Kosong"}</div>` : ""}</div>`;
     }).join("");
   }
+  function renderVideoBoard() {
+    const list = projects.filter((p) => fmtFilter === "all" || p.format === fmtFilter).map((p) => ({ ...p, kind: "video", agent: "video" }));
+    $("#board").innerHTML = boardHtml(VSTAGES, list, (p) => {
+      const f = FORMATS[p.format] || FORMATS.education;
+      return cardHtml(p, `<span class="chip k" style="--kc:var(--c-video)">${esc(f.name)}</span><span class="chip">Gaya ${esc(p.style || f.style)}</span>`, vCheckPct(p), (p.platforms || []).map((k) => ({ ig: "IG", tiktok: "TT", yt: "YT" }[k])).join(" · ") || "—");
+    }, "Tekan “+ Video baru” untuk mula.");
+  }
+  function renderTaskBoard() {
+    const a = AGENTS[view];
+    const list = tasks.filter((t) => t.agent === view).map((t) => ({ ...t, kind: "task" }));
+    $("#board").innerHTML = boardHtml(TSTAGES, list, (t) => {
+      const chip = a.fields[0].options ? `<span class="chip k" style="--kc:${a.color}">${esc(lab(view, a.fields[0].k, t[a.fields[0].k]))}</span>` : "";
+      return cardHtml(t, chip, tCheckPct(t), t.updated ? ago(t.updated) : "");
+    }, "Tekan “+ Tugas baru” untuk brief agent.");
+  }
 
-  // ---- render: drawer
-  function agentPrompt(p) {
+  // ---- drawer
+  function videoPrompt(p) {
     const f = FORMATS[p.format] || FORMATS.education;
-    const broll = p.broll ? `B-roll dalam folder ${p.broll}` : "B-roll guna stok Pixabay";
-    const lines = [`Guna skill reel-editor. Edit project CapCut "${p.capcut || "NAMA PROJECT"}", format ${f.cmd}, ${broll}. Aku guna Windows.`];
+    const lines = [`Guna skill reel-editor. Edit project CapCut "${p.capcut || "NAMA PROJECT"}", format ${f.cmd}, ${p.broll ? `B-roll dalam folder ${p.broll}` : "B-roll guna stok Pixabay"}. Aku guna Windows.`];
     if (p.hook) lines.push(`Hook yang aku nak: "${p.hook}".`);
     if ((p.style || f.style) !== f.style) lines.push(`Guna Gaya ${p.style}.`);
     if (p.notes) lines.push(`Nota: ${p.notes}`);
-    if ((p.platforms || []).length) lines.push(`Lepas aku approve, sediakan caption post untuk ${(p.platforms).map((k) => PLATFORMS[k]).join(", ")}.`);
+    if ((p.platforms || []).length) lines.push(`Lepas aku approve, sediakan caption post untuk ${p.platforms.map((k) => PLATFORMS[k]).join(", ")}.`);
     return lines.join("\n");
   }
+  const taskPrompt = (t) => { const a = AGENTS[t.agent]; let s = a.prompt(t); if (t.notes) s += `\nNota: ${t.notes}`; return s; };
+  const promptFor = (d) => (d.kind === "video" ? videoPrompt(d) : taskPrompt(d));
+
   function renderDrawer() {
-    const el = $("#drawer");
+    const el = $("#drawer"); if (!el) return;
     if (!draft) { el.hidden = true; el.innerHTML = ""; return; }
     el.hidden = false;
-    const p = draft;
-    const f = FORMATS[p.format] || FORMATS.education;
-    const checks = CHECKS[p.stage] || [];
-    const c = p.checks || {};
-    const dis = readOnly ? "disabled" : "";
-    el.innerHTML = `
-      <div class="sec-head">
-        <div><div class="eyebrow">${p.isNew ? "Video baru" : "Butiran video"}${p.example ? " · contoh" : ""}</div><h2 style="margin-top:4px">${esc(p.title || "Tanpa tajuk")}</h2></div>
-        <button class="btn ghost small" type="button" data-act="close">Tutup</button>
-      </div>
-      <div class="drawer-grid">
-        <div style="display:grid;gap:12px;align-content:start;min-width:0">
-          <div class="field"><label for="f-title">Tajuk video</label><input class="input" id="f-title" data-k="title" value="${esc(p.title)}" placeholder="Contoh: Customer kata mahal" ${dis}></div>
-          <div class="field"><label>Format</label><div class="seg">${Object.entries(FORMATS).map(([k, v]) => `<button type="button" data-fmt="${k}" aria-pressed="${p.format === k}" ${dis}>${esc(v.name)}</button>`).join("")}</div></div>
-          <div class="row2">
-            <div class="field"><label for="f-stage">Peringkat</label><select class="select" id="f-stage" data-k="stage" ${dis}>${STAGES.map((s) => `<option value="${s.id}" ${p.stage === s.id ? "selected" : ""}>${s.name}</option>`).join("")}</select></div>
-            <div class="field"><label for="f-due">Tarikh post</label><input class="input" type="date" id="f-due" data-k="due" value="${esc(p.due)}" ${dis}></div>
-          </div>
-          <div class="row2">
-            <div class="field"><label for="f-capcut">Nama project CapCut</label><input class="input" id="f-capcut" data-k="capcut" value="${esc(p.capcut)}" placeholder="claude test" ${dis}></div>
-            <div class="field"><label for="f-style">Gaya</label><select class="select" id="f-style" data-k="style" ${dis}><option value="A" ${(p.style || f.style) === "A" ? "selected" : ""}>A · Authority</option><option value="B" ${(p.style || f.style) === "B" ? "selected" : ""}>B · Cinematic</option></select></div>
-          </div>
-          <div class="field"><label for="f-hook">Hook (saat 0–2)</label><input class="input" id="f-hook" data-k="hook" value="${esc(p.hook)}" placeholder="Apa kau jawab bila customer kata mahal?" list="hook-list" ${dis}>
-            <datalist id="hook-list">${hooks.map((h) => `<option value="${esc(h.text)}"></option>`).join("")}</datalist></div>
-          <div class="field"><label for="f-broll">Folder B-roll sendiri (kosongkan untuk stok Pixabay)</label><input class="input" id="f-broll" data-k="broll" value="${esc(p.broll)}" placeholder="D:\\B-roll" ${dis}></div>
-          <div class="field"><label>Platform</label><div class="seg">${Object.entries(PLATFORMS).map(([k, v]) => `<button type="button" data-plat="${k}" aria-pressed="${(p.platforms || []).includes(k)}" ${dis}>${esc(v)}</button>`).join("")}</div></div>
-          <div class="field"><label for="f-notes">Nota untuk agent</label><textarea class="input" id="f-notes" data-k="notes" placeholder="Contoh: potong bahagian aku sebut harga lama" ${dis}>${esc(p.notes)}</textarea></div>
-          ${p.stage === "posted" ? `
-          <div class="field"><label>Prestasi (isi lepas 48 jam)</label>
-            <div class="stats">${[["views", "Views"], ["saves", "Saves"], ["shares", "Shares"], ["watch", "Tonton %"]].map(([k, n]) => `<div class="field"><label for="s-${k}">${n}</label><input class="input" type="number" min="0" id="s-${k}" data-stat="${k}" value="${esc(p.stats?.[k] ?? "")}" ${dis}></div>`).join("")}</div>
-          </div>` : ""}
-        </div>
-        <div style="display:grid;gap:12px;align-content:start;min-width:0">
-          <div class="field"><label>Arahan untuk agent reel-editor</label>
-            <div class="prompt-box" id="prompt">${esc(agentPrompt(p))}</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary small" type="button" data-act="copy">Salin arahan</button><span class="note" style="align-self:center">Paste dalam chat baru di Claude desktop app.</span></div>
-          </div>
-          ${checks.length ? `<div class="field"><label>Checklist · ${esc(STAGES.find((s) => s.id === p.stage).name)}</label>
-            <div class="checks">${checks.map(([k, t, sub]) => { const key = `${p.stage}.${k}`; const on = !!c[key]; return `<label class="check ${on ? "done" : ""}"><input type="checkbox" data-check="${key}" ${on ? "checked" : ""} ${dis}><span>${esc(t)}${sub ? `<small>${esc(sub)}</small>` : ""}</span></label>`; }).join("")}</div></div>`
-          : `<div class="note">${p.stage === "edit" ? "Agent sedang edit. Bila preview sampai, pindah ke Semak." : p.stage === "posted" ? "Isi prestasi supaya kau nampak hook dan format mana yang menang." : "Tiada checklist untuk peringkat ni."}</div>`}
-        </div>
-      </div>
-      <div class="drawer-foot">
-        <div class="left">${!p.isNew && !readOnly ? `<button class="btn ghost small danger" type="button" data-act="delete">Padam</button>` : ""}</div>
-        <div class="right">
-          ${!readOnly && p.stage !== "posted" ? `<button class="btn small" type="button" data-act="advance">Pindah ke ${esc(STAGES[STAGES.findIndex((s) => s.id === p.stage) + 1]?.name || "")} →</button>` : ""}
-          ${!readOnly ? `<button class="btn primary small" type="button" data-act="save">${p.isNew ? "Tambah video" : "Simpan"}</button>` : `<span class="note">Paparan baca sahaja</span>`}
-        </div>
-      </div>`;
-  }
-
-  // ---- render: hooks + style
-  function renderHooks() {
-    $("#formulas").innerHTML = FORMULAS.map((f, i) => `<div class="formula"><b>${esc(f.name)}</b><code>${esc(f.tpl)}</code><span class="ex-line">${esc(f.ex)}</span>
-      <div class="formula-actions"><button class="btn small ghost" type="button" data-usef="${i}">Guna formula ni</button></div></div>`).join("");
-    $("#hooks").innerHTML = hooks.length ? hooks.map((h) => `<div class="hook"><div><p>${esc(h.text)}</p><small>${h.used ? `Dah guna ${h.used}×` : "Belum guna"}</small></div>
-      <div class="hook-actions"><button class="btn small" type="button" data-usehook="${h.id}">Video baru</button>${readOnly ? "" : `<button class="btn small ghost danger" type="button" data-delhook="${h.id}" aria-label="Padam hook">×</button>`}</div></div>`).join("")
-      : `<div class="empty">Belum ada hook disimpan. Tulis satu di atas, atau tekan “Guna formula ni” untuk mula dari templat.</div>`;
-  }
-  function renderFormats() {
-    $("#formats").innerHTML = FORMAT_GUIDE.map((g) => `<div class="panel block"><div class="sec-head"><div><h2>${esc(FORMATS[g.f].name)}</h2><p>Gaya ${FORMATS[g.f].style}</p></div></div>
-      <div class="timeline">${g.rows.map(([a, b]) => `<div class="tl-row"><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join("")}</div></div>`).join("");
-  }
-
-  function renderAll() { renderRail(); renderKpis(); renderWeek(); renderFilter(); renderBoard(); renderDrawer(); renderHooks(); }
-
-  // ---- data ops (db when available, memory otherwise)
-  const clean = (p) => { const o = { ...p }; delete o.id; delete o.isNew; return o; };
-  async function saveProject(p) {
-    const body = clean(p);
-    body.updated = Date.now();
-    if (body.stage === "posted" && !body.postedAt) body.postedAt = Date.now();
-    if (body.stage !== "posted") delete body.postedAt;
-    if (!db) {
-      if (p.isNew) { const id = "m" + ++memId; projects.push({ id, ...body }); return id; }
-      projects = projects.map((x) => (x.id === p.id ? { id: p.id, ...body } : x)); return p.id;
+    const d = draft, dis = readOnly ? "disabled" : "";
+    const stages = d.kind === "video" ? VSTAGES : TSTAGES;
+    const nextStage = stages[stages.findIndex((s) => s.id === d.stage) + 1];
+    const a = AGENTS[d.agent];
+    let left = `<div class="field"><label for="f-title">Tajuk</label><input class="input" id="f-title" data-k="title" value="${esc(d.title)}" placeholder="${d.kind === "video" ? "Contoh: Customer kata mahal" : "Contoh: Promo kelas Disember"}" ${dis}></div>
+      <div class="row2"><div class="field"><label for="f-stage">Peringkat</label><select class="select" id="f-stage" data-k="stage" ${dis}>${stages.map((s) => `<option value="${s.id}" ${d.stage === s.id ? "selected" : ""}>${s.name}</option>`).join("")}</select></div>
+        <div class="field"><label for="f-due">${d.kind === "video" ? "Tarikh post" : "Tarikh siap"}</label><input class="input" type="date" id="f-due" data-k="due" value="${esc(d.due)}" ${dis}></div></div>`;
+    let checks = [], ckey = (k) => k;
+    if (d.kind === "video") {
+      const f = FORMATS[d.format] || FORMATS.education;
+      left += `<div class="field"><span class="lbl">Format</span><div class="seg">${Object.entries(FORMATS).map(([k, v]) => `<button type="button" data-fmt="${k}" aria-pressed="${d.format === k}" ${dis}>${esc(v.name)}</button>`).join("")}</div></div>
+        <div class="row2"><div class="field"><label for="f-capcut">Nama project CapCut</label><input class="input" id="f-capcut" data-k="capcut" value="${esc(d.capcut)}" placeholder="claude test" ${dis}></div>
+          <div class="field"><label for="f-style">Gaya</label><select class="select" id="f-style" data-k="style" ${dis}><option value="A" ${(d.style || f.style) === "A" ? "selected" : ""}>A · Authority</option><option value="B" ${(d.style || f.style) === "B" ? "selected" : ""}>B · Cinematic</option></select></div></div>
+        <div class="field"><label for="f-hook">Hook (saat 0–2)</label><input class="input" id="f-hook" data-k="hook" value="${esc(d.hook)}" placeholder="Apa kau jawab bila customer kata mahal?" list="hook-list" ${dis}><datalist id="hook-list">${hooks.map((h) => `<option value="${esc(h.text)}"></option>`).join("")}</datalist></div>
+        <div class="field"><label for="f-broll">Folder B-roll sendiri (kosongkan untuk stok Pixabay)</label><input class="input" id="f-broll" data-k="broll" value="${esc(d.broll)}" placeholder="D:\\B-roll" ${dis}></div>
+        <div class="field"><span class="lbl">Platform</span><div class="seg">${Object.entries(PLATFORMS).map(([k, v]) => `<button type="button" data-multi="platforms" data-val="${k}" aria-pressed="${(d.platforms || []).includes(k)}" ${dis}>${esc(v)}</button>`).join("")}</div></div>`;
+      if (d.stage === "posted") left += `<div class="field"><span class="lbl">Prestasi (isi lepas 48 jam)</span><div class="stats">${[["views", "Views"], ["saves", "Saves"], ["shares", "Shares"], ["watch", "Tonton %"]].map(([k, n]) => `<div class="field"><label for="s-${k}">${n}</label><input class="input" type="number" min="0" id="s-${k}" data-stat="${k}" value="${esc(d.stats?.[k] ?? "")}" ${dis}></div>`).join("")}</div></div>`;
+      checks = VCHECKS[d.stage] || []; ckey = (k) => `${d.stage}.${k}`;
+    } else {
+      for (const f of a.fields) {
+        const v = d[f.k] ?? "";
+        if (f.type === "seg") left += `<div class="field"><span class="lbl">${esc(f.label)}</span><div class="seg">${f.options.map(([k, n]) => `<button type="button" data-seg="${f.k}" data-val="${k}" aria-pressed="${v === k}" ${dis}>${esc(n)}</button>`).join("")}</div></div>`;
+        else if (f.type === "number") left += `<div class="field"><label for="f-${f.k}">${esc(f.label)}</label><input class="input" type="number" min="0" id="f-${f.k}" data-k="${f.k}" value="${esc(v)}" ${dis}></div>`;
+        else if (f.type === "creative") {
+          const opts = [...projects.map((p) => `Video: ${p.title}`), ...tasks.filter((t) => t.agent === "poster").map((t) => `Poster: ${t.title}`)];
+          left += `<div class="field"><label for="f-${f.k}">${esc(f.label)}</label><select class="select" id="f-${f.k}" data-k="${f.k}" ${dis}><option value="">Belum dipilih</option>${opts.map((o) => `<option ${v === o ? "selected" : ""}>${esc(o)}</option>`).join("")}</select></div>`;
+        } else left += `<div class="field"><label for="f-${f.k}">${esc(f.label)}</label><input class="input" id="f-${f.k}" data-k="${f.k}" value="${esc(v)}" placeholder="${esc(f.ph || "")}" ${dis}></div>`;
+      }
+      if (d.stage === "semak" || d.stage === "siap") checks = a.checks;
     }
-    if (p.isNew) { body.created = Date.now(); const ref = await db.collection("projects").add(body); return ref.id; }
-    await db.doc("projects/" + p.id).set(body); return p.id;
+    left += `<div class="field"><label for="f-notes">Nota untuk agent</label><textarea class="input" id="f-notes" data-k="notes" placeholder="Apa-apa yang agent perlu tahu" ${dis}>${esc(d.notes)}</textarea></div>`;
+    const c = d.checks || {};
+    const right = `<div class="field"><span class="lbl">Arahan untuk ${esc(a.name)}</span><div class="prompt-box" id="prompt">${esc(promptFor(d))}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn primary small" type="button" data-act="copy">Salin arahan</button><span class="note">Paste dalam chat baru di Claude desktop app.</span></div>
+        ${a.live ? "" : `<div class="warn-box">Skill <b>${esc(a.skill)}</b> belum dibina, jadi arahan ni belum boleh dijalankan lagi.</div>`}</div>
+      ${checks.length ? `<div class="field"><span class="lbl">Checklist · ${esc(stages.find((s) => s.id === d.stage)?.name)}</span><div class="checks">${checks.map(([k, t, sub]) => { const on = !!c[ckey(k)]; return `<label class="check ${on ? "done" : ""}"><input type="checkbox" data-check="${ckey(k)}" ${on ? "checked" : ""} ${dis}><span>${esc(t)}${sub ? `<small>${esc(sub)}</small>` : ""}</span></label>`; }).join("")}</div></div>`
+        : `<div class="note">${d.stage === "edit" || d.stage === "jalan" ? "Agent sedang jalan. Bila hasil sampai, pindah ke Semak." : d.stage === "posted" ? "Isi prestasi supaya kau nampak hook dan format mana yang menang." : "Checklist muncul bila tugas sampai peringkat semak."}</div>`}`;
+    el.innerHTML = `<div class="sec-head"><div><div class="eyebrow">${d.isNew ? "Baru" : "Butiran"} · ${esc(a.name)}</div><h2 style="margin-top:4px">${esc(d.title || "Tanpa tajuk")}</h2></div><button class="btn ghost small" type="button" data-act="close">Tutup</button></div>
+      <div class="drawer-grid"><div class="stack">${left}</div><div class="stack">${right}</div></div>
+      <div class="drawer-foot"><div>${!d.isNew && !readOnly ? `<button class="btn ghost small danger" type="button" data-act="delete">Padam</button>` : ""}</div>
+        <div>${!readOnly && nextStage ? `<button class="btn small" type="button" data-act="advance">Pindah ke ${esc(nextStage.name)} →</button>` : ""}${!readOnly ? `<button class="btn primary small" type="button" data-act="save">${d.isNew ? "Tambah" : "Simpan"}</button>` : `<span class="note">Paparan baca sahaja</span>`}</div></div>`;
   }
-  async function deleteProject(id) { if (!db) { projects = projects.filter((p) => p.id !== id); return; } await db.doc("projects/" + id).delete(); }
-  async function saveSettings() { if (db) await db.doc("settings/main").set(settings); }
-  async function addHook(text) {
-    if (!db) { hooks.unshift({ id: "h" + ++memId, text, used: 0, created: Date.now() }); return; }
-    await db.collection("hooks").add({ text, used: 0, created: Date.now() });
-  }
-  async function bumpHook(text) {
-    const h = hooks.find((x) => x.text === text); if (!h) return;
-    if (!db) { h.used = (h.used || 0) + 1; return; }
-    await db.doc("hooks/" + h.id).update({ used: (h.used || 0) + 1 });
-  }
-  async function deleteHook(id) { if (!db) { hooks = hooks.filter((h) => h.id !== id); return; } await db.doc("hooks/" + id).delete(); }
 
+  // ---- resources
+  function renderHooks() {
+    $("#formulas").innerHTML = FORMULAS.map((f, i) => `<div class="formula"><b>${esc(f.name)}</b><code>${esc(f.tpl)}</code><span class="ex-line">${esc(f.ex)}</span><div class="formula-actions"><button class="btn small ghost" type="button" data-usef="${i}">Guna formula ni</button></div></div>`).join("");
+    $("#hooks").innerHTML = hooks.length ? hooks.map((h) => `<div class="hook"><div><p>${esc(h.text)}</p><small>${h.used ? `Dah guna ${h.used}×` : "Belum guna"}</small></div>
+      <div style="display:flex;gap:6px"><button class="btn small" type="button" data-usehook="${h.id}">Video baru</button>${readOnly ? "" : `<button class="btn small ghost danger" type="button" data-delhook="${h.id}" aria-label="Padam hook">×</button>`}</div></div>`).join("")
+      : `<div class="empty">Belum ada hook disimpan. Tulis satu di atas, atau tekan “Guna formula ni”.</div>`;
+  }
+
+  // ------------------------------------------------------------------ data ops
+  const strip = (x) => { const o = { ...x }; for (const k of ["id", "isNew", "kind", "done", "review", "doneAt"]) delete o[k]; return o; };
+  async function saveItem(d) {
+    const body = strip(d); body.updated = Date.now();
+    const isVideo = d.kind === "video";
+    if (isVideo) { delete body.agent; if (body.stage === "posted" && !body.postedAt) body.postedAt = Date.now(); if (body.stage !== "posted") delete body.postedAt; }
+    else { if (body.stage === "siap" && !body.doneAt) body.doneAt = Date.now(); if (body.stage !== "siap") delete body.doneAt; if (d.doneAt && body.stage === "siap") body.doneAt = d.doneAt; }
+    const coll = isVideo ? "projects" : "tasks";
+    if (!db) {
+      const arr = isVideo ? projects : tasks;
+      if (d.isNew) { const id = "m" + ++memId; arr.push({ id, ...body, created: Date.now() }); return id; }
+      const i = arr.findIndex((x) => x.id === d.id); arr[i] = { id: d.id, ...body }; return d.id;
+    }
+    if (d.isNew) { body.created = Date.now(); const ref = await db.collection(coll).add(body); return ref.id; }
+    await db.doc(`${coll}/${d.id}`).set(body); return d.id;
+  }
+  async function deleteItem(d) {
+    const coll = d.kind === "video" ? "projects" : "tasks";
+    if (!db) { if (d.kind === "video") projects = projects.filter((x) => x.id !== d.id); else tasks = tasks.filter((x) => x.id !== d.id); return; }
+    await db.doc(`${coll}/${d.id}`).delete();
+  }
+  async function addHook(text) { if (!db) { hooks.unshift({ id: "h" + ++memId, text, used: 0, created: Date.now() }); return; } await db.collection("hooks").add({ text, used: 0, created: Date.now() }); }
+  async function bumpHook(text) { const h = hooks.find((x) => x.text === text); if (!h) return; if (!db) { h.used = (h.used || 0) + 1; return; } await db.doc("hooks/" + h.id).update({ used: (h.used || 0) + 1 }); }
+  async function deleteHook(id) { if (!db) { hooks = hooks.filter((h) => h.id !== id); return; } await db.doc("hooks/" + id).delete(); }
   function fail(e) {
-    if (e && e.code === "invalid_argument") { readOnly = true; renderAll(); toast("Kau tak boleh ubah data di paparan ni"); return; }
-    if (e && e.code === "quota_exceeded") { toast("Storan penuh. Padam projek lama dulu."); return; }
+    if (e && e.code === "invalid_argument") { readOnly = true; update(); renderDrawer(); toast("Kau tak boleh ubah data di paparan ni"); return; }
+    if (e && e.code === "quota_exceeded") { toast("Storan penuh. Padam tugas lama dulu."); return; }
     toast("Tak dapat simpan. Cuba lagi sekejap.");
   }
 
-  // ---- actions
-  function openProject(id) {
-    const p = projects.find((x) => x.id === id); if (!p) return;
-    selectedId = id; draft = JSON.parse(JSON.stringify(p));
-    renderBoard(); renderDrawer();
-    $("#drawer").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  // ------------------------------------------------------------------ actions
+  function findItem(key) {
+    const [kind, id] = key.split(":");
+    const x = kind === "video" ? projects.find((p) => p.id === id) : tasks.find((t) => t.id === id);
+    return x ? { ...JSON.parse(JSON.stringify(x)), kind, agent: kind === "video" ? "video" : x.agent } : null;
   }
-  function newProject(seed = {}) {
-    showView("pipeline");
-    selectedId = null;
-    draft = { isNew: true, title: "", format: "education", style: "A", stage: "idea", capcut: "", hook: "", broll: "", notes: "", platforms: ["ig", "tiktok"], due: "", checks: {}, ...seed };
-    renderBoard(); renderDrawer();
-    $("#drawer").scrollIntoView({ behavior: "auto", block: "start" });
+  function openItem(key) {
+    const x = findItem(key); if (!x) return;
+    const target = x.kind === "video" ? "video" : x.agent;
+    if (view !== target) go(target);
+    selectedKey = key; draft = x;
+    update(); renderDrawer();
+    $("#drawer")?.scrollIntoView({ behavior: "auto", block: "start" });
+  }
+  function newItem(agent, seed = {}) {
+    if (view !== agent) go(agent);
+    selectedKey = null;
+    if (agent === "video") draft = { isNew: true, kind: "video", agent: "video", title: "", format: "education", style: "A", stage: "idea", capcut: "", hook: "", broll: "", notes: "", platforms: ["ig", "tiktok"], due: "", checks: {}, ...seed };
+    else { draft = { isNew: true, kind: "task", agent, title: "", stage: "brief", due: "", notes: "", checks: {}, ...seed }; for (const f of AGENTS[agent].fields) if (f.def !== undefined && draft[f.k] === undefined) draft[f.k] = f.def; }
+    update(); renderDrawer();
+    $("#drawer")?.scrollIntoView({ behavior: "auto", block: "start" });
     setTimeout(() => $("#f-title")?.focus(), 0);
   }
-  async function commit(closeAfter) {
-    if (!draft.title.trim()) { toast("Isi tajuk video dulu"); $("#f-title")?.focus(); return; }
+  async function commit() {
+    if (!draft.title.trim()) { toast("Isi tajuk dulu"); $("#f-title")?.focus(); return; }
     try {
       const wasNew = draft.isNew;
-      if (draft.hook) await bumpHook(draft.hook).catch(() => {});
-      const id = await saveProject(draft);
-      toast(wasNew ? "Video ditambah" : "Disimpan");
-      if (closeAfter) { draft = null; selectedId = null; }
-      else { selectedId = id; draft = { ...draft, id, isNew: false }; }
-      if (!db) renderAll(); else { renderBoard(); renderDrawer(); }
+      if (draft.kind === "video" && draft.hook) await bumpHook(draft.hook).catch(() => {});
+      const id = await saveItem(draft);
+      selectedKey = `${draft.kind}:${id}`; draft = { ...draft, id, isNew: false };
+      toast(wasNew ? "Ditambah" : "Disimpan");
+      update(); renderDrawer();
     } catch (e) { fail(e); }
   }
-  async function moveTo(id, stage) {
-    const p = projects.find((x) => x.id === id); if (!p || p.stage === stage) return;
-    try { await saveProject({ ...p, stage }); if (!db) renderAll(); toast(`Dipindah ke ${STAGES.find((s) => s.id === stage).name}`); }
-    catch (e) { fail(e); }
+  async function moveTo(key, stage) {
+    const x = findItem(key); if (!x || x.stage === stage) return;
+    try { await saveItem({ ...x, stage }); if (!db) update(); toast(`Dipindah ke ${(x.kind === "video" ? VSTAGES : TSTAGES).find((s) => s.id === stage).name}`); } catch (e) { fail(e); }
   }
 
-  function showView(v) {
-    for (const t of document.querySelectorAll(".tab")) t.setAttribute("aria-selected", String(t.dataset.view === v));
-    $("#view-pipeline").hidden = v !== "pipeline";
-    $("#view-hooks").hidden = v !== "hooks";
-    $("#view-style").hidden = v !== "style";
-    try { localStorage.setItem("rs-view", v); } catch (_) {}
+  function go(v) { if (!VIEWS.includes(v)) v = "overview"; if (location.hash !== "#" + v) history.replaceState(null, "", "#" + v); view = v; closeSide(); mount(); window.scrollTo(0, 0); }
+  window.addEventListener("hashchange", () => { const v = location.hash.slice(1); if (v !== view) { view = VIEWS.includes(v) ? v : "overview"; closeSide(); mount(); window.scrollTo(0, 0); } });
+  const openSide = () => { $("#side").classList.add("open"); $("#scrim").hidden = false; $("#close-side").hidden = false; };
+  const closeSide = () => { $("#side").classList.remove("open"); $("#scrim").hidden = true; $("#close-side").hidden = true; };
+
+  async function copyText(text, node) {
+    try { await navigator.clipboard.writeText(text); toast("Disalin"); }
+    catch (_) { if (node) { const r = document.createRange(); r.selectNodeContents(node); const s = getSelection(); s.removeAllRanges(); s.addRange(r); } toast("Tekan Ctrl+C untuk salin"); }
   }
 
   document.addEventListener("click", async (ev) => {
-    const t = ev.target.closest("button, [data-open]");
-    if (!t) return;
-    if (t.dataset.view) return showView(t.dataset.view);
-    if (t.id === "btn-new") return newProject();
-    if (t.dataset.jump) {
-      showView("pipeline");
-      const col = document.querySelector(`.col[data-stage="${t.dataset.jump}"]`);
-      col?.scrollIntoView({ behavior: "auto", block: "nearest", inline: "center" });
-      return;
-    }
-    if (t.dataset.open) return openProject(t.dataset.open);
-    if (t.dataset.filter) { fmtFilter = t.dataset.filter; renderFilter(); renderBoard(); return; }
-    if (t.id === "tgt-minus" || t.id === "tgt-plus") {
+    const t = ev.target.closest("button, a[href^='#'], [data-open]");
+    if (!t) { if (!ev.target.closest(".search")) $("#results").hidden = true; return; }
+    if (t.matches("a[href^='#']") && !t.dataset.open) { ev.preventDefault(); go(t.getAttribute("href").slice(1)); return; }
+    if (t.id === "open-side") return openSide();
+    if (t.id === "close-side") return closeSide();
+    if (t.id === "bell") { go("overview"); setTimeout(() => $("#ov-attn")?.scrollIntoView({ behavior: "auto", block: "center" }), 0); return; }
+    if (t.id === "quick-new") return newItem(AGENTS[view] ? view : "video");
+    if (t.dataset.newfor) return newItem(t.dataset.newfor);
+    if (t.dataset.open) { $("#results").hidden = true; $("#q").value = ""; return openItem(t.dataset.open); }
+    if (t.dataset.jumpcol) { document.querySelector(`.col[data-stage="${t.dataset.jumpcol}"]`)?.scrollIntoView({ behavior: "auto", block: "nearest", inline: "center" }); return; }
+    if (t.dataset.filter) { fmtFilter = t.dataset.filter; renderFilter(); renderVideoBoard(); return; }
+    if (t.dataset.copy) return copyText($("#" + t.dataset.copy).textContent, $("#" + t.dataset.copy));
+    if (t.dataset.usef !== undefined) { const i = $("#hook-text"); i.value = FORMULAS[+t.dataset.usef].tpl; i.focus(); return; }
+    if (t.dataset.usehook) { const h = hooks.find((x) => x.id === t.dataset.usehook); return newItem("video", { hook: h?.text || "" }); }
+    if (t.dataset.delhook) { try { await deleteHook(t.dataset.delhook); if (!db) update(); } catch (e) { fail(e); } return; }
+    const act = t.dataset.act;
+    if (act === "refresh") { update(); toast("Dikemas kini"); return; }
+    if (act === "new") return newItem(view);
+    if (act === "tgt-" || act === "tgt+") {
       if (readOnly) return;
-      settings.weeklyTarget = Math.max(1, Math.min(21, (settings.weeklyTarget || 4) + (t.id === "tgt-plus" ? 1 : -1)));
-      renderRail(); renderKpis();
-      clearTimeout(window.__tgtT); window.__tgtT = setTimeout(() => saveSettings().catch(fail), 600);
-      return;
+      settings.weeklyTarget = Math.max(1, Math.min(21, (settings.weeklyTarget || 4) + (act === "tgt+" ? 1 : -1)));
+      renderTarget(); clearTimeout(window.__tgt); window.__tgt = setTimeout(() => { if (db) db.doc("settings/main").set(settings).catch(fail); }, 600); return;
     }
-    if (t.dataset.usef !== undefined) { const f = FORMULAS[+t.dataset.usef]; $("#hook-text").value = f.tpl; $("#hook-text").focus(); return; }
-    if (t.dataset.usehook) { const h = hooks.find((x) => x.id === t.dataset.usehook); return newProject({ hook: h?.text || "" }); }
-    if (t.dataset.delhook) { try { await deleteHook(t.dataset.delhook); if (!db) renderHooks(); } catch (e) { fail(e); } return; }
     if (!draft) return;
     if (t.dataset.fmt) { draft.format = t.dataset.fmt; draft.style = FORMATS[t.dataset.fmt].style; return renderDrawer(); }
-    if (t.dataset.plat) { const s = new Set(draft.platforms || []); s.has(t.dataset.plat) ? s.delete(t.dataset.plat) : s.add(t.dataset.plat); draft.platforms = [...s]; return renderDrawer(); }
-    const act = t.dataset.act;
-    if (act === "close") { draft = null; selectedId = null; renderBoard(); renderDrawer(); }
-    else if (act === "save") commit(false);
-    else if (act === "advance") { const i = STAGES.findIndex((s) => s.id === draft.stage); draft.stage = STAGES[Math.min(STAGES.length - 1, i + 1)].id; await commit(false); }
+    if (t.dataset.seg) { draft[t.dataset.seg] = t.dataset.val; return renderDrawer(); }
+    if (t.dataset.multi) { const s = new Set(draft[t.dataset.multi] || []); s.has(t.dataset.val) ? s.delete(t.dataset.val) : s.add(t.dataset.val); draft[t.dataset.multi] = [...s]; return renderDrawer(); }
+    if (act === "close") { draft = null; selectedKey = null; update(); renderDrawer(); }
+    else if (act === "save") commit();
+    else if (act === "advance") { const st = draft.kind === "video" ? VSTAGES : TSTAGES; const i = st.findIndex((s) => s.id === draft.stage); draft.stage = st[Math.min(st.length - 1, i + 1)].id; await commit(); }
     else if (act === "delete") {
       if (t.dataset.confirm !== "1") { t.dataset.confirm = "1"; t.textContent = "Tekan sekali lagi untuk padam"; return; }
-      try { await deleteProject(draft.id); draft = null; selectedId = null; if (!db) renderAll(); else { renderBoard(); renderDrawer(); } toast("Dipadam"); } catch (e) { fail(e); }
-    } else if (act === "copy") {
-      const text = agentPrompt(draft);
-      try { await navigator.clipboard.writeText(text); toast("Arahan disalin"); }
-      catch (_) { const r = document.createRange(); r.selectNodeContents($("#prompt")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Tekan Ctrl+C untuk salin"); }
-    }
+      try { await deleteItem(draft); draft = null; selectedKey = null; update(); renderDrawer(); toast("Dipadam"); } catch (e) { fail(e); }
+    } else if (act === "copy") copyText(promptFor(draft), $("#prompt"));
   });
 
   document.addEventListener("input", (ev) => {
-    if (!draft) return;
     const el = ev.target;
+    if (el.id === "q") return renderSearch(el.value);
+    if (!draft) return;
     if (el.dataset.k) {
-      draft[el.dataset.k] = el.value;
+      draft[el.dataset.k] = el.type === "number" ? (el.value === "" ? "" : Number(el.value)) : el.value;
       if (el.dataset.k === "stage") return renderDrawer();
-      const pb = $("#prompt"); if (pb) pb.textContent = agentPrompt(draft);
-    } else if (el.dataset.stat) {
-      draft.stats = { ...(draft.stats || {}), [el.dataset.stat]: el.value === "" ? "" : Number(el.value) };
-    }
+      const pb = $("#prompt"); if (pb) pb.textContent = promptFor(draft);
+    } else if (el.dataset.stat) draft.stats = { ...(draft.stats || {}), [el.dataset.stat]: el.value === "" ? "" : Number(el.value) };
   });
   document.addEventListener("change", (ev) => {
     const el = ev.target;
+    if (el.id === "period") { period = el.value; try { localStorage.setItem("as-period", period); } catch (_) {} update(); return; }
+    if (draft && el.dataset.k && el.tagName === "SELECT" && el.dataset.k !== "stage") { draft[el.dataset.k] = el.value; const pb = $("#prompt"); if (pb) pb.textContent = promptFor(draft); }
     if (!draft || !el.dataset.check) return;
     draft.checks = { ...(draft.checks || {}), [el.dataset.check]: el.checked };
     el.closest(".check").classList.toggle("done", el.checked);
-    if (!draft.isNew) commit(false);
+    if (!draft.isNew) commit();
   });
-
-  $("#hook-form").addEventListener("submit", async (ev) => {
+  document.addEventListener("submit", async (ev) => {
+    if (ev.target.id !== "hook-form") return;
     ev.preventDefault();
-    const v = $("#hook-text").value.trim();
-    if (!v) return;
+    const v = $("#hook-text").value.trim(); if (!v) return;
     if (readOnly) return toast("Paparan baca sahaja");
-    try { await addHook(v); $("#hook-text").value = ""; if (!db) renderHooks(); toast("Hook disimpan"); } catch (e) { fail(e); }
+    try { await addHook(v); $("#hook-text").value = ""; if (!db) update(); toast("Hook disimpan"); } catch (e) { fail(e); }
   });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { $("#results").hidden = true; closeSide(); } });
+  $("#scrim").addEventListener("click", closeSide);
 
-  // drag & drop between columns
-  let dragId = null;
-  document.addEventListener("dragstart", (e) => { const c = e.target.closest?.(".card"); if (!c || readOnly) return; dragId = c.dataset.id; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", dragId); });
-  document.addEventListener("dragover", (e) => { const col = e.target.closest?.(".col"); if (!col || !dragId) return; e.preventDefault(); document.querySelectorAll(".col.drop").forEach((x) => x !== col && x.classList.remove("drop")); col.classList.add("drop"); });
+  function renderSearch(q) {
+    const r = $("#results"); q = q.trim().toLowerCase();
+    if (!q) { r.hidden = true; return; }
+    const hits = allItems().filter((x) => [x.title, x.capcut, x.hook, x.headline, x.product, x.notes].some((v) => String(v || "").toLowerCase().includes(q))).slice(0, 8);
+    r.innerHTML = hits.length ? hits.map((x) => `<button type="button" data-open="${x.kind}:${x.id}"><span style="width:8px;height:8px;border-radius:50%;background:${itemColor(x)}"></span><span>${esc(x.title)}</span><small>${esc(AGENTS[x.agent]?.short)} · ${esc(stageName(x))}</small></button>`).join("") : `<div class="note" style="padding:10px">Tiada yang sepadan dengan “${esc(q)}”.</div>`;
+    r.hidden = false;
+  }
+
+  // drag & drop
+  let dragKey = null;
+  document.addEventListener("dragstart", (e) => { const c = e.target.closest?.(".card"); if (!c || readOnly) return; dragKey = c.dataset.key; e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", dragKey); });
+  document.addEventListener("dragover", (e) => { const col = e.target.closest?.(".col"); if (!col || !dragKey) return; e.preventDefault(); document.querySelectorAll(".col.drop").forEach((x) => x !== col && x.classList.remove("drop")); col.classList.add("drop"); });
   document.addEventListener("dragleave", (e) => { const col = e.target.closest?.(".col"); if (col && !col.contains(e.relatedTarget)) col.classList.remove("drop"); });
-  document.addEventListener("drop", (e) => { const col = e.target.closest?.(".col"); document.querySelectorAll(".col.drop").forEach((x) => x.classList.remove("drop")); if (!col || !dragId) return; e.preventDefault(); const id = dragId; dragId = null; moveTo(id, col.dataset.stage); });
-  document.addEventListener("dragend", () => { dragId = null; document.querySelectorAll(".col.drop").forEach((x) => x.classList.remove("drop")); });
+  document.addEventListener("drop", (e) => { const col = e.target.closest?.(".col"); document.querySelectorAll(".col.drop").forEach((x) => x.classList.remove("drop")); if (!col || !dragKey) return; e.preventDefault(); const k = dragKey; dragKey = null; moveTo(k, col.dataset.stage); });
+  document.addEventListener("dragend", () => { dragKey = null; document.querySelectorAll(".col.drop").forEach((x) => x.classList.remove("drop")); });
 
-  // ---- boot
-  try { const v = localStorage.getItem("rs-view"); if (v === "hooks" || v === "style") showView(v); } catch (_) {}
-  renderFormats();
-  renderAll();
+  // ------------------------------------------------------------------ boot
+  { const h = location.hash.slice(1); view = VIEWS.includes(h) ? h : "overview"; }
+  mount();
 
   (async () => {
-    let timer = setTimeout(() => setStatus("", "Storan lambat menjawab…"), 10000);
+    const timer = setTimeout(() => setStatus("", "Storan lambat menjawab…"), 10000);
     db = window.claude?.use ? await window.claude.use("db").catch(() => null) : null;
-    if (!db) {
-      clearTimeout(timer);
-      setStatus("off", "Mod sementara: data tak disimpan");
-      return;
-    }
-    let pending = 3;
+    if (!db) { clearTimeout(timer); setStatus("off", "Mod sementara: data tak disimpan"); return; }
+    let pending = 4;
     const ready = (fromCache) => { if (fromCache) return; if (--pending <= 0) { clearTimeout(timer); setStatus("ok", "Tersimpan"); } };
     const err = () => { clearTimeout(timer); setStatus("off", "Storan terputus. Muat semula halaman."); };
-    db.collection("projects").onSnapshot((snap) => {
-      projects = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-      if (selectedId && !projects.find((p) => p.id === selectedId)) { selectedId = null; draft = null; }
-      renderRail(); renderKpis(); renderWeek(); renderBoard();
-      if (!draft) renderDrawer();
-      ready(snap.metadata.fromCache);
-    }, err);
-    db.collection("hooks").orderBy("created", "desc").onSnapshot((snap) => {
-      hooks = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-      renderHooks(); ready(snap.metadata.fromCache);
-    }, err);
-    db.doc("settings/main").onSnapshot((snap) => {
-      if (snap.exists) settings = { weeklyTarget: 4, ...snap.data() };
-      renderRail(); renderKpis(); ready(snap.metadata.fromCache);
-    }, err);
+    const keepDraft = () => { if (draft && !draft.isNew && !findItem(selectedKey)) { draft = null; selectedKey = null; renderDrawer(); } };
+    db.collection("projects").onSnapshot((s) => { projects = s.docs.map((d) => ({ id: d.id, ...d.data() })); keepDraft(); update(); ready(s.metadata.fromCache); }, err);
+    db.collection("tasks").onSnapshot((s) => { tasks = s.docs.map((d) => ({ id: d.id, ...d.data() })).filter((t) => AGENTS[t.agent] && t.agent !== "video"); keepDraft(); update(); ready(s.metadata.fromCache); }, err);
+    db.collection("hooks").orderBy("created", "desc").onSnapshot((s) => { hooks = s.docs.map((d) => ({ id: d.id, ...d.data() })); update(); ready(s.metadata.fromCache); }, err);
+    db.doc("settings/main").onSnapshot((s) => { if (s.exists) settings = { weeklyTarget: 4, ...s.data() }; if (view === "video") renderTarget(); ready(s.metadata.fromCache); }, err);
   })();
 })();
 </script>
