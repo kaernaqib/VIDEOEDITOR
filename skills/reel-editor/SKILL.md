@@ -1,6 +1,6 @@
 ---
 name: reel-editor
-description: Edit a vertical 9:16 Reel / TikTok / Short inside the user's own CapCut project, in one of two house styles (Authority talking-head or Cinematic Story) and one of four formats (Education, Vlog, Do & Don't, Before/After). Cuts silences, fillers and bad takes, adds word-by-word captions with yellow keyword pops, punch-ins, listicle headers, B-roll (own folder, Pexels, or AI), music and SFX, masters the voice to -14 LUFS, makes a thumbnail, and posts via Zernio after one approval. Use when the user says "edit reel", "edit video aku", "/edit-reel", gives a CapCut project/folder name, or asks to make a reel in their style.
+description: Edit a vertical 9:16 Reel / TikTok / Short inside the user's own CapCut project, in one of two house styles (Authority talking-head or Cinematic Story) and one of four formats (Education, Vlog, Do & Don't, Before/After). Cuts silences, fillers and bad takes, adds word-by-word captions with yellow keyword pops, punch-ins, listicle headers, B-roll (own folder, Pixabay/Pexels stock, or AI), music and SFX, masters the voice to -14 LUFS, makes a thumbnail, and posts via Zernio after one approval. Use when the user says "edit reel", "edit video aku", "/edit-reel", gives a CapCut project/folder name, or asks to make a reel in their style.
 ---
 
 # Reel Editor
