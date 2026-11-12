@@ -1,0 +1,72 @@
+{
+ "name": "Deposit Bonus",
+ "src": "/home/user/reels/src/bonus.mov",
+ "work": "/home/user/reels/work/bonus",
+ "words": "words_l.json",
+ "fix": {
+  "2": "Deposit",
+  "23": "Weby",
+  "109": "Weby",
+  "55": "1000%",
+  "56": "",
+  "61": "100%",
+  "62": "",
+  "75": "100%",
+  "76": "",
+  "54": "dollar",
+  "47": "1000%",
+  "64": "1000%",
+  "8": "jangan"
+ },
+ "drop": [
+  [
+   0,
+   1,
+   "Untuk part"
+  ],
+  [
+   5,
+   6,
+   "bagi aku"
+  ],
+  [
+   37,
+   43,
+   "aku tak nak mention broker apa"
+  ]
+ ],
+ "keywords": [
+  14,
+  20,
+  30,
+  32,
+  47,
+  59,
+  68,
+  88,
+  95,
+  98,
+  113,
+  123
+ ],
+ "title": [
+  "Deposit Bonus",
+  "Bagus Atau Tak?"
+ ],
+ "face": {
+  "x": 340,
+  "top": 200
+ },
+ "remove_time": [
+  [
+   5.05,
+   6.72,
+   "retake: dia depend dengan"
+  ],
+  [
+   21.25,
+   22.12,
+   "filler: Ha"
+  ]
+ ]
+}

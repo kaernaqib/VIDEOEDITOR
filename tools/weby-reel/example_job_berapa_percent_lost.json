@@ -1,0 +1,6 @@
+{"name": "Berapa Percent Lost", "src": "/home/user/reels/src/lost.mov", "work": "/home/user/reels/work/lost", "words": "words_l.json",
+ "fix": {"10": "Depend", "27": "inginkan", "33": "5%", "34": "", "36": "drawdown", "37": "", "39": "drawdown", "40": "", "42": "5%", "43": "", "151": "betul-betul", "152": "", "155": "betul-betul", "156": "", "188": "cent.", "194": "cent,", "171": "dulu."},
+ "drop": [[90, 146, "rambling about setups"], [170, 170, "repeated dulu"], [214, 216, "ataupun kau pergi"]],
+ "keywords": [5, 9, 18, 22, 24, 29, 33, 36, 52, 55, 57, 65, 73, 75, 84, 154, 163, 169, 176, 188, 196, 203, 211, 221],
+ "title": ["Berapa Percent Nak Letak", "Bila Kita Lost?"],
+ "face": {"x": 400, "top": 240}}
