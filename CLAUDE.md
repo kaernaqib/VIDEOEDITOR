@@ -31,6 +31,6 @@ Skill yang dipakai sebenarnya disalin ke `~/.claude/skills/`. Kalau ubah skill d
 
 <!-- Kemas kini bahagian ni hujung setiap sesi kerja. Ringkas: apa siap, apa seterusnya. -->
 
-- Projek CapCut aktif: **1228** (vlog Melbourne 29 minit) dipecah jadi 15 reel. Subtitle dan hook dah dibetulkan. v2 (16 Nov): framing muka dikecilkan (latar blur) dan B-roll dibuang; preview v2 dalam `reels_v2/`. Menunggu orang tu semak dan kata "Pasang" atau "Ubah reel X".
+- Projek CapCut aktif: **1228** (vlog Melbourne 29 minit) dipecah jadi 15 reel. Subtitle dan hook dah dibetulkan. v2 (16 Nov): framing muka dikecilkan (latar blur) dan B-roll dibuang; preview v2 dalam `reels_v2/`. Dah dipasang ke CapCut sebagai "1228 Reel 01 - ..." hingga "1228 Reel 15 - ...". Poin 1 permintaan orang tu masih belum diketahui.
 - Butiran penuh dan lokasi fail: `.claude/handoffs/2026-11-16-capcut-1228.md`.
 - Nota handoff terkini: lihat fail paling baru dalam `.claude/handoffs/`.
