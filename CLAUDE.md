@@ -19,6 +19,12 @@ Skill yang dipakai sebenarnya disalin ke `~/.claude/skills/`. Kalau ubah skill d
 - Output render (`renders/`, `*.mp4`, `*.mov`) tak masuk git.
 - Projek CapCut sendiri ada dalam folder CapCut kat PC, bukan dalam repo ni.
 
+## Simpan video
+
+- Video yang dah siap edit: copy ke `D:\Video\<nama projek>\` (hard disk ADATA SSD, drive D:). Guna copy, bukan move, dan semak saiz fail sama selepas copy.
+- Jangan simpan video dalam Google Drive (storan terhad) atau dalam repo.
+- Kalau drive D: tak ada, berhenti dan beritahu orang tu. Jangan simpan di tempat lain tanpa tanya.
+
 ## Cara sambung kerja (jimat token)
 
 1. Chat baru: buka dalam folder repo ni. Claude baca `CLAUDE.md`, kemudian nota terbaru dalam `.claude/handoffs/`.
