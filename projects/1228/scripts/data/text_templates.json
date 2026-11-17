@@ -1,0 +1,1096 @@
+{
+ "source": [
+  "C:\\Users\\USER\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\1015\\draft_content.json",
+  "C:\\Users\\USER\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\0824\\draft_content.json",
+  "C:\\Users\\USER\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\claude test\\draft_content.json",
+  "C:\\Users\\USER\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\0922\\draft_content.json",
+  "C:\\Users\\USER\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\1001\\draft_content.json",
+  "C:\\Users\\USER\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\1229\\draft_content.json",
+  "C:\\Users\\USER\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\0925\\draft_content.json",
+  "C:\\Users\\USER\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\0202\\draft_content.json",
+  "C:\\Users\\USER\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\1211\\draft_content.json",
+  "C:\\Users\\USER\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\1228\\draft_content.json",
+  "C:\\Users\\USER\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\0123 (1)\\draft_content.json",
+  "C:\\Users\\USER\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\GBE FLIP ACCOUNT\\draft_content.json",
+  "C:\\Users\\USER\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\0314\\draft_content.json"
+ ],
+ "title": {
+  "track": {
+   "id": "F5AF37BD-9E60-4dd8-9F94-3DF712246898",
+   "type": "text",
+   "flag": 1,
+   "attribute": 0,
+   "name": "",
+   "is_default_name": true
+  },
+  "segment": {
+   "id": "39E5F2C6-35FB-4b17-A5A8-C704CDF27AEF",
+   "source_timerange": null,
+   "target_timerange": {
+    "start": 28133333,
+    "duration": 3000000
+   },
+   "render_timerange": {
+    "start": 0,
+    "duration": 0
+   },
+   "desc": "",
+   "state": 0,
+   "speed": 1.0,
+   "is_loop": false,
+   "is_tone_modify": false,
+   "reverse": false,
+   "intensifies_audio": false,
+   "cartoon": false,
+   "volume": 1.0,
+   "last_nonzero_volume": 1.0,
+   "clip": {
+    "scale": {
+     "x": 0.3929560923562472,
+     "y": 0.3929560923562472
+    },
+    "rotation": 0.0,
+    "transform": {
+     "x": 0.0,
+     "y": -0.6402349486049927
+    },
+    "flip": {
+     "vertical": false,
+     "horizontal": false
+    },
+    "alpha": 1.0
+   },
+   "uniform_scale": {
+    "on": true,
+    "value": 1.0
+   },
+   "material_id": "61E988A9-809E-4a0b-A174-2D0D6E02A1D8",
+   "extra_material_refs": [
+    "B974C0DB-0928-4156-B2A5-202A9CA32827"
+   ],
+   "render_index": 14013,
+   "keyframe_refs": [],
+   "enable_lut": false,
+   "enable_adjust": false,
+   "enable_hsl": false,
+   "visible": true,
+   "group_id": "",
+   "enable_color_curves": true,
+   "enable_hsl_curves": true,
+   "track_render_index": 1,
+   "hdr_settings": null,
+   "hdr_vivid_settings": null,
+   "enable_color_wheels": true,
+   "track_attribute": 0,
+   "is_placeholder": false,
+   "template_id": "",
+   "enable_smart_color_adjust": false,
+   "template_scene": "default",
+   "common_keyframes": [],
+   "caption_info": null,
+   "responsive_layout": {
+    "enable": false,
+    "target_follow": "",
+    "size_layout": 0,
+    "horizontal_pos_layout": 0,
+    "vertical_pos_layout": 0
+   },
+   "enable_color_match_adjust": false,
+   "enable_color_correct_adjust": false,
+   "enable_adjust_mask": false,
+   "raw_segment_id": "",
+   "lyric_keyframes": null,
+   "enable_video_mask": true,
+   "digital_human_template_group_id": "",
+   "color_correct_alg_result": "",
+   "source": "segmentsourcenormal",
+   "enable_mask_stroke": false,
+   "enable_mask_shadow": false,
+   "enable_color_adjust_pro": false,
+   "segment_color_tag": ""
+  },
+  "material": {
+   "recognize_task_id": "",
+   "id": "61E988A9-809E-4a0b-A174-2D0D6E02A1D8",
+   "name": "",
+   "recognize_text": "",
+   "recognize_model": "",
+   "punc_model": "",
+   "type": "text",
+   "content": "{\"text\":\"Follow @webymarkets for more marketing insights.\\nWebsite :  webymarkets.com\",\"styles\":[{\"fill\":{\"content\":{\"render_type\":\"solid\",\"solid\":{\"color\":[1,1,1]}}},\"font\":{\"path\":\"C:/Users/USER/AppData/Local/CapCut/Apps/9.6.0.4097/Resources/Font/SystemFont/en.ttf\",\"id\":\"\"},\"size\":15,\"useLetterColor\":true,\"range\":[0,75]}]}",
+   "base_content": "",
+   "words": {
+    "start_time": [],
+    "end_time": [],
+    "text": []
+   },
+   "current_words": {
+    "start_time": [],
+    "end_time": [],
+    "text": []
+   },
+   "global_alpha": 1.0,
+   "combo_info": {
+    "text_templates": []
+   },
+   "caption_template_info": {
+    "resource_id": "",
+    "third_resource_id": "",
+    "resource_name": "",
+    "category_id": "",
+    "category_name": "",
+    "effect_id": "",
+    "request_id": "",
+    "path": "",
+    "is_new": false,
+    "source_platform": 0
+   },
+   "layer_weight": 1,
+   "letter_spacing": 0.0,
+   "text_curve": null,
+   "text_loop_on_path": false,
+   "offset_on_path": 0.0,
+   "enable_path_typesetting": false,
+   "text_exceeds_path_process_type": 0,
+   "text_typesetting_paths": null,
+   "text_typesetting_paths_file": "",
+   "text_typesetting_path_index": 0,
+   "line_spacing": 0.02,
+   "has_shadow": false,
+   "shadow_color": "",
+   "shadow_alpha": 0.9,
+   "shadow_smoothing": 0.45,
+   "shadow_distance": 5.0,
+   "shadow_point": {
+    "x": 0.6363961030678928,
+    "y": -0.6363961030678928
+   },
+   "shadow_angle": -45.0,
+   "shadow_thickness_projection_enable": false,
+   "shadow_thickness_projection_angle": 0.0,
+   "shadow_thickness_projection_distance": 0.0,
+   "border_alpha": 1.0,
+   "border_color": "#ffffff",
+   "border_width": 0.08,
+   "border_mode": 0,
+   "style_name": "",
+   "text_color": "#ffffff",
+   "text_alpha": 1.0,
+   "font_name": "",
+   "font_title": "none",
+   "font_size": 15.0,
+   "font_path": "C:/Users/USER/AppData/Local/CapCut/Apps/9.6.0.4097/Resources/Font/SystemFont/en.ttf",
+   "font_id": "",
+   "font_resource_id": "",
+   "initial_scale": 1.0,
+   "font_url": "",
+   "typesetting": 0,
+   "alignment": 1,
+   "line_feed": 1,
+   "use_effect_default_color": true,
+   "is_rich_text": false,
+   "shape_clip_x": false,
+   "shape_clip_y": false,
+   "ktv_color": "",
+   "text_to_audio_ids": [],
+   "bold_width": 0.0,
+   "italic_degree": 0,
+   "underline": false,
+   "underline_width": 0.05,
+   "underline_offset": 0.22,
+   "sub_type": 0,
+   "check_flag": 31,
+   "text_size": 30,
+   "font_category_name": "",
+   "font_source_platform": 0,
+   "font_third_resource_id": "",
+   "font_category_id": "",
+   "add_type": 0,
+   "operation_type": 0,
+   "recognize_type": 0,
+   "fonts": [],
+   "background_color": "#000000",
+   "background_alpha": 1.0,
+   "background_style": 1,
+   "background_round_radius": 0.4000000059604645,
+   "background_width": 0.2800000011920929,
+   "background_height": 0.2800000011920929,
+   "background_vertical_offset": 0.0,
+   "background_horizontal_offset": 0.0,
+   "background_fill": "",
+   "single_char_bg_enable": false,
+   "single_char_bg_color": "",
+   "single_char_bg_alpha": 1.0,
+   "single_char_bg_round_radius": 0.3,
+   "single_char_bg_width": 0.0,
+   "single_char_bg_height": 0.0,
+   "single_char_bg_vertical_offset": 0.0,
+   "single_char_bg_horizontal_offset": 0.0,
+   "font_team_id": "",
+   "tts_auto_update": false,
+   "text_preset_resource_id": "",
+   "group_id": "",
+   "preset_id": "",
+   "preset_name": "",
+   "preset_category": "",
+   "preset_category_id": "",
+   "preset_index": 0,
+   "preset_has_set_alignment": false,
+   "force_apply_line_max_width": false,
+   "language": "",
+   "relevance_segment": [],
+   "original_size": [],
+   "fixed_width": -1.0,
+   "fixed_height": -1.0,
+   "autoAdaptCanvasEnabled": false,
+   "line_max_width": 0.82,
+   "oneline_cutoff": false,
+   "cutoff_postfix": "",
+   "subtitle_template_original_fontsize": 0.0,
+   "subtitle_keywords": null,
+   "inner_padding": -1.0,
+   "multi_language_current": "none",
+   "source_from": "",
+   "is_lyric_effect": false,
+   "lyric_group_id": "",
+   "lyrics_template": {
+    "resource_id": "",
+    "resource_name": "",
+    "panel": "",
+    "effect_id": "",
+    "path": "",
+    "category_id": "",
+    "category_name": "",
+    "request_id": ""
+   },
+   "is_batch_replace": false,
+   "is_words_linear": false,
+   "ssml_content": "",
+   "subtitle_keywords_config": null,
+   "sub_template_id": -1,
+   "translate_original_text": "",
+   "adjust_params": []
+  },
+  "refs": [
+   [
+    "material_animations",
+    {
+     "id": "B974C0DB-0928-4156-B2A5-202A9CA32827",
+     "type": "sticker_animation",
+     "animations": [],
+     "multi_language_current": "none"
+    }
+   ]
+  ],
+  "text": "Follow @webymarkets for more marketing insights.\nWebsite :  webymarkets.com",
+  "styles": [
+   {
+    "fill": {
+     "content": {
+      "render_type": "solid",
+      "solid": {
+       "color": [
+        1,
+        1,
+        1
+       ]
+      }
+     }
+    },
+    "font": {
+     "path": "C:/Users/USER/AppData/Local/CapCut/Apps/9.6.0.4097/Resources/Font/SystemFont/en.ttf",
+     "id": ""
+    },
+    "size": 15,
+    "useLetterColor": true,
+    "range": [
+     0,
+     75
+    ]
+   }
+  ]
+ },
+ "caption": {
+  "track": {
+   "id": "D9A561B9-E2DD-4d81-AEDB-368FA5C1BD3D",
+   "type": "text",
+   "flag": 0,
+   "attribute": 0,
+   "name": "",
+   "is_default_name": true
+  },
+  "segment": {
+   "id": "1200EA3E-6285-4e7a-8065-DDF80C8F13B3",
+   "source_timerange": null,
+   "target_timerange": {
+    "start": 626533333,
+    "duration": 54166667
+   },
+   "render_timerange": {
+    "start": 0,
+    "duration": 0
+   },
+   "desc": "",
+   "state": 0,
+   "speed": 1.0,
+   "is_loop": false,
+   "is_tone_modify": false,
+   "reverse": false,
+   "intensifies_audio": false,
+   "cartoon": false,
+   "volume": 1.0,
+   "last_nonzero_volume": 1.0,
+   "clip": {
+    "scale": {
+     "x": 0.78,
+     "y": 0.78
+    },
+    "rotation": 0.0,
+    "transform": {
+     "x": 0.0,
+     "y": -0.52
+    },
+    "flip": {
+     "vertical": false,
+     "horizontal": false
+    },
+    "alpha": 1.0
+   },
+   "uniform_scale": {
+    "on": true,
+    "value": 1.0
+   },
+   "material_id": "1B9A88F8-2843-4c28-A9FF-9ED992F30B71",
+   "extra_material_refs": [
+    "D7E69CF7-A89B-4824-8244-9A23AAFE0076"
+   ],
+   "render_index": 14031,
+   "keyframe_refs": [],
+   "enable_lut": false,
+   "enable_adjust": false,
+   "enable_hsl": false,
+   "visible": true,
+   "group_id": "",
+   "enable_color_curves": true,
+   "enable_hsl_curves": true,
+   "track_render_index": 3,
+   "hdr_settings": null,
+   "hdr_vivid_settings": null,
+   "enable_color_wheels": true,
+   "track_attribute": 0,
+   "is_placeholder": false,
+   "template_id": "",
+   "enable_smart_color_adjust": false,
+   "template_scene": "default",
+   "common_keyframes": [],
+   "caption_info": null,
+   "responsive_layout": {
+    "enable": false,
+    "target_follow": "",
+    "size_layout": 0,
+    "horizontal_pos_layout": 0,
+    "vertical_pos_layout": 0
+   },
+   "enable_color_match_adjust": false,
+   "enable_color_correct_adjust": false,
+   "enable_adjust_mask": false,
+   "raw_segment_id": "",
+   "lyric_keyframes": null,
+   "enable_video_mask": true,
+   "digital_human_template_group_id": "",
+   "color_correct_alg_result": "",
+   "source": "segmentsourcenormal",
+   "enable_mask_stroke": false,
+   "enable_mask_shadow": false,
+   "enable_color_adjust_pro": false,
+   "segment_color_tag": ""
+  },
+  "material": {
+   "recognize_task_id": "",
+   "id": "1B9A88F8-2843-4c28-A9FF-9ED992F30B71",
+   "name": "",
+   "recognize_text": "",
+   "recognize_model": "",
+   "punc_model": "",
+   "type": "text",
+   "content": "{\"text\":\"Cara Buli Perempuan\\n Lagi Teruk Dari Lelaki\",\"styles\":[{\"fill\":{\"content\":{\"render_type\":\"solid\",\"solid\":{\"color\":[1,1,1]}}},\"font\":{\"path\":\"C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf\",\"id\":\"7462282002201431301\"},\"size\":15,\"range\":[0,4]},{\"fill\":{\"content\":{\"render_type\":\"solid\",\"solid\":{\"color\":[0.93333333730697632,0.800000011920929,0.26274511218070984]}}},\"font\":{\"path\":\"C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf\",\"id\":\"7462282002201431301\"},\"size\":15,\"useLetterColor\":true,\"range\":[4,31]},{\"fill\":{\"content\":{\"render_type\":\"solid\",\"solid\":{\"color\":[1,1,1]}}},\"font\":{\"path\":\"C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf\",\"id\":\"7462282002201431301\"},\"size\":15,\"range\":[31,43]}]}",
+   "base_content": "",
+   "words": {
+    "start_time": [],
+    "end_time": [],
+    "text": []
+   },
+   "current_words": {
+    "start_time": [],
+    "end_time": [],
+    "text": []
+   },
+   "global_alpha": 1.0,
+   "combo_info": {
+    "text_templates": []
+   },
+   "caption_template_info": {
+    "resource_id": "",
+    "third_resource_id": "",
+    "resource_name": "",
+    "category_id": "",
+    "category_name": "",
+    "effect_id": "",
+    "request_id": "",
+    "path": "",
+    "is_new": false,
+    "source_platform": 0
+   },
+   "layer_weight": 1,
+   "letter_spacing": 0.0,
+   "text_curve": null,
+   "text_loop_on_path": false,
+   "offset_on_path": 0.0,
+   "enable_path_typesetting": false,
+   "text_exceeds_path_process_type": 0,
+   "text_typesetting_paths": null,
+   "text_typesetting_paths_file": "",
+   "text_typesetting_path_index": 0,
+   "line_spacing": 0.02,
+   "has_shadow": false,
+   "shadow_color": "",
+   "shadow_alpha": 0.9,
+   "shadow_smoothing": 0.45,
+   "shadow_distance": 5.0,
+   "shadow_point": {
+    "x": 0.6363961030678928,
+    "y": -0.6363961030678928
+   },
+   "shadow_angle": -45.0,
+   "shadow_thickness_projection_enable": false,
+   "shadow_thickness_projection_angle": 0.0,
+   "shadow_thickness_projection_distance": 0.0,
+   "border_alpha": 1.0,
+   "border_color": "",
+   "border_width": 0.08,
+   "border_mode": 0,
+   "style_name": "",
+   "text_color": "#eecc43",
+   "text_alpha": 1.0,
+   "font_name": "",
+   "font_title": "none",
+   "font_size": 15.0,
+   "font_path": "C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf",
+   "font_id": "",
+   "font_resource_id": "7462282002201431301",
+   "initial_scale": 1.0,
+   "font_url": "",
+   "typesetting": 0,
+   "alignment": 1,
+   "line_feed": 1,
+   "use_effect_default_color": false,
+   "is_rich_text": true,
+   "shape_clip_x": false,
+   "shape_clip_y": false,
+   "ktv_color": "",
+   "text_to_audio_ids": [],
+   "bold_width": 0.0,
+   "italic_degree": 0,
+   "underline": false,
+   "underline_width": 0.05,
+   "underline_offset": 0.22,
+   "sub_type": 0,
+   "check_flag": 7,
+   "text_size": 30,
+   "font_category_name": "",
+   "font_source_platform": 1,
+   "font_third_resource_id": "",
+   "font_category_id": "",
+   "add_type": 0,
+   "operation_type": 0,
+   "recognize_type": 0,
+   "fonts": [
+    {
+     "id": "8C2664B6-3735-4d68-BF82-1CFC170EAC88",
+     "resource_id": "7462282002201431301",
+     "third_resource_id": "",
+     "category_id": "",
+     "category_name": "",
+     "source_platform": 1,
+     "path": "C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf",
+     "effect_id": "7462282002201431301",
+     "title": "Uninsta-Heavy",
+     "team_id": "",
+     "file_uri": "",
+     "request_id": "202609221230466A0A728AC758A6083FF8"
+    }
+   ],
+   "background_color": "",
+   "background_alpha": 1.0,
+   "background_style": 0,
+   "background_round_radius": 0.0,
+   "background_width": 0.14,
+   "background_height": 0.14,
+   "background_vertical_offset": 0.0,
+   "background_horizontal_offset": 0.0,
+   "background_fill": "",
+   "single_char_bg_enable": false,
+   "single_char_bg_color": "",
+   "single_char_bg_alpha": 1.0,
+   "single_char_bg_round_radius": 0.3,
+   "single_char_bg_width": 0.0,
+   "single_char_bg_height": 0.0,
+   "single_char_bg_vertical_offset": 0.0,
+   "single_char_bg_horizontal_offset": 0.0,
+   "font_team_id": "",
+   "tts_auto_update": false,
+   "text_preset_resource_id": "",
+   "group_id": "",
+   "preset_id": "",
+   "preset_name": "",
+   "preset_category": "",
+   "preset_category_id": "",
+   "preset_index": 0,
+   "preset_has_set_alignment": false,
+   "force_apply_line_max_width": false,
+   "language": "",
+   "relevance_segment": [],
+   "original_size": [],
+   "fixed_width": -1.0,
+   "fixed_height": -1.0,
+   "autoAdaptCanvasEnabled": false,
+   "line_max_width": 0.82,
+   "oneline_cutoff": false,
+   "cutoff_postfix": "",
+   "subtitle_template_original_fontsize": 0.0,
+   "subtitle_keywords": null,
+   "inner_padding": -1.0,
+   "multi_language_current": "none",
+   "source_from": "",
+   "is_lyric_effect": false,
+   "lyric_group_id": "",
+   "lyrics_template": {
+    "resource_id": "",
+    "resource_name": "",
+    "panel": "",
+    "effect_id": "",
+    "path": "",
+    "category_id": "",
+    "category_name": "",
+    "request_id": ""
+   },
+   "is_batch_replace": false,
+   "is_words_linear": false,
+   "ssml_content": "",
+   "subtitle_keywords_config": null,
+   "sub_template_id": -1,
+   "translate_original_text": ""
+  },
+  "refs": [
+   [
+    "material_animations",
+    {
+     "id": "D7E69CF7-A89B-4824-8244-9A23AAFE0076",
+     "type": "sticker_animation",
+     "animations": [],
+     "multi_language_current": "none"
+    }
+   ]
+  ],
+  "text": "Cara Buli Perempuan\n Lagi Teruk Dari Lelaki",
+  "styles": [
+   {
+    "fill": {
+     "content": {
+      "render_type": "solid",
+      "solid": {
+       "color": [
+        1,
+        1,
+        1
+       ]
+      }
+     }
+    },
+    "font": {
+     "path": "C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf",
+     "id": "7462282002201431301"
+    },
+    "size": 15,
+    "range": [
+     0,
+     4
+    ]
+   },
+   {
+    "fill": {
+     "content": {
+      "render_type": "solid",
+      "solid": {
+       "color": [
+        0.9333333373069763,
+        0.800000011920929,
+        0.26274511218070984
+       ]
+      }
+     }
+    },
+    "font": {
+     "path": "C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf",
+     "id": "7462282002201431301"
+    },
+    "size": 15,
+    "useLetterColor": true,
+    "range": [
+     4,
+     31
+    ]
+   },
+   {
+    "fill": {
+     "content": {
+      "render_type": "solid",
+      "solid": {
+       "color": [
+        1,
+        1,
+        1
+       ]
+      }
+     }
+    },
+    "font": {
+     "path": "C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf",
+     "id": "7462282002201431301"
+    },
+    "size": 15,
+    "range": [
+     31,
+     43
+    ]
+   }
+  ],
+  "base_style": {
+   "fill": {
+    "content": {
+     "render_type": "solid",
+     "solid": {
+      "color": [
+       1,
+       1,
+       1
+      ]
+     }
+    }
+   },
+   "font": {
+    "path": "C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf",
+    "id": "7462282002201431301"
+   },
+   "size": 15,
+   "range": [
+    0,
+    4
+   ]
+  },
+  "hi_style": {
+   "fill": {
+    "content": {
+     "render_type": "solid",
+     "solid": {
+      "color": [
+       0.9333333373069763,
+       0.800000011920929,
+       0.26274511218070984
+      ]
+     }
+    }
+   },
+   "font": {
+    "path": "C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf",
+    "id": "7462282002201431301"
+   },
+   "size": 15,
+   "useLetterColor": true,
+   "range": [
+    4,
+    31
+   ]
+  }
+ },
+ "header": {
+  "track": {
+   "id": "D9A561B9-E2DD-4d81-AEDB-368FA5C1BD3D",
+   "type": "text",
+   "flag": 0,
+   "attribute": 0,
+   "name": "",
+   "is_default_name": true
+  },
+  "segment": {
+   "id": "1200EA3E-6285-4e7a-8065-DDF80C8F13B3",
+   "source_timerange": null,
+   "target_timerange": {
+    "start": 626533333,
+    "duration": 54166667
+   },
+   "render_timerange": {
+    "start": 0,
+    "duration": 0
+   },
+   "desc": "",
+   "state": 0,
+   "speed": 1.0,
+   "is_loop": false,
+   "is_tone_modify": false,
+   "reverse": false,
+   "intensifies_audio": false,
+   "cartoon": false,
+   "volume": 1.0,
+   "last_nonzero_volume": 1.0,
+   "clip": {
+    "scale": {
+     "x": 0.62,
+     "y": 0.62
+    },
+    "rotation": 0.0,
+    "transform": {
+     "x": 0.0,
+     "y": 0.7
+    },
+    "flip": {
+     "vertical": false,
+     "horizontal": false
+    },
+    "alpha": 1.0
+   },
+   "uniform_scale": {
+    "on": true,
+    "value": 1.0
+   },
+   "material_id": "1B9A88F8-2843-4c28-A9FF-9ED992F30B71",
+   "extra_material_refs": [
+    "D7E69CF7-A89B-4824-8244-9A23AAFE0076"
+   ],
+   "render_index": 14031,
+   "keyframe_refs": [],
+   "enable_lut": false,
+   "enable_adjust": false,
+   "enable_hsl": false,
+   "visible": true,
+   "group_id": "",
+   "enable_color_curves": true,
+   "enable_hsl_curves": true,
+   "track_render_index": 3,
+   "hdr_settings": null,
+   "hdr_vivid_settings": null,
+   "enable_color_wheels": true,
+   "track_attribute": 0,
+   "is_placeholder": false,
+   "template_id": "",
+   "enable_smart_color_adjust": false,
+   "template_scene": "default",
+   "common_keyframes": [],
+   "caption_info": null,
+   "responsive_layout": {
+    "enable": false,
+    "target_follow": "",
+    "size_layout": 0,
+    "horizontal_pos_layout": 0,
+    "vertical_pos_layout": 0
+   },
+   "enable_color_match_adjust": false,
+   "enable_color_correct_adjust": false,
+   "enable_adjust_mask": false,
+   "raw_segment_id": "",
+   "lyric_keyframes": null,
+   "enable_video_mask": true,
+   "digital_human_template_group_id": "",
+   "color_correct_alg_result": "",
+   "source": "segmentsourcenormal",
+   "enable_mask_stroke": false,
+   "enable_mask_shadow": false,
+   "enable_color_adjust_pro": false,
+   "segment_color_tag": ""
+  },
+  "material": {
+   "recognize_task_id": "",
+   "id": "1B9A88F8-2843-4c28-A9FF-9ED992F30B71",
+   "name": "",
+   "recognize_text": "",
+   "recognize_model": "",
+   "punc_model": "",
+   "type": "text",
+   "content": "{\"text\":\"Cara Buli Perempuan\\n Lagi Teruk Dari Lelaki\",\"styles\":[{\"fill\":{\"content\":{\"render_type\":\"solid\",\"solid\":{\"color\":[1,1,1]}}},\"font\":{\"path\":\"C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf\",\"id\":\"7462282002201431301\"},\"size\":15,\"range\":[0,4]},{\"fill\":{\"content\":{\"render_type\":\"solid\",\"solid\":{\"color\":[0.93333333730697632,0.800000011920929,0.26274511218070984]}}},\"font\":{\"path\":\"C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf\",\"id\":\"7462282002201431301\"},\"size\":15,\"useLetterColor\":true,\"range\":[4,31]},{\"fill\":{\"content\":{\"render_type\":\"solid\",\"solid\":{\"color\":[1,1,1]}}},\"font\":{\"path\":\"C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf\",\"id\":\"7462282002201431301\"},\"size\":15,\"range\":[31,43]}]}",
+   "base_content": "",
+   "words": {
+    "start_time": [],
+    "end_time": [],
+    "text": []
+   },
+   "current_words": {
+    "start_time": [],
+    "end_time": [],
+    "text": []
+   },
+   "global_alpha": 1.0,
+   "combo_info": {
+    "text_templates": []
+   },
+   "caption_template_info": {
+    "resource_id": "",
+    "third_resource_id": "",
+    "resource_name": "",
+    "category_id": "",
+    "category_name": "",
+    "effect_id": "",
+    "request_id": "",
+    "path": "",
+    "is_new": false,
+    "source_platform": 0
+   },
+   "layer_weight": 1,
+   "letter_spacing": 0.0,
+   "text_curve": null,
+   "text_loop_on_path": false,
+   "offset_on_path": 0.0,
+   "enable_path_typesetting": false,
+   "text_exceeds_path_process_type": 0,
+   "text_typesetting_paths": null,
+   "text_typesetting_paths_file": "",
+   "text_typesetting_path_index": 0,
+   "line_spacing": 0.02,
+   "has_shadow": false,
+   "shadow_color": "",
+   "shadow_alpha": 0.9,
+   "shadow_smoothing": 0.45,
+   "shadow_distance": 5.0,
+   "shadow_point": {
+    "x": 0.6363961030678928,
+    "y": -0.6363961030678928
+   },
+   "shadow_angle": -45.0,
+   "shadow_thickness_projection_enable": false,
+   "shadow_thickness_projection_angle": 0.0,
+   "shadow_thickness_projection_distance": 0.0,
+   "border_alpha": 1.0,
+   "border_color": "",
+   "border_width": 0.08,
+   "border_mode": 0,
+   "style_name": "",
+   "text_color": "#eecc43",
+   "text_alpha": 1.0,
+   "font_name": "",
+   "font_title": "none",
+   "font_size": 15.0,
+   "font_path": "C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf",
+   "font_id": "",
+   "font_resource_id": "7462282002201431301",
+   "initial_scale": 1.0,
+   "font_url": "",
+   "typesetting": 0,
+   "alignment": 1,
+   "line_feed": 1,
+   "use_effect_default_color": false,
+   "is_rich_text": true,
+   "shape_clip_x": false,
+   "shape_clip_y": false,
+   "ktv_color": "",
+   "text_to_audio_ids": [],
+   "bold_width": 0.0,
+   "italic_degree": 0,
+   "underline": false,
+   "underline_width": 0.05,
+   "underline_offset": 0.22,
+   "sub_type": 0,
+   "check_flag": 7,
+   "text_size": 30,
+   "font_category_name": "",
+   "font_source_platform": 1,
+   "font_third_resource_id": "",
+   "font_category_id": "",
+   "add_type": 0,
+   "operation_type": 0,
+   "recognize_type": 0,
+   "fonts": [
+    {
+     "id": "8C2664B6-3735-4d68-BF82-1CFC170EAC88",
+     "resource_id": "7462282002201431301",
+     "third_resource_id": "",
+     "category_id": "",
+     "category_name": "",
+     "source_platform": 1,
+     "path": "C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf",
+     "effect_id": "7462282002201431301",
+     "title": "Uninsta-Heavy",
+     "team_id": "",
+     "file_uri": "",
+     "request_id": "202609221230466A0A728AC758A6083FF8"
+    }
+   ],
+   "background_color": "",
+   "background_alpha": 1.0,
+   "background_style": 0,
+   "background_round_radius": 0.0,
+   "background_width": 0.14,
+   "background_height": 0.14,
+   "background_vertical_offset": 0.0,
+   "background_horizontal_offset": 0.0,
+   "background_fill": "",
+   "single_char_bg_enable": false,
+   "single_char_bg_color": "",
+   "single_char_bg_alpha": 1.0,
+   "single_char_bg_round_radius": 0.3,
+   "single_char_bg_width": 0.0,
+   "single_char_bg_height": 0.0,
+   "single_char_bg_vertical_offset": 0.0,
+   "single_char_bg_horizontal_offset": 0.0,
+   "font_team_id": "",
+   "tts_auto_update": false,
+   "text_preset_resource_id": "",
+   "group_id": "",
+   "preset_id": "",
+   "preset_name": "",
+   "preset_category": "",
+   "preset_category_id": "",
+   "preset_index": 0,
+   "preset_has_set_alignment": false,
+   "force_apply_line_max_width": false,
+   "language": "",
+   "relevance_segment": [],
+   "original_size": [],
+   "fixed_width": -1.0,
+   "fixed_height": -1.0,
+   "autoAdaptCanvasEnabled": false,
+   "line_max_width": 0.82,
+   "oneline_cutoff": false,
+   "cutoff_postfix": "",
+   "subtitle_template_original_fontsize": 0.0,
+   "subtitle_keywords": null,
+   "inner_padding": -1.0,
+   "multi_language_current": "none",
+   "source_from": "",
+   "is_lyric_effect": false,
+   "lyric_group_id": "",
+   "lyrics_template": {
+    "resource_id": "",
+    "resource_name": "",
+    "panel": "",
+    "effect_id": "",
+    "path": "",
+    "category_id": "",
+    "category_name": "",
+    "request_id": ""
+   },
+   "is_batch_replace": false,
+   "is_words_linear": false,
+   "ssml_content": "",
+   "subtitle_keywords_config": null,
+   "sub_template_id": -1,
+   "translate_original_text": ""
+  },
+  "refs": [
+   [
+    "material_animations",
+    {
+     "id": "D7E69CF7-A89B-4824-8244-9A23AAFE0076",
+     "type": "sticker_animation",
+     "animations": [],
+     "multi_language_current": "none"
+    }
+   ]
+  ],
+  "text": "Cara Buli Perempuan\n Lagi Teruk Dari Lelaki",
+  "styles": [
+   {
+    "fill": {
+     "content": {
+      "render_type": "solid",
+      "solid": {
+       "color": [
+        0.9333333373069763,
+        0.800000011920929,
+        0.26274511218070984
+       ]
+      }
+     }
+    },
+    "font": {
+     "path": "C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf",
+     "id": "7462282002201431301"
+    },
+    "size": 15,
+    "useLetterColor": true,
+    "range": [
+     4,
+     31
+    ]
+   },
+   {
+    "fill": {
+     "content": {
+      "render_type": "solid",
+      "solid": {
+       "color": [
+        1,
+        1,
+        1
+       ]
+      }
+     }
+    },
+    "font": {
+     "path": "C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf",
+     "id": "7462282002201431301"
+    },
+    "size": 15,
+    "range": [
+     0,
+     4
+    ]
+   }
+  ],
+  "base_style": {
+   "fill": {
+    "content": {
+     "render_type": "solid",
+     "solid": {
+      "color": [
+       1,
+       1,
+       1
+      ]
+     }
+    }
+   },
+   "font": {
+    "path": "C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf",
+    "id": "7462282002201431301"
+   },
+   "size": 15,
+   "range": [
+    0,
+    4
+   ]
+  },
+  "hi_style": {
+   "fill": {
+    "content": {
+     "render_type": "solid",
+     "solid": {
+      "color": [
+       0.9333333373069763,
+       0.800000011920929,
+       0.26274511218070984
+      ]
+     }
+    }
+   },
+   "font": {
+    "path": "C:/Users/USER/AppData/Local/CapCut/User Data/Cache/effect/7462282002201431301/af8a9ee4f505d18caf5816a019e7a8d3/font.ttf",
+    "id": "7462282002201431301"
+   },
+   "size": 15,
+   "useLetterColor": true,
+   "range": [
+    4,
+    31
+   ]
+  }
+ }
+}

@@ -1,0 +1,156 @@
+{
+ "id": "authority",
+ "name": "Authority",
+ "inspired_by": "wolfofwallst, personalbrandlaunch (3 reels measured)",
+ "summary": "Talking-head authority: bold white chunk captions mid-frame, one yellow keyword pop, listicle headers, hard cuts with punch-ins, short cutaways.",
+ "best_for": {
+  "modes": [
+   "talking-head",
+   "faceless"
+  ],
+  "formats": [
+   "education",
+   "dos-donts",
+   "before-after"
+  ]
+ },
+ "measured": {
+  "duration_s": 45.803,
+  "cuts_per_10s": 2.013,
+  "avg_shot_s": 6.003,
+  "lufs": -14.667,
+  "brightness": 0.323,
+  "contrast": 0.26,
+  "saturation": 0.422,
+  "warmth_r_minus_b": 0.046,
+  "bw_frame_share": 0.014,
+  "yellow_text_by_third": {
+   "top": 0.17,
+   "middle": 0.61,
+   "bottom": 0.22
+  }
+ },
+ "fonts": {
+  "caption": {
+   "family": "Poppins",
+   "weight": 800,
+   "case": "sentence",
+   "capcut_hint": "Poppins ExtraBold (CapCut font library)",
+   "free_fallback": "Montserrat Black"
+  },
+  "keyword": {
+   "family": "Poppins",
+   "weight": 900,
+   "case": "as-said; UPPERCASE when big",
+   "free_fallback": "Montserrat Black"
+  },
+  "header_number": {
+   "family": "Poppins",
+   "weight": 900,
+   "style": "italic"
+  },
+  "header_title": {
+   "family": "Poppins",
+   "weight": 800,
+   "style": "italic",
+   "case": "UPPERCASE"
+  }
+ },
+ "colors": {
+  "caption": "#FFFFFF",
+  "keyword": "#FFD21F",
+  "keyword_dim": "#8A8A8A",
+  "shadow": "#000000B3",
+  "bad": "#FF3B30",
+  "good": "#34C759",
+  "stage_bg": "#0A0A0A"
+ },
+ "captions": {
+  "kind": "chunk",
+  "words": [
+   2,
+   4
+  ],
+  "y": 0.55,
+  "align": "center",
+  "size_rel": 0.045,
+  "shadow": "soft drop, 0 2px 8px",
+  "stroke": "none",
+  "keyword": {
+   "line": "own second line",
+   "scale": 1.5,
+   "big_scale": 2.0,
+   "every_s": [
+    4,
+    8
+   ],
+   "big_every_s": 10
+  }
+ },
+ "titles": {
+  "listicle_header": {
+   "position": "top-left",
+   "y": 0.07,
+   "number_scale": 1.6
+  }
+ },
+ "grade": {
+  "capcut": {
+   "contrast": 0.1,
+   "saturation": 0.05,
+   "shadow": -0.08,
+   "temperature": 0.03,
+   "sharpen": 0.1
+  },
+  "bw_segments": false,
+  "notes": "Clean, natural skin. Slightly crisp. No heavy look."
+ },
+ "pacing": {
+  "target_shot_s": [
+   2.5,
+   9
+  ],
+  "punch_in": {
+   "scale": 1.12,
+   "on": "every jump cut"
+  },
+  "push_in_every_s": 30,
+  "broll_every_s": [
+   3,
+   5
+  ],
+  "broll_len_s": [
+   1,
+   2
+  ]
+ },
+ "transitions": {
+  "default": "hard cut",
+  "allowed": [
+   "hard cut",
+   "zoom in (fast, ≤0.2 s) at a point's title"
+  ],
+  "max_per_reel": 2
+ },
+ "animations": {
+  "caption_in": "pop / scale-up ≤0.15 s",
+  "keyword_in": "pop with slight overshoot",
+  "broll_in": "none (hard cut)",
+  "icons": "logo / icon pops above head in a yellow dashed box when a brand or object is named",
+  "end": "Follow-button pop with handle"
+ },
+ "sfx": {
+  "broll_in": "soft whoosh",
+  "keyword_big": "pop",
+  "header": "click",
+  "turn": "riser"
+ },
+ "music": {
+  "mood": "confident hip-hop / corporate beat, low",
+  "below_voice_db": 15
+ },
+ "loudness_lufs": -14,
+ "not_possible_in_capcut": [
+  "Movie / TV cutaways (copyright: use stock or own B-roll instead)"
+ ]
+}

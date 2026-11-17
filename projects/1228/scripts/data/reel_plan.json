@@ -1,0 +1,733 @@
+{
+ "01": {
+  "parts": [
+   {
+    "f": 0.55,
+    "zooms": [
+     [
+      0,
+      7
+     ],
+     [
+      32,
+      41
+     ]
+    ],
+    "remove": [
+     [
+      42,
+      88,
+      "entrance/luas: off-topic"
+     ]
+    ]
+   }
+  ],
+  "kw": [
+   "gelap",
+   "belakang",
+   "zoom",
+   "gambar"
+  ],
+  "big": [
+   "zoom"
+  ],
+  "broll": [
+   [
+    "topi",
+    "cap hat"
+   ],
+   [
+    "setting",
+    "camera lens"
+   ],
+   [
+    "gambar",
+    "taking photo smartphone"
+   ]
+  ]
+ },
+ "02": {
+  "parts": [
+   {
+    "f": 0.6,
+    "zooms": [
+     [
+      0,
+      8
+     ],
+     [
+      140,
+      148
+     ]
+    ],
+    "remove": [
+     [
+      27,
+      41,
+      "Malaysia diulang"
+     ],
+     [
+      85,
+      104,
+      "liburan: panjang"
+     ],
+     [
+      124,
+      134,
+      "jalan2 diulang"
+     ]
+    ]
+   }
+  ],
+  "kw": [
+   "Indonesia",
+   "Malaysia",
+   "first",
+   "botanical",
+   "single",
+   "backpacker",
+   "Sydney"
+  ],
+  "big": [
+   "single"
+  ],
+  "broll": [
+   [
+    "Kuala",
+    "kuala lumpur"
+   ],
+   [
+    "botanical",
+    "garden flowers"
+   ],
+   [
+    "backpacker",
+    "backpacker walking"
+   ],
+   [
+    "Sydney",
+    "sydney opera house"
+   ]
+  ]
+ },
+ "03": {
+  "parts": [
+   {
+    "f": 0.6,
+    "zooms": [
+     [
+      0,
+      8
+     ],
+     [
+      44,
+      49
+     ]
+    ],
+    "remove": []
+   }
+  ],
+  "kw": [
+   "modal",
+   "jauh",
+   "barai",
+   "uber"
+  ],
+  "big": [
+   "barai"
+  ],
+  "broll": [
+   [
+    "modal",
+    "saving money coins"
+   ],
+   [
+    "jauh",
+    "road trip car"
+   ],
+   [
+    "lutut",
+    "knee"
+   ],
+   [
+    "uber",
+    "taxi city night"
+   ]
+  ]
+ },
+ "04": {
+  "parts": [
+   {
+    "f": 0.55,
+    "zooms": [
+     [
+      0,
+      11
+     ],
+     [
+      49,
+      56
+     ]
+    ],
+    "remove": [
+     [
+      48,
+      48,
+      "hmm"
+     ]
+    ]
+   }
+  ],
+  "kw": [
+   "Victoria",
+   "bentuk",
+   "berenang",
+   "bayar"
+  ],
+  "big": [
+   "bayar"
+  ],
+  "broll": [
+   [
+    "art",
+    "gallery paintings"
+   ],
+   [
+    "berenang",
+    "swimming pool"
+   ],
+   [
+    "bayar",
+    "ticket payment"
+   ],
+   [
+    "muzium",
+    "museum"
+   ]
+  ]
+ },
+ "05": {
+  "parts": [
+   {
+    "f": 0.55,
+    "zooms": [
+     [
+      0,
+      4
+     ]
+    ],
+    "remove": [
+     [
+      17,
+      20,
+      "apa nama tu"
+     ],
+     [
+      78,
+      90,
+      "ending lemah"
+     ]
+    ]
+   },
+   {
+    "f": 0.6,
+    "zooms": [
+     [
+      0,
+      10
+     ]
+    ],
+    "remove": []
+   }
+  ],
+  "kw": [
+   "tram",
+   "sakit",
+   "800m",
+   "tutup"
+  ],
+  "big": [
+   "tutup"
+  ],
+  "broll": [
+   [
+    "tram",
+    "tram"
+   ],
+   [
+    "kaki",
+    "walking feet street"
+   ],
+   [
+    "Maps",
+    "map smartphone navigation"
+   ],
+   [
+    "Allah",
+    "closed sign"
+   ]
+  ]
+ },
+ "06": {
+  "parts": [
+   {
+    "f": 0.55,
+    "zooms": [
+     [
+      0,
+      12
+     ],
+     [
+      54,
+      67
+     ]
+    ],
+    "remove": []
+   }
+  ],
+  "kw": [
+   "96",
+   "senang",
+   "bas",
+   "train"
+  ],
+  "big": [
+   "96"
+  ],
+  "broll": [
+   [
+    "mencari",
+    "tourist map"
+   ],
+   [
+    "bas",
+    "city bus"
+   ],
+   [
+    "train",
+    "train station"
+   ]
+  ]
+ },
+ "07": {
+  "parts": [
+   {
+    "f": 0.6,
+    "zooms": [
+     [
+      4,
+      12
+     ],
+     [
+      29,
+      39
+     ]
+    ],
+    "remove": [
+     [
+      0,
+      3,
+      "lead-in"
+     ],
+     [
+      40,
+      43,
+      "tak nampak muka"
+     ]
+    ]
+   }
+  ],
+  "kw": [
+   "perempuan",
+   "panas",
+   "berangin",
+   "hujan",
+   "banjir",
+   "sejuk",
+   "pening"
+  ],
+  "big": [
+   "perempuan"
+  ],
+  "broll": [
+   [
+    "panas",
+    "sun sky"
+   ],
+   [
+    "berangin",
+    "trees wind"
+   ],
+   [
+    "hujan",
+    "rain city"
+   ],
+   [
+    "banjir",
+    "flood"
+   ],
+   [
+    "pening",
+    "headache confused"
+   ]
+  ]
+ },
+ "08": {
+  "parts": [
+   {
+    "f": 0.55,
+    "zooms": [
+     [
+      7,
+      12
+     ],
+     [
+      89,
+      97
+     ]
+    ],
+    "remove": [
+     [
+      54,
+      77,
+      "mencari jalan: panjang"
+     ]
+    ]
+   }
+  ],
+  "kw": [
+   "terbang",
+   "gila",
+   "besar",
+   "tercabut"
+  ],
+  "big": [
+   "terbang"
+  ],
+  "broll": [
+   [
+    "terbang",
+    "strong wind storm"
+   ],
+   [
+    "Beach",
+    "beach waves"
+   ],
+   [
+    "pokok",
+    "tree wind storm"
+   ]
+  ]
+ },
+ "09": {
+  "parts": [
+   {
+    "f": 0.55,
+    "zooms": [
+     [
+      0,
+      8
+     ],
+     [
+      41,
+      57
+     ]
+    ],
+    "remove": []
+   }
+  ],
+  "kw": [
+   "sedap",
+   "jogging",
+   "berat",
+   "combo",
+   "orang",
+   "cuti"
+  ],
+  "big": [
+   "combo"
+  ],
+  "broll": [
+   [
+    "jogging",
+    "running beach"
+   ],
+   [
+    "beg",
+    "backpack travel"
+   ],
+   [
+    "hujan",
+    "rain drops"
+   ],
+   [
+    "kerja",
+    "office work"
+   ]
+  ]
+ },
+ "10": {
+  "parts": [
+   {
+    "f": 0.5,
+    "zooms": [
+     [
+      19,
+      24
+     ]
+    ],
+    "remove": []
+   },
+   {
+    "f": 0.65,
+    "zooms": [],
+    "remove": []
+   }
+  ],
+  "kw": [
+   "sejuk",
+   "terjun",
+   "timbul",
+   "lawa",
+   "warna",
+   "panas"
+  ],
+  "big": [
+   "terjun"
+  ],
+  "broll": [
+   [
+    "angin",
+    "windy beach waves"
+   ],
+   [
+    "terjun",
+    "jumping water"
+   ],
+   [
+    "warna",
+    "colorful beach houses"
+   ]
+  ]
+ },
+ "11": {
+  "parts": [
+   {
+    "f": 0.6,
+    "zooms": [
+     [
+      0,
+      12
+     ],
+     [
+      29,
+      38
+     ]
+    ],
+    "remove": [
+     [
+      40,
+      40,
+      "kita"
+     ]
+    ]
+   }
+  ],
+  "kw": [
+   "sandal",
+   "melecet",
+   "hanging",
+   "$15"
+  ],
+  "big": [
+   "hanging"
+  ],
+  "broll": [
+   [
+    "sandal",
+    "sandals"
+   ],
+   [
+    "melecetlah",
+    "foot pain"
+   ],
+   [
+    "top",
+    "contactless payment"
+   ]
+  ]
+ },
+ "12": {
+  "parts": [
+   {
+    "f": 0.5,
+    "zooms": [
+     [
+      0,
+      4
+     ],
+     [
+      19,
+      33
+     ]
+    ],
+    "remove": []
+   }
+  ],
+  "kw": [
+   "brighton",
+   "bule",
+   "kencang"
+  ],
+  "big": [
+   "bule"
+  ],
+  "broll": [
+   [
+    "brighton",
+    "brighton beach bathing boxes"
+   ],
+   [
+    "kencang",
+    "windy beach"
+   ]
+  ]
+ },
+ "13": {
+  "parts": [
+   {
+    "f": 0.6,
+    "zooms": [
+     [
+      0,
+      5
+     ]
+    ],
+    "remove": []
+   },
+   {
+    "f": 0.55,
+    "zooms": [
+     [
+      7,
+      12
+     ]
+    ],
+    "remove": []
+   }
+  ],
+  "kw": [
+   "sailing",
+   "angin",
+   "pagar",
+   "berani",
+   "bin"
+  ],
+  "big": [
+   "bin"
+  ],
+  "broll": [
+   [
+    "sailing",
+    "sailboat"
+   ],
+   [
+    "ombak",
+    "ocean waves"
+   ],
+   [
+    "pagar",
+    "fence beach"
+   ]
+  ]
+ },
+ "14": {
+  "parts": [
+   {
+    "f": 0.55,
+    "zooms": [
+     [
+      15,
+      27
+     ]
+    ],
+    "remove": []
+   },
+   {
+    "f": 0.6,
+    "zooms": [
+     [
+      32,
+      46
+     ]
+    ],
+    "remove": []
+   }
+  ],
+  "kw": [
+   "matahari",
+   "sejuk",
+   "jauh",
+   "City",
+   "mantap"
+  ],
+  "big": [
+   "matahari"
+  ],
+  "broll": [
+   [
+    "matahari",
+    "sun through clouds"
+   ],
+   [
+    "bas",
+    "bus passengers"
+   ],
+   [
+    "City",
+    "melbourne city skyline"
+   ]
+  ]
+ },
+ "15": {
+  "parts": [
+   {
+    "f": 0.55,
+    "zooms": [
+     [
+      8,
+      21
+     ],
+     [
+      63,
+      72
+     ]
+    ],
+    "remove": []
+   }
+  ],
+  "kw": [
+   "penyet",
+   "nasi",
+   "Melayu",
+   "RM40"
+  ],
+  "big": [
+   "penyet"
+  ],
+  "broll": [
+   [
+    "ayam",
+    "fried chicken"
+   ],
+   [
+    "nasi",
+    "rice"
+   ],
+   [
+    "bil",
+    "receipt"
+   ]
+  ]
+ }
+}
