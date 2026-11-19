@@ -1,0 +1,16 @@
+{
+ "_series": {
+  "poster_image": "D:/Video/1228/work/poster_melbourne.jpg",
+  "sfx_dir": "D:/Video/_sfx"
+ },
+ "01": {
+  "headline": ["JANGAN PAKAI TOPI", "MACAM NI MASA VLOG!"],
+  "accent_line": 0,
+  "sfx": [
+   {"t": 5.5, "name": "windows_error", "vol": 0.55, "dur": 0.8},
+   {"t": 13.3, "name": "ding", "vol": 0.45, "dur": 1.3},
+   {"t": 17.05, "name": "ba_dun_dun", "vol": 0.5, "dur": 0.9},
+   {"t": 24.9, "name": "crowd_laughing", "vol": 0.35, "dur": 1.9}
+  ]
+ }
+}

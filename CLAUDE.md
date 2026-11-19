@@ -26,6 +26,17 @@ Skill yang dipakai sebenarnya disalin ke `~/.claude/skills/`. Kalau ubah skill d
 - **Muka jangan besar sangat.** Untuk footage 16:9, jangan crop penuh ke 9:16. Guna bingkai yang lebih kecil (lebar ~2.0x kanvas) dengan canvas blur di atas dan bawah.
 - **Tiada B-roll stok untuk vlog peribadi.** Guna footage dia sendiri sahaja.
 
+## Gaya edit pilihan: poster-frame (skill `skills/poster-frame-reel`)
+
+Diluluskan 19 Nov 2026 pada reel 01 projek 1228. Ini gaya default untuk klip pendek dia:
+
+- Kanvas 9:16 (1080x1920). Ikut "gradient frame": poster di atas (0 hingga ~610, pudar ke hitam antara y 300 hingga 470), video landskap dikecilkan ke jalur ~4:3 di tengah (y 608 hingga 1414), dan bahagian bawah hitam.
+- **Poster:** SATU poster umum untuk semua klip dalam siri, gaya thumbnail YouTube: kolaj 2-3 gambar dia sendiri di tempat cantik, warna terang, tajuk kuning bergradien dengan outline hitam (cth. "DAY 1 DI MELBOURNE"). Poster tak perlu berkait dengan isi klip. Muka mesti berada di atas headline. Buat dengan `make_poster.py`.
+- **Headline hook:** 2 baris Impact huruf besar, satu baris ungu `#CA00FF` dan satu putih, di y ~375 dan ~482.
+- **Tiada capsule/pill** di bawah headline.
+- **Subtitle:** di bawah video (y ~1466), 1-3 perkataan, Segoe UI Bold, putih dengan satu perkataan ungu `#A773F8` dan glow ungu. JANGAN guna gaya putih bertukar kuning (karaoke); dah dicuba dan ditolak.
+- **SFX / bunyi meme** di bahagian kelakar atau penting, 3-5 bunyi satu klip, volume rendah. Pustaka ada dalam `D:\Video\_sfx\library.json`.
+
 ## Simpan video
 
 - Video yang dah siap edit: copy ke `D:\Video\<nama projek>\` (hard disk ADATA SSD, drive D:). Guna copy, bukan move, dan semak saiz fail sama selepas copy.
@@ -45,6 +56,7 @@ Skill yang dipakai sebenarnya disalin ke `~/.claude/skills/`. Kalau ubah skill d
 <!-- Kemas kini bahagian ni hujung setiap sesi kerja. Ringkas: apa siap, apa seterusnya. -->
 
 - Projek CapCut aktif: **1228** (vlog Melbourne 29 minit) dipecah jadi 15 reel. Subtitle dan hook dah dibetulkan. v2 (16 Nov): framing muka dikecilkan (latar blur) dan B-roll dibuang; preview v2 dalam `reels_v2/`. Dah dipasang ke CapCut sebagai "1228 Reel 01 - ..." hingga "1228 Reel 15 - ...". Poin 1 permintaan orang tu masih belum diketahui.
+- 19 Nov: gaya poster-frame diluluskan pada reel 01 (`D:\Video\1228\preview\reels_poster\reel_01_poster.mp4`). Reel 02 hingga 15 belum dirender: setiap satu perlukan headline dan SFX dalam `projects/1228/scripts/data/poster_hooks.json`, kemudian jalankan `poster_job.py D:/Video/1228/work NN D:/Video/1228/preview/reels_poster`. Poster umum: `D:\Video\1228\work\poster_melbourne.jpg` (config `data/poster_melbourne.json`).
 - Skrip 1228 dalam `projects/1228/scripts/`. Folder kerja penuh dan preview dalam `D:\Video\1228\` (dipindah dari Temp, 17 Nov).
 - Butiran penuh dan lokasi fail: `.claude/handoffs/2026-11-16-capcut-1228.md`.
 - Nota handoff terkini: lihat fail paling baru dalam `.claude/handoffs/`.
