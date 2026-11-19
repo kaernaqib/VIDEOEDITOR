@@ -19,6 +19,13 @@ Skill yang dipakai sebenarnya disalin ke `~/.claude/skills/`. Kalau ubah skill d
 - Output render (`renders/`, `*.mp4`, `*.mov`) tak masuk git.
 - Projek CapCut sendiri ada dalam folder CapCut kat PC, bukan dalam repo ni.
 
+## Pilihan orang tu (wajib ikut)
+
+- **Satu sampel dulu.** Lepas apa-apa perubahan gaya (framing, subtitle, B-roll, grade, susunan), render dan hantar SATU reel dulu (biasanya reel 01) untuk dia semak. Jangan render semua atau pasang ke CapCut sebelum dia kata OK. Sebab: jimat kredit.
+- **Subtitle di bawah muka.** Letak subtitle di paras dada, kira-kira 76% ketinggian skrin (CapCut caption y = -0.52). Jangan letak di tengah sebab muka jadi tertutup.
+- **Muka jangan besar sangat.** Untuk footage 16:9, jangan crop penuh ke 9:16. Guna bingkai yang lebih kecil (lebar ~2.0x kanvas) dengan canvas blur di atas dan bawah.
+- **Tiada B-roll stok untuk vlog peribadi.** Guna footage dia sendiri sahaja.
+
 ## Simpan video
 
 - Video yang dah siap edit: copy ke `D:\Video\<nama projek>\` (hard disk ADATA SSD, drive D:). Guna copy, bukan move, dan semak saiz fail sama selepas copy.
