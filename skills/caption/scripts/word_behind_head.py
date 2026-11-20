@@ -61,6 +61,7 @@ DEF_STYLE = {
     "cap_min_y": 0.15,        # zon caption: 15% hingga 65% tinggi frame
     "cap_max_y": 0.65,
     "cap_gap": 0.02,          # jarak caption di atas perkataan besar (x tinggi frame)
+    "cap_fallback_y": 0.62,   # kalau tiada ruang di atas perkataan besar: paras dada
     "crf": 17,
     "preset": "medium",
 }
@@ -170,7 +171,7 @@ def snap_onsets(words, audio, sr=16000, back=0.05, fwd=0.25):
         new = (a + idx) * 0.01
         if new < w["e"] - 0.03:
             w["s_raw"] = s
-            w["s"] = round(new, 3)
+            w["s"] = round(float(new), 3)
     # pastikan masa sentiasa naik
     for i in range(1, len(words)):
         if words[i]["s"] < words[i - 1]["s"]:
@@ -197,13 +198,14 @@ def cmd_transcribe(a):
         for w in seg.words or []:
             t = w.word.strip()
             if t:
-                words.append({"w": t, "s": round(w.start, 3), "e": round(w.end, 3),
-                              "p": round(w.probability, 2)})
+                words.append({"w": t, "s": round(float(w.start), 3),
+                              "e": round(float(w.end), 3),
+                              "p": round(float(w.probability), 2)})
     words = snap_onsets(words, audio)
     names = [n.strip() for n in (a.names or "").split(",") if n.strip()]
     for w in words:  # tanda perkataan meragukan untuk disemak
         core = re.sub(r"[^\w']", "", w["w"]).lower()
-        w["check"] = w["p"] < 0.55
+        w["check"] = bool(w["p"] < 0.55)
         for nm in names:
             if core and core != nm.lower() and _close(core, nm.lower()):
                 w["suggest"] = nm
@@ -473,7 +475,11 @@ def cmd_render(a):
     cap_h = b - tp
     H = info["h"]
     cap_y = big_y - int(st["cap_gap"] * H) - cap_h
-    cap_y = int(min(max(cap_y, st["cap_min_y"] * H), st["cap_max_y"] * H - cap_h))
+    if cap_y < st["cap_min_y"] * H:
+        # Tiada ruang di atas perkataan besar: JANGAN tindih huruf. Pindah ke
+        # paras dada (pilihan orang tu: subtitle bawah muka), masih atas 1/3 bawah.
+        cap_y = int(st["cap_fallback_y"] * H)
+    cap_y = int(min(cap_y, st["cap_max_y"] * H - cap_h))
     groups = group_words(words, big_idx, st["cap_max_words"])
     layout = {"big_text": big_text, "big_frame": f_big, "big_y": big_y,
               "big_h": word_img.height, "cap_y": cap_y,

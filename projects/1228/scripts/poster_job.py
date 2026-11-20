@@ -32,7 +32,7 @@ if hk.get("poster"):                                       # per-reel poster fro
     poster = {"tiles": tiles}
 else:                                                      # one general series poster for every reel
     poster = {"image": series["poster_image"], "zoom": 1.0, "contrast": 1.0, "saturation": 1.0}
-sfx_dir = series.get("sfx_dir", "D:/Video/_sfx")
+sfx_dir = series.get("sfx_dir", "D:/CLAUDE/kerja/_sfx")
 lib = {x["name"]: x for x in L(f"{sfx_dir}/library.json")} if hk.get("sfx") else {}
 sfx = [{"t": s["t"], "file": lib[s["name"]]["file"], "vol": s.get("vol", 0.5), "dur": s.get("dur", min(2.5, lib[s["name"]]["dur"]))}
        for s in hk.get("sfx", [])]

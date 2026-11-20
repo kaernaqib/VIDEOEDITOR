@@ -28,7 +28,7 @@ Masa caption mesti tepat pada suara. Caption yang lewat 3 frame pun terasa "peli
 
 Cakap dengan orang tu dalam bahasa biasa. Jangan tunjuk kod melainkan diminta.
 
-1. **Folder kerja.** Satu folder untuk setiap klip, cth `D:\Video\<projek>\caption\`. Semua (venv, model, fon) dipasang dalam folder ini sahaja, jangan ubah apa-apa lain dalam PC.
+1. **Folder kerja.** Satu folder untuk setiap klip, cth `D:\CLAUDE\kerja\<projek>\caption\` (jangan dalam `D:\Video`, itu untuk video siap sahaja). Semua (venv, model, fon) dipasang dalam folder ini sahaja, jangan ubah apa-apa lain dalam PC.
 2. **Setup** (sekali satu folder, atau guna semula venv yang sama):
    `powershell -ExecutionPolicy Bypass -File <skill>/scripts/setup.ps1 -Dir <folder>`
    Pasang venv + faster-whisper + rembg (CPU) + Pillow + numpy, dan fon Anton + Inter dari Google Fonts. **Beritahu dulu** sebelum model dimuat turun: cut-out ~1 GB, whisper ~0.5 GB, boleh ambil sampai 30 minit kalau internet perlahan. Perlu ~3 GB ruang. Jalankan di latar belakang dan bagi update.
@@ -55,7 +55,7 @@ Cakap dengan orang tu dalam bahasa biasa. Jangan tunjuk kod melainkan diminta.
 | Kedudukan | Cari atas kepala dari mask pada frame perkataan disebut, dalam **40% tengah** frame sahaja (tangan diangkat tak dikira). Kepala tutup ~**60%** tinggi huruf (atas kepala sampai lebih sikit separuh huruf). Kemudian pastikan kepala tutup **≥15%** piksel huruf; kalau kurang (hood tajam, topi), turunkan perkataan sampai cukup tapi masih boleh dibaca. Kekal di situ selepas itu |
 | Animasi | Bila disebut: pop 80% → ~105% → 100% dalam 6 frame |
 | Caption | Inter Bold, saiz fon ~7% lebar frame, putih, bayang gelap lembut, maks 3 perkataan satu kumpulan, pecah pada jeda/tanda baca semula jadi, kumpulan di tengah, setiap perkataan muncul pada masa sendiri, kumpulan kekal sampai kumpulan seterusnya mula |
-| Zon caption | Di atas perkataan besar, tak pernah bertindih. Antara **15% dan 65%** tinggi frame (1/3 bawah ditutup butang dan caption Instagram; elak juga butang di kanan) |
+| Zon caption | Di atas perkataan besar, tak pernah bertindih. Antara **15% dan 65%** tinggi frame (1/3 bawah ditutup butang dan caption Instagram; elak juga butang di kanan). Kalau kepala rapat ke atas frame dan tiada ruang di atas perkataan besar, caption turun ke paras dada (`cap_fallback_y`, default 0.62) |
 | Perkataan besar | Tak dicaption dua kali |
 
 Nota pilihan orang tu: default dia untuk subtitle ialah di bawah muka (paras dada). Dalam gaya ini caption duduk **di atas kepala**, jadi muka tetap tak tertutup. Kalau dia nak caption bawah, set `cap_min_y`/`cap_max_y` sendiri, tapi jangan masuk 1/3 bawah.
@@ -71,7 +71,7 @@ Nota pilihan orang tu: default dia untuk subtitle ialah di bawah muka (paras dad
   "big": "RM10k",
   "big_text": null,
   "accent_words": [6],
-  "sfx_dir": "D:/Video/_sfx",
+  "sfx_dir": "D:/CLAUDE/kerja/_sfx",
   "sfx": [{"t": 1.70, "file": "whoosh.wav", "vol": 0.25, "dur": 0.6}],
   "style": {
     "big_font": ["fonts/Anton-Regular.ttf"],
@@ -80,14 +80,14 @@ Nota pilihan orang tu: default dia untuk subtitle ialah di bawah muka (paras dad
     "head_overlap": 0.60, "min_cover": 0.15, "big_y": null,
     "pop_frames": 6, "pop_from": 0.80, "pop_overshoot": 0.05,
     "cap_color": "#FFFFFF", "cap_accent": "#FFD400", "cap_size": 0.07,
-    "cap_max_words": 3, "cap_min_y": 0.15, "cap_max_y": 0.65
+    "cap_max_words": 3, "cap_min_y": 0.15, "cap_max_y": 0.65, "cap_fallback_y": 0.62
   }
 }
 ```
 
 - `big`: indeks dalam `words` atau teks perkataan (tanpa tanda baca, tak kisah huruf besar/kecil). `big_text` untuk paparan lain (cth "10K").
 - `accent_words`: indeks perkataan caption yang guna `cap_accent`. Satu perkataan sahaja satu ayat.
-- `sfx`: bunyi kecil (tick, whoosh) pada perkataan yang bergerak, vol 0.2-0.35, di bawah suara. Pustaka orang tu: `D:\Video\_sfx\library.json`.
+- `sfx`: bunyi kecil (tick, whoosh) pada perkataan yang bergerak, vol 0.2-0.35, di bawah suara. Pustaka orang tu: `D:\CLAUDE\kerja\_sfx\library.json`.
 - `layout.json` dalam `work/` rekod kedudukan yang dipilih (big_y, cap_y, kumpulan caption) untuk semakan.
 
 ## Bina gaya caption sendiri
@@ -115,5 +115,7 @@ Reel asal guna lebih banyak alat; buat hanya kalau orang tu minta:
 - **Storyboard dulu:** satu still satu baris skrip, kemudian render cut pertama, kemudian pusingan nota.
 
 ## Keperluan
+
+Whisper dan cut-out perlu RAM bebas ~3 GB. Kalau keluar ralat `mkl_malloc` / "failed to allocate memory", tunggu render lain (Remotion, CapCut) habis atau tutup tab Chrome, kemudian cuba semula.
 
 ffmpeg/ffprobe dalam PATH, Python 3.10+ dengan faster-whisper, rembg[cpu], Pillow, numpy (setup.ps1 pasang semua dalam venv folder kerja). Fon Anton + Inter (fallback Windows: impact.ttf, segoeuib.ttf).

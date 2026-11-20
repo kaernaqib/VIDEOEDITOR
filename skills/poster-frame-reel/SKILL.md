@@ -22,7 +22,7 @@ Semua nombor boleh diubah dalam `style` job (lihat `DEF` dalam skrip).
 
 1. **Hook headline.** Tulis 2 baris pendek (maks ~20 aksara satu baris) yang buat orang nak tengok: soalan, larangan, atau kejutan. Contoh: "JANGAN PAKAI TOPI / MACAM NI MASA VLOG!". `accent_line` pilih baris mana yang ungu (0 atau 1). Tukar-tukar antara reel supaya feed tak nampak sama.
 2. **Poster (SATU untuk semua reel dalam siri).** Orang tu nak poster umum gaya thumbnail YouTube: warna terang, kolaj 2-3 gambar dia sendiri di tempat cantik (gambar telefon biasanya paling elok), tajuk kuning bergradien dengan outline hitam tebal (cth. "DAY 1 DI MELBOURNE"). Poster tak perlu berkait dengan isi reel. Buat sekali dengan `scripts/make_poster.py poster.json`, kemudian semua job guna `"poster": {"image": "poster.jpg", "zoom": 1.0, "contrast": 1.0, "saturation": 1.0}`. Letak `focus` = kedudukan muka dalam gambar (x, y) dan `face_at` ~0.31-0.36 supaya muka berada di zon 0-320px, di atas headline. Ukur muka dengan grid sebelum teka. Semak dengan `--still`.
-2b. **SFX / bunyi meme.** Letak di bahagian yang kelakar atau penting sahaja, 3-5 bunyi satu reel, jangan melampau. Bunyi tanpa suara (windows_error, ding, ba_dun_dun, record_scratch) boleh bertindih dengan percakapan. Bunyi bersuara (bruh, hehe_boi, lol, oh_my_god) letak di celah senyap atau hujung ayat. Volume 0.35-0.6, `dur` potong bunyi panjang. Pustaka: `D:\Video\_sfx\library.json` (79 bunyi, ada `tag`: fail, reaction, timeskip, emphasis, punchline, movement, glitch). Kalau pustaka hilang, bina semula dengan `scripts/build_sfx_library.py <folder video SFX> D:/Video/_sfx` (jadual potongan dalam `references/sfx_cuts.json`).
+2b. **SFX / bunyi meme.** Letak di bahagian yang kelakar atau penting sahaja, 3-5 bunyi satu reel, jangan melampau. Bunyi tanpa suara (windows_error, ding, ba_dun_dun, record_scratch) boleh bertindih dengan percakapan. Bunyi bersuara (bruh, hehe_boi, lol, oh_my_god) letak di celah senyap atau hujung ayat. Volume 0.35-0.6, `dur` potong bunyi panjang. Pustaka: `D:\CLAUDE\kerja\_sfx\library.json` (79 bunyi, ada `tag`: fail, reaction, timeskip, emphasis, punchline, movement, glitch). Kalau pustaka hilang, bina semula dengan `scripts/build_sfx_library.py <folder video SFX> D:/CLAUDE/kerja/_sfx` (jadual potongan dalam `references/sfx_cuts.json`).
 3. **Subtitle.** Beri `captions` (frasa yang dah dibetulkan ejaannya) dan, jika ada, `words` (masa setiap perkataan). Skrip pecahkan jadi 1-3 perkataan dan pilih perkataan paling bermakna untuk diwarnakan ungu (perkataan `keyword` diutamakan).
 4. **Semak layout:** `python scripts/render_poster_reel.py job.json --still` hasilkan `layer.png` (poster + headline + pill). Baiki `focus`/`zoom` sampai muka nampak elok.
 5. **Render SATU reel dulu** dan hantar untuk semakan. Jangan render yang lain sebelum orang tu kata OK.
@@ -40,7 +40,7 @@ Semua nombor boleh diubah dalam `style` job (lihat `DEF` dalam skrip).
   "accent_line": 0,
   "clips": [{"path": "SRC.MP4", "t0": 114.4, "t1": 116.6, "f": 0.55, "scale0": 1.0, "scale1": 1.04}],
   "audio": "audio_siap_mix.mp4",
-  "sfx_dir": "D:/Video/_sfx",
+  "sfx_dir": "D:/CLAUDE/kerja/_sfx",
   "sfx": [{"t": 5.5, "file": "meme/windows_error.wav", "vol": 0.55, "dur": 0.8}],
   "captions": [{"a": 2.25, "b": 3.21, "text": "topi ni kalau pakai", "keyword": null}],
   "words": [{"w": "topi", "s": 2.25, "e": 2.61}],
@@ -55,7 +55,7 @@ Semua nombor boleh diubah dalam `style` job (lihat `DEF` dalam skrip).
 
 ## Untuk projek 1228
 
-`projects/1228/scripts/poster_job.py WORK NN OUT_DIR [--still|--reuse-band]` bina job dari `rNN/` (EDL, captions, words, audio preview_raw) dan `poster_hooks.json`: `_series` (poster umum, pill dengan `{n}`, folder SFX) dan setiap reel (headline, `sfx` ikut nama dalam pustaka). Poster umum: `D:\Video\1228\work\poster_melbourne.jpg`.
+`projects/1228/scripts/poster_job.py WORK NN OUT_DIR [--still|--reuse-band]` bina job dari `rNN/` (EDL, captions, words, audio preview_raw) dan `poster_hooks.json`: `_series` (poster umum, pill dengan `{n}`, folder SFX) dan setiap reel (headline, `sfx` ikut nama dalam pustaka). Poster umum: `D:\CLAUDE\kerja\1228\work\poster_melbourne.jpg`.
 
 ## Keperluan
 

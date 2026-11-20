@@ -134,7 +134,7 @@ def build(r):
 
     series = HOOKS.get("_series", {})
     hk = HOOKS.get(f"L{rid}", {})
-    sfx_dir = series.get("sfx_dir", "D:/Video/_sfx")
+    sfx_dir = series.get("sfx_dir", "D:/CLAUDE/kerja/_sfx")
     lib = {x["name"]: x for x in L(f"{sfx_dir}/library.json")}
     def when(s):
         """"t": seconds, or "at": a phrase in the captions (+ "off" seconds after that caption starts)."""

@@ -56,7 +56,7 @@ for c in job["clips"]:
                   "posX": round(100 * x0 / (1920 - cw), 2)})
     frame += c["frames"]
 
-sfx_dir = job.get("sfx_dir", "D:/Video/_sfx")
+sfx_dir = job.get("sfx_dir", "D:/CLAUDE/kerja/_sfx")
 sfx = []
 for s in job.get("sfx", []):
     name = "sfx/" + os.path.basename(s["file"])

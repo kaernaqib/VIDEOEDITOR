@@ -2,7 +2,7 @@
 
 usage: python build_sfx_library.py SRC_DIR OUT_DIR [CUTS.json]
   SRC_DIR  folder holding the compilation videos named in CUTS["sources"]
-  OUT_DIR  e.g. D:/Video/_sfx   ->  OUT_DIR/<source>/<name>.wav and OUT_DIR/library.json
+  OUT_DIR  e.g. D:/CLAUDE/kerja/_sfx   ->  OUT_DIR/<source>/<name>.wav and OUT_DIR/library.json
 """
 import json, os, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor

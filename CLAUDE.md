@@ -38,11 +38,12 @@ Diluluskan 19 Nov 2026 pada reel 01 projek 1228. Ini gaya default untuk klip pen
 - **Headline hook:** 2 baris Impact huruf besar, satu baris ungu `#CA00FF` dan satu putih, di y ~375 dan ~482.
 - **Tiada capsule/pill** di bawah headline.
 - **Subtitle:** di bawah video (y ~1466), 1-3 perkataan, Segoe UI Bold, putih dengan satu perkataan ungu `#A773F8` dan glow ungu. JANGAN guna gaya putih bertukar kuning (karaoke); dah dicuba dan ditolak.
-- **SFX / bunyi meme** di bahagian kelakar atau penting, 3-5 bunyi satu klip, volume rendah. Pustaka ada dalam `D:\Video\_sfx\library.json`.
+- **SFX / bunyi meme** di bahagian kelakar atau penting, 3-5 bunyi satu klip, volume rendah. Pustaka ada dalam `D:\CLAUDE\kerja\_sfx\library.json`.
 
 ## Simpan video
 
-- Video yang dah siap edit: copy ke `D:\Video\<nama projek>\` (hard disk ADATA SSD, drive D:). Guna copy, bukan move, dan semak saiz fail sama selepas copy.
+- **`D:\Video\<nama projek>\` untuk video siap SAHAJA** (versi penuh, tiada `_phone`, tiada folder kerja). Orang tu tak nak nampak fail kerja dalam folder Video. Guna copy, bukan move, dan semak saiz fail sama selepas copy.
+- **Fail kerja** (venv, model AI, mask, klip potongan, preview, versi lama, SFX) dalam `D:\CLAUDE\kerja\<nama projek>\`. Pustaka SFX: `D:\CLAUDE\kerja\_sfx\`. Fail besar ni tak masuk GitHub (had 100 MB satu fail); yang masuk GitHub cuma skrip, skill dan config.
 - Jangan simpan video dalam Google Drive (storan terhad) atau dalam repo.
 - Kalau drive D: tak ada, berhenti dan beritahu orang tu. Jangan simpan di tempat lain tanpa tanya.
 
@@ -59,8 +60,8 @@ Diluluskan 19 Nov 2026 pada reel 01 projek 1228. Ini gaya default untuk klip pen
 <!-- Kemas kini bahagian ni hujung setiap sesi kerja. Ringkas: apa siap, apa seterusnya. -->
 
 - Projek CapCut aktif: **1228** (vlog Melbourne 29 minit) dipecah jadi 15 reel. Subtitle dan hook dah dibetulkan. v2 (16 Nov): framing muka dikecilkan (latar blur) dan B-roll dibuang; preview v2 dalam `reels_v2/`. Dah dipasang ke CapCut sebagai "1228 Reel 01 - ..." hingga "1228 Reel 15 - ...". Poin 1 permintaan orang tu masih belum diketahui.
-- 19 Nov: gaya poster-frame diluluskan. Poster umum: `D:\Video\1228\work\poster_melbourne.jpg` (config `data/poster_melbourne.json`).
-- 20 Nov (v4): 15 reel pendek dianggap kurang konteks. Vlog dipecah semula jadi **10 reel panjang (70 hingga 140 saat)**, setiap satu satu situasi penuh, dipotong terus dari timeline 1228. Pelan dalam `projects/1228/scripts/data/long_plan.json` (julat masa timeline + headline), SFX ikut frasa (`"at"`) dalam `poster_hooks.json` di bawah kunci `L01`..`L10`. Render: `long_reels.py D:/Video/1228/work D:/Video/1228/preview/reels_long 01 ...`. Output: `D:\Video\1228\preview\reels_long\long_NN.mp4` (penuh) dan `long_NN_phone.mp4` (720p untuk telefon). **Pilihan dia: reel ambil konteks penuh, 60 hingga 120 saat, boleh lebih kalau perlu.** Reel poster-frame lama (`reels_poster/`) dan 15 projek CapCut lama dah tak dipakai.
-- Skrip 1228 dalam `projects/1228/scripts/`. Folder kerja penuh dan preview dalam `D:\Video\1228\` (dipindah dari Temp, 17 Nov).
+- 19 Nov: gaya poster-frame diluluskan. Poster umum: `D:\CLAUDE\kerja\1228\work\poster_melbourne.jpg` (config `data/poster_melbourne.json`).
+- 20 Nov (v4): 15 reel pendek dianggap kurang konteks. Vlog dipecah semula jadi **10 reel panjang (70 hingga 140 saat)**, setiap satu satu situasi penuh, dipotong terus dari timeline 1228. Pelan dalam `projects/1228/scripts/data/long_plan.json` (julat masa timeline + headline), SFX ikut frasa (`"at"`) dalam `poster_hooks.json` di bawah kunci `L01`..`L10`. Render: `long_reels.py D:/CLAUDE/kerja/1228/work D:/CLAUDE/kerja/1228/preview/reels_long 01 ...`. Output: `D:\CLAUDE\kerja\1228\preview\reels_long\long_NN.mp4` (penuh) dan `long_NN_phone.mp4` (720p untuk telefon). **Pilihan dia: reel ambil konteks penuh, 60 hingga 120 saat, boleh lebih kalau perlu.** Reel poster-frame lama (`reels_poster/`) dan 15 projek CapCut lama dah tak dipakai.
+- Skrip 1228 dalam `projects/1228/scripts/`. Folder kerja penuh dan preview dalam `D:\CLAUDE\kerja\1228\` (dipindah 20 Nov). 10 reel panjang (versi penuh) disalin ke `D:\Video\1228\long_NN.mp4`.
 - Butiran penuh dan lokasi fail: `.claude/handoffs/2026-11-16-capcut-1228.md`.
 - Nota handoff terkini: lihat fail paling baru dalam `.claude/handoffs/`.
