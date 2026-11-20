@@ -208,9 +208,9 @@ const P = {
     } };
   },
   brackets(L, p) {
-    const c = p.color || '#ffffff', box = { l: 26, t: 22, r: 26, b: 46 };
+    const c = p.color || '#ffffff', box = p.box ? { l: p.box[0], t: p.box[1], r: p.box[2], b: p.box[3] } : { l: 26, t: 22, r: 26, b: 46 };
     const bs = ['a', 'b', 'c', 'd'].map(k => { const b = el('div', 'br ' + k); b.style.setProperty('--c', c); L.appendChild(b); return b; });
-    const lab = el('div', 'lbl', p.label || 'REC 00:00:08'); lab.style.setProperty('--c', c); lab.style.left = '26%'; lab.style.top = '17%'; L.appendChild(lab);
+    const lab = el('div', 'lbl', p.label || 'REC 00:00:08'); lab.style.setProperty('--c', c); lab.style.left = box.l + '%'; lab.style.top = Math.max(1, box.t - 5) + '%'; L.appendChild(lab);
     return { dur: 2.4, tick(t) {
       const k = back(t / .35), o = (1 - k) * 18;
       bs[0].style.left = (box.l - o) + '%'; bs[0].style.top = (box.t - o) + '%';

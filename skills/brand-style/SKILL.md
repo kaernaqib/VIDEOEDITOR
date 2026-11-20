@@ -17,7 +17,7 @@ Folder skill: `skills/brand-style` (salinan `~/.claude/skills/brand-style`). Lal
 Nama brand / handle, jenis kandungan (vlog, tips, podcast), 2-3 reel rujukan yang dia suka (link atau fail), warna atau fon yang dia suka atau benci. Baca dulu gaya yang dah diluluskan dalam `CLAUDE.md` (poster-frame: hook ungu `#CA00FF`, subtitle putih + satu perkataan ungu `#A773F8`, SFX meme) dan `brand/*/STYLE.md` kalau ada. Jangan cadang semula benda yang dia dah tolak (cth. subtitle karaoke putih-ke-kuning).
 
 ### 2. Pusingan 1
-1. Ambil satu still dari video dia: `ffmpeg -ss 5 -i <video> -frames:v 1 -vf scale=540:-2 <dir>/src_frame.jpg`.
+1. Buat satu frame latar 540x960 yang **bersih**: susunan reel dia yang sebenar (untuk poster-frame: jalur video y 608-1414 atas kanvas hitam), TANPA poster, tajuk atau subtitle. Jangan guna frame dari reel siap (teks lama bertindih dengan kad dan dia akan tolak semuanya) dan jangan crop muka penuh skrin. Cari kotak muka (YuNet: `~/.claude/skills/video-effect/models/yunet.onnx`) dalam % kanvas untuk `box` bracket. Letak teks di ruang kosong (atas y 0-31%, bawah y 74-100%).
 2. Tulis `brand/<brand>/round1.json` (contoh penuh: `data/round1_example.json`). 8-12 kad sahaja (lebih banyak memeningkan; dia nilai satu demi satu), setiap kad yang ada bunyi letak `sfx` terus pada kad itu. Setiap kad: `id` (cth. `FS-01`), `cat`, `title`, `desc` (Bahasa Melayu), `preset`, `p` (parameter).
 3. `python scripts/build_board.py brand/<brand>/round1.json <out_dir> --frame <dir>/src_frame.jpg` (`out_dir` dalam scratchpad).
 4. Terbitkan: `file_path` `<out_dir>/index.html`, `files` `{"frame.jpg": "<out_dir>/frame.jpg"}`, `capabilities` `{"db": {}, "user": {}}`, `icon` `"palette"`. Simpan url dalam `brand/<brand>/board.json`.
@@ -51,7 +51,7 @@ Semua kad terima: `bg` (`warm` | `dark` | `frame` | `img:<fail>`), `dim` (0-1, g
 | `slam` | satu perkataan hentak + gegar | `text`, `glow` |
 | `fadeup` | naik perlahan dengan blur | `text` |
 | `nametag` | tag nama bawah | `name`, `role` |
-| `brackets` | bucu kamera kunci + label | `label` |
+| `brackets` | bucu kamera kunci + label | `label`, `box` [kiri, atas, kanan, bawah] % |
 | `type` | taip dengan kursor | `text`, `speed` |
 | `graph` | garis naik + nombor kira | `points`, `from`, `to`, `suffix`, `label` |
 | `bars` | bar tumbuh | `values`, `label` |

@@ -1,0 +1,21 @@
+{
+  "brand": "Utama",
+  "round": 2,
+  "intro": "Pusingan 2: 8 animasi atas susunan reel awak (video di tengah, ruang hitam atas dan bawah). Kiraan 3-2-1-CUT dan kilat hitam putih dah dikunci.",
+  "categories": [
+    {"name": "Frasa besar", "desc": "Ganti BOOM dengan frasa"},
+    {"name": "Bracket muka", "desc": "Bucu kamera kunci pada muka"},
+    {"name": "Kata kunci bawah", "desc": "Satu perkataan di ruang bawah"},
+    {"name": "Peralihan", "desc": "Cara tukar shot"}
+  ],
+  "cards": [
+    {"id": "FR-01", "cat": "Frasa besar", "title": "Frasa bertindan", "desc": "MOMENT / TAK DAPAT / DILUPAKAN muncul ikut rentak di atas video", "preset": "stack", "p": {"bg": "frame", "words": ["MOMENT", "TAK DAPAT", "DILUPAKAN"], "font": "anton", "color": "#f6d34a", "size": 13, "y": 6, "step": 0.4, "sfx": "thud"}},
+    {"id": "FR-02", "cat": "Frasa besar", "title": "Frasa serif lembut", "desc": "Italic serif naik perlahan, gaya sama dengan kiraan yang awak suka", "preset": "fadeup", "p": {"bg": "frame", "text": "moment tak dapat dilupakan", "font": "serif", "color": "#f6d34a", "size": 12, "y": 12}},
+    {"id": "FR-03", "cat": "Frasa besar", "title": "Frasa ditaip", "desc": "Huruf mono ditaip satu-satu", "preset": "type", "p": {"bg": "frame", "text": "MOMENT TAK DAPAT DILUPAKAN", "size": 6.5, "y": 13, "color": "#ffffff", "sfx": "type"}},
+    {"id": "BR-01", "cat": "Bracket muka", "title": "Bracket putih pada muka", "desc": "Bucu kunci tepat pada muka awak + REC berkelip", "preset": "brackets", "p": {"bg": "frame", "box": [37, 33, 18, 36], "label": "REC 00:00:08"}},
+    {"id": "BR-02", "cat": "Bracket muka", "title": "Bracket kuning pada muka", "desc": "Sama, warna kuning dengan label lain", "preset": "brackets", "p": {"bg": "frame", "box": [37, 33, 18, 36], "label": "LOCKED ON", "color": "#f6d34a", "sfx": "click"}},
+    {"id": "KW-01", "cat": "Kata kunci bawah", "title": "Kata kunci kuning di bawah", "desc": "Satu perkataan besar di ruang hitam bawah video", "preset": "slam", "p": {"bg": "frame", "text": "SERIUS?", "y": 80, "size": 15, "glow": true, "sfx": "pop"}},
+    {"id": "TR-02", "cat": "Peralihan", "title": "Punch-in", "desc": "Zoom laju pada satu perkataan (pusingan 1 belum dipilih)", "preset": "punch", "p": {"bg": "frame", "text": "SERIUS?", "y": 80, "size": 14, "zoom": 1.25, "sfx": "thud"}},
+    {"id": "TR-03", "cat": "Peralihan", "title": "Kilat ke warna filem", "desc": "Macam kilat yang awak suka, tapi jadi warna lama (sepia)", "preset": "flash", "p": {"bg": "frame", "text": "TAPI...", "font": "serif", "size": 14, "after": "sepia(.85) contrast(1.15)", "sfx": "whoosh"}}
+  ]
+}
