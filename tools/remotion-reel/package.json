@@ -1,0 +1,23 @@
+{
+  "name": "remotion-reel",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Remotion render pipeline for 9:16 reels (poster-frame style)",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts",
+    "still": "remotion still src/index.ts"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.545",
+    "@remotion/layout-utils": "^4.0.545",
+    "@remotion/media-utils": "^4.0.545",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "^4.0.545"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}

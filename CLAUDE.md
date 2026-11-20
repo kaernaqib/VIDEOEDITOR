@@ -11,6 +11,7 @@ Claude skills untuk edit video pendek (Reels / TikTok / Shorts), bahasa Melayu.
 - `skills/voiceover-glass-reel`: voiceover jadi reel dokumentari 16:9 dalam After Effects.
 - `skills/caption`: caption "word behind head" (perkataan besar di belakang kepala via cut-out rembg, caption kecil ikut masa whisper) + cara bina gaya caption sendiri. Skrip `scripts/word_behind_head.py` (transcribe / render / --still).
 - `tools/weby-reel`: pipeline render ffmpeg + libass (`render.py`, `transcribe.py`, contoh job JSON).
+- `tools/remotion-reel`: pipeline Remotion (React) untuk motion graphics. Komposisi `PosterReel` (layout poster-frame, props: poster, video, videoStartSec, durationSec, headline, captions). Media letak dalam `public/` (tak masuk git). Render: `npx remotion render src/index.ts PosterReel out/x.mp4 --props=job.json`. Studio: `npm run studio`.
 
 Skill yang dipakai sebenarnya disalin ke `~/.claude/skills/`. Kalau ubah skill dalam repo ni, salin semula ke situ (atau sebaliknya) supaya dua-dua sama.
 
