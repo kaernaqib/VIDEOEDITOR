@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ffprobe *)",
+      "PowerShell(ffprobe *)",
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(Get-ChildItem)",
+      "PowerShell(Test-Path *)",
+      "mcp__ded2ed6f-b935-4000-9b0b-5cf081271a8e__read_file_content",
+      "mcp__c5d4afd8-67c6-4338-a570-3e0e7d341b19__read_doc",
+      "mcp__terminal__read_terminal"
+    ]
+  }
+}
