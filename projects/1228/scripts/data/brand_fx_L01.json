@@ -1,0 +1,15 @@
+{
+  "video": "D:/Video/1228/long_01.mp4",
+  "out": "D:/CLAUDE/kerja/1228/preview/brand/long_01_brand.mp4",
+  "band": [608, 1414],
+  "fx": [
+    {"type": "brackets", "t": 3.5, "dur": 2.8, "label": "REC 00:00:08"},
+    {"type": "keyword", "t": 20.55, "text": "JUMPA!", "punch": true, "sfx": "pop"},
+    {"type": "phrase", "t": 22.7, "lines": ["SHRINE OF", "REMEMBRANCE"], "sfx": "thud"},
+    {"type": "flash", "t": 37.4, "until": 52.9, "look": "film", "text": "1914-1918", "text_t": 51.5, "sfx": "whoosh"},
+    {"type": "keyword", "t": 64.8, "text": "JENAZAH?"},
+    {"type": "keyword", "t": 85.85, "text": "GELAP"},
+    {"type": "keyword", "t": 102.8, "text": "GILA", "punch": true},
+    {"type": "flash", "t": 119.7, "until": 121.4, "look": "bw", "text": "LUASNYA", "text_t": 119.8, "sfx": "whoosh"}
+  ]
+}

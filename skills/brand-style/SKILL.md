@@ -63,3 +63,10 @@ Semua kad terima: `bg` (`warm` | `dark` | `frame` | `img:<fail>`), `dim` (0-1, g
 SFX sebenar dari pustaka dia (`D:\CLAUDE\kerja\_sfx\library.json`) boleh dipakai: salin mp3 ke `out_dir`, terbitkan dalam `files`, set `"file": "nama.mp3"`.
 
 Papan ni pratonton (HTML/CSS) sahaja, bukan render akhir. Bila gaya dikunci, terjemah ke pipeline render sebenar.
+
+## 6. Pasang gaya pada reel (brand_fx.py)
+Lapisan atas reel yang dah siap (poster, tajuk, subtitle asal tak disentuh):
+`~/.claude/skills/video-effect/.venv/Scripts/python.exe scripts/brand_fx.py <plan.json> [--still 4.3,20.8]`
+- Plan: `{"video", "out", "band": [608, 1414], "fx": [...]}`, jenis `brackets`, `keyword` (+`punch`), `phrase`, `countdown`, `flash` (`look` film|bw, `until`, `text`, `text_t`). Contoh: `projects/1228/scripts/data/brand_fx_L01.json`.
+- Masa ambil dari `words` dalam `job.json` reel. Bracket hanya bila muka nampak (cari dengan YuNet); jangan tindih SFX meme sedia ada (biar `sfx` kosong di situ).
+- Semak still dulu, kemudian render penuh, kemudian hantar ke `video-review` sebagai versi baru.
