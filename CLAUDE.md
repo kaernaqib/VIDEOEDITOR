@@ -10,6 +10,9 @@ Claude skills untuk edit video pendek (Reels / TikTok / Shorts), bahasa Melayu.
 - `skills/capcut-talking-head-edit`: tulis fail timeline CapCut terus, tambah motion graphics.
 - `skills/voiceover-glass-reel`: voiceover jadi reel dokumentari 16:9 dalam After Effects.
 - `skills/caption`: caption "word behind head" (perkataan besar di belakang kepala via cut-out rembg, caption kecil ikut masa whisper) + cara bina gaya caption sendiri. Skrip `scripts/word_behind_head.py` (transcribe / render / --still).
+- `skills/video-effect`: 51 video effect yang ikut muka (orbit, spotlight, glass-widgets, locked-on, reject-stamp, ...), Python + ffmpeg + MediaPipe. Dari github.com/Vibha-Ramprakash/claude-video-effects, disesuaikan untuk Windows. Venv dalam folder skill (`.venv/Scripts/python.exe`).
+- `skills/video-review`: semak video macam Frame.io. Video diterbitkan sebagai Artifact dengan komen ikut saat (db `comments`); Claude baca komen, edit, terbitkan v2 di link sama. Skrip `scripts/build_review.py`.
+- `skills/brand-style`: papan semakan gaya (Artifact) dengan kad animasi 9:16 + SFX; dia pilih Simpan/Mungkin/Buang + nota (db `reviews/rN`), Claude buat pusingan seterusnya dan kunci gaya dalam `brand/<brand>/STYLE.md` + `style.json`. Skrip `scripts/build_board.py`.
 - `tools/weby-reel`: pipeline render ffmpeg + libass (`render.py`, `transcribe.py`, contoh job JSON).
 - `tools/remotion-reel`: pipeline Remotion (React) untuk motion graphics. Komposisi `PosterReel` (layout poster-frame, props: poster, video, videoStartSec, durationSec, headline, captions). Media letak dalam `public/` (tak masuk git). Render: `npx remotion render src/index.ts PosterReel out/x.mp4 --props=job.json`. Studio: `npm run studio`.
 

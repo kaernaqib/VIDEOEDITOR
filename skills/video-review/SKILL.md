@@ -14,10 +14,10 @@ Folder skill: `skills/video-review` (salinan dalam `~/.claude/skills/video-revie
 ## Aliran
 
 ### 1. Terbitkan versi pertama
-1. Pilih folder semakan di sebelah projek, cth. `D:\Video\1228\review\long_01\` (bukan dalam repo, bukan Google Drive).
+1. Pilih folder semakan di sebelah projek, cth. `D:\CLAUDE\kerja\1228\review\long_01\` (fail kerja; bukan dalam `D:\Video`, repo atau Google Drive).
 2. `python scripts/build_review.py new <folder> <video.mp4> --title "1228 Reel 01" --note "draf pertama"`
    - Video dimampatkan ke <= 14 MB, 720p (had fail Artifact 15 MB). Video lebih ~3 minit mungkin terlalu besar: hantar bahagian.
-   - Guna versi telefon kalau ada (`long_NN_phone.mp4`).
+   - Guna versi telefon kalau ada (`D:\CLAUDE\kerja\<projek>\preview\...\long_NN_phone.mp4`), kalau tak, versi penuh dari `D:\Video\<projek>\`.
 3. Terbitkan dengan Artifact:
    - `file_path`: `<folder>/index.html`
    - `files`: `{"v1.mp4": "<folder>/v1.mp4"}`

@@ -60,6 +60,6 @@ Semua kad terima: `bg` (`warm` | `dark` | `frame` | `img:<fail>`), `dim` (0-1, g
 | `punch` | zoom laju | `zoom`, `text` |
 | `sound` | bunyi sahaja (gelombang) | `sfx` atau `file` |
 
-SFX sebenar dari pustaka dia (`D:\Video\_sfx\library.json`) boleh dipakai: salin mp3 ke `out_dir`, terbitkan dalam `files`, set `"file": "nama.mp3"`.
+SFX sebenar dari pustaka dia (`D:\CLAUDE\kerja\_sfx\library.json`) boleh dipakai: salin mp3 ke `out_dir`, terbitkan dalam `files`, set `"file": "nama.mp3"`.
 
 Papan ni pratonton (HTML/CSS) sahaja, bukan render akhir. Bila gaya dikunci, terjemah ke pipeline render sebenar.
