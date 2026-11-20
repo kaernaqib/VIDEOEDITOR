@@ -1,0 +1,21 @@
+{
+  "brand": "Utama",
+  "locked": "2026-11-20",
+  "canvas": {"w": 1080, "h": 1920, "video_band": [608, 1414], "text_zones": {"top": [0, 0.31], "bottom": [0.74, 1.0]}},
+  "fonts": {"display": "Anton", "serif": "Instrument Serif Italic", "mono": "Space Mono Bold"},
+  "colors": {"yellow": "#f6d34a", "white": "#ffffff", "bracket": "#ffffff"},
+  "elements": {
+    "countdown": {"id": "FS-01", "items": ["3", "2", "1", "CUT"], "step_s": 0.5, "font": "serif", "color": "#f6d34a", "width_frac": 0.34, "scale_in": [1.5, 1.0], "sfx": "click"},
+    "phrase_stack": {"id": "FR-01", "lines": 3, "step_s": 0.4, "font": "display", "uppercase": true, "color": "#f6d34a", "width_frac": 0.13, "y_frac": 0.06, "scale_in": [1.35, 1.0], "sfx": "thud"},
+    "face_brackets": {"id": "BR-01", "color": "#ffffff", "stroke_px": 4, "corner_frac": 0.12, "pad": 0.15, "in_s": 0.35, "label": "REC 00:00:08", "label_font": "mono", "blink_hz": 3, "track": "yunet"},
+    "keyword_bottom": {"id": "KW-01", "font": "display", "color": "#f6d34a", "glow": true, "width_frac": 0.15, "y_frac": 0.80, "scale_in": [2.2, 1.0], "in_s": 0.16, "shake": true, "hold_s": 2.0, "sfx": "pop"}
+  },
+  "transitions": {
+    "flash_bw": {"id": "TR-01", "flash_s": 0.12, "filter": "grayscale(1) contrast(1.2)", "text_font": "display", "sfx": "whoosh", "use": "kejutan / tapi..."},
+    "flash_film": {"id": "TR-03", "flash_s": 0.12, "filter": "sepia(0.85) contrast(1.15)", "text_font": "serif", "sfx": "whoosh", "use": "imbas kembali / sentimental"},
+    "punch_in": {"id": "TR-02", "zoom": 1.25, "in_s": 0.15, "with": "keyword_bottom", "sfx": "thud", "max_per_reel": 3}
+  },
+  "per_reel": {"countdown_or_phrase": 1, "keyword_bottom": [2, 4], "flash": [1, 2], "punch_in": [2, 3], "face_brackets": 1},
+  "rejected": ["FS-03", "FR-02", "FR-03", "GB-01", "TX-03", "TX-01"],
+  "unresolved": ["SB-01 purple subtitle", "TX-05 purple hook"]
+}
