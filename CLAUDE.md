@@ -25,6 +25,7 @@ Skill yang dipakai sebenarnya disalin ke `~/.claude/skills/`. Kalau ubah skill d
 - **Subtitle di bawah muka.** Letak subtitle di paras dada, kira-kira 76% ketinggian skrin (CapCut caption y = -0.52). Jangan letak di tengah sebab muka jadi tertutup.
 - **Muka jangan besar sangat.** Untuk footage 16:9, jangan crop penuh ke 9:16. Guna bingkai yang lebih kecil (lebar ~2.0x kanvas) dengan canvas blur di atas dan bawah.
 - **Tiada B-roll stok untuk vlog peribadi.** Guna footage dia sendiri sahaja.
+- **Klip ada konteks penuh.** Bila potong vlog jadi reel, setiap reel 60 hingga 120 saat (boleh lebih) dan mesti ceritakan satu situasi dari awal sampai habis, supaya penonton faham apa yang berlaku. Jangan potong 20 hingga 40 saat sahaja.
 
 ## Gaya edit pilihan: poster-frame (skill `skills/poster-frame-reel`)
 
@@ -56,7 +57,8 @@ Diluluskan 19 Nov 2026 pada reel 01 projek 1228. Ini gaya default untuk klip pen
 <!-- Kemas kini bahagian ni hujung setiap sesi kerja. Ringkas: apa siap, apa seterusnya. -->
 
 - Projek CapCut aktif: **1228** (vlog Melbourne 29 minit) dipecah jadi 15 reel. Subtitle dan hook dah dibetulkan. v2 (16 Nov): framing muka dikecilkan (latar blur) dan B-roll dibuang; preview v2 dalam `reels_v2/`. Dah dipasang ke CapCut sebagai "1228 Reel 01 - ..." hingga "1228 Reel 15 - ...". Poin 1 permintaan orang tu masih belum diketahui.
-- 19 Nov: gaya poster-frame diluluskan pada reel 01 (`D:\Video\1228\preview\reels_poster\reel_01_poster.mp4`). Reel 02 hingga 15 belum dirender: setiap satu perlukan headline dan SFX dalam `projects/1228/scripts/data/poster_hooks.json`, kemudian jalankan `poster_job.py D:/Video/1228/work NN D:/Video/1228/preview/reels_poster`. Poster umum: `D:\Video\1228\work\poster_melbourne.jpg` (config `data/poster_melbourne.json`).
+- 19 Nov: gaya poster-frame diluluskan. Poster umum: `D:\Video\1228\work\poster_melbourne.jpg` (config `data/poster_melbourne.json`).
+- 20 Nov (v4): 15 reel pendek dianggap kurang konteks. Vlog dipecah semula jadi **10 reel panjang (70 hingga 140 saat)**, setiap satu satu situasi penuh, dipotong terus dari timeline 1228. Pelan dalam `projects/1228/scripts/data/long_plan.json` (julat masa timeline + headline), SFX ikut frasa (`"at"`) dalam `poster_hooks.json` di bawah kunci `L01`..`L10`. Render: `long_reels.py D:/Video/1228/work D:/Video/1228/preview/reels_long 01 ...`. Output: `D:\Video\1228\preview\reels_long\long_NN.mp4` (penuh) dan `long_NN_phone.mp4` (720p untuk telefon). **Pilihan dia: reel ambil konteks penuh, 60 hingga 120 saat, boleh lebih kalau perlu.** Reel poster-frame lama (`reels_poster/`) dan 15 projek CapCut lama dah tak dipakai.
 - Skrip 1228 dalam `projects/1228/scripts/`. Folder kerja penuh dan preview dalam `D:\Video\1228\` (dipindah dari Temp, 17 Nov).
 - Butiran penuh dan lokasi fail: `.claude/handoffs/2026-11-16-capcut-1228.md`.
 - Nota handoff terkini: lihat fail paling baru dalam `.claude/handoffs/`.

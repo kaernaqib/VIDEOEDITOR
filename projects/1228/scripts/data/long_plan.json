@@ -1,0 +1,180 @@
+{
+ "_note": "v4 (19 Nov 2026): longer reels, 60-120s, each a complete situation. ranges = seconds on the 1228 timeline (see captions_dump / source_map). Silent stretches longer than max_silence are shortened.",
+ "max_silence": 1.6,
+ "music": {
+  "file": "C:/Users/USER/Downloads/[ 1 HOUR SUMMER TROPICAL BEATS ] CHILLOUT, VLOG INSTRUMENTALS [No Copyright Sound] [FREE USE MUSIC] - Monetization - Instrumentals, Beats.mp3",
+  "vol": 0.05
+ },
+ "reels": [
+  {
+   "id": "01",
+   "title": "Shrine of Remembrance & topi",
+   "ranges": [
+    [
+     0,
+     20
+    ],
+    [
+     40,
+     180
+    ]
+   ],
+   "headline": [
+    "SOLO TRAVEL MELBOURNE",
+    "SIAPA NAK AMBIK GAMBAR?!"
+   ],
+   "accent_line": 1
+  },
+  {
+   "id": "02",
+   "title": "Jumpa pakcik Indonesia",
+   "ranges": [
+    [
+     226.5,
+     329.0
+    ]
+   ],
+   "headline": [
+    "JUMPA ORANG INDONESIA",
+    "DI MELBOURNE!"
+   ],
+   "accent_line": 1
+  },
+  {
+   "id": "03",
+   "title": "Jalan kaki jimat modal ke NGV",
+   "ranges": [
+    [
+     360,
+     425
+    ],
+    [
+     480,
+     535
+    ]
+   ],
+   "headline": [
+    "JALAN KAKI JIMAT MODAL",
+    "SAMPAI LUTUT BARAI"
+   ]
+  },
+  {
+   "id": "04",
+   "title": "Queen Vic Market tutup",
+   "ranges": [
+    [
+     540,
+     648
+    ]
+   ],
+   "headline": [
+    "JALAN 800M KAKI SAKIT",
+    "SAMPAI-SAMPAI TUTUP?!"
+   ],
+   "accent_line": 1
+  },
+  {
+   "id": "05",
+   "title": "State Library & tram 96",
+   "ranges": [
+    [
+     680,
+     800
+    ]
+   ],
+   "headline": [
+    "NAIK TRAM 96",
+    "DARI CITY KE ST KILDA"
+   ]
+  },
+  {
+   "id": "06",
+   "title": "Cuaca Melbourne macam perempuan",
+   "ranges": [
+    [
+     800,
+     915
+    ]
+   ],
+   "headline": [
+    "CUACA MELBOURNE",
+    "MACAM PEREMPUAN?!"
+   ],
+   "accent_line": 1
+  },
+  {
+   "id": "07",
+   "title": "Angin St Kilda",
+   "ranges": [
+    [
+     920,
+     970
+    ],
+    [
+     1010,
+     1082.2
+    ]
+   ],
+   "headline": [
+    "ANGIN ST KILDA",
+    "MACAM NAK TERBANG!"
+   ]
+  },
+  {
+   "id": "08",
+   "title": "Pantai St Kilda & silap pakai sandal",
+   "ranges": [
+    [
+     1083,
+     1120
+    ],
+    [
+     1160,
+     1247
+    ]
+   ],
+   "headline": [
+    "SILAP BESAR!",
+    "PAKAI SANDAL JALAN JAUH"
+   ],
+   "accent_line": 0
+  },
+  {
+   "id": "09",
+   "title": "Tak jadi Brighton, ikut bule ke Elwood",
+   "ranges": [
+    [
+     1262.2,
+     1365
+    ],
+    [
+     1400,
+     1440.3
+    ]
+   ],
+   "headline": [
+    "TAK JADI KE BRIGHTON",
+    "IKUT BULE KE ELWOOD"
+   ],
+   "accent_line": 1
+  },
+  {
+   "id": "10",
+   "title": "Balik City & ayam penyet",
+   "ranges": [
+    [
+     1540,
+     1600
+    ],
+    [
+     1640,
+     1739
+    ]
+   ],
+   "headline": [
+    "DATANG JAUH-JAUH",
+    "MAKAN AYAM PENYET"
+   ]
+  }
+ ]
+}

@@ -4,13 +4,349 @@
   "sfx_dir": "D:/Video/_sfx"
  },
  "01": {
-  "headline": ["JANGAN PAKAI TOPI", "MACAM NI MASA VLOG!"],
+  "headline": [
+   "JANGAN PAKAI TOPI",
+   "MACAM NI MASA VLOG!"
+  ],
   "accent_line": 0,
   "sfx": [
-   {"t": 5.5, "name": "windows_error", "vol": 0.55, "dur": 0.8},
-   {"t": 13.3, "name": "ding", "vol": 0.45, "dur": 1.3},
-   {"t": 17.05, "name": "ba_dun_dun", "vol": 0.5, "dur": 0.9},
-   {"t": 24.9, "name": "crowd_laughing", "vol": 0.35, "dur": 1.9}
+   {
+    "t": 5.5,
+    "name": "windows_error",
+    "vol": 0.55,
+    "dur": 0.8
+   },
+   {
+    "t": 13.3,
+    "name": "ding",
+    "vol": 0.45,
+    "dur": 1.3
+   },
+   {
+    "t": 17.05,
+    "name": "ba_dun_dun",
+    "vol": 0.5,
+    "dur": 0.9
+   },
+   {
+    "t": 24.9,
+    "name": "crowd_laughing",
+    "vol": 0.35,
+    "dur": 1.9
+   }
+  ]
+ },
+ "L01": {
+  "sfx": [
+   {
+    "t": 64.3,
+    "name": "dun_dun_dunn",
+    "vol": 0.4,
+    "dur": 2.2
+   },
+   {
+    "t": 85.9,
+    "name": "windows_error",
+    "vol": 0.55,
+    "dur": 0.8
+   },
+   {
+    "t": 97.1,
+    "name": "ding",
+    "vol": 0.45,
+    "dur": 1.3
+   },
+   {
+    "t": 101.6,
+    "name": "ba_dun_dun",
+    "vol": 0.5,
+    "dur": 0.9
+   },
+   {
+    "t": 134.2,
+    "name": "crickets",
+    "vol": 0.35,
+    "dur": 2.6
+   },
+   {
+    "t": 138.4,
+    "name": "ba_dun_tsss",
+    "vol": 0.45,
+    "dur": 1.9
+   }
+  ]
+ },
+ "L02": {
+  "sfx": [
+   {
+    "at": "saya orang Malaysia",
+    "name": "record_scratch",
+    "vol": 0.35,
+    "dur": 1.2
+   },
+   {
+    "at": "kita kita single",
+    "name": "ba_dun_tsss",
+    "off": 2.6,
+    "dur": 1.9
+   },
+   {
+    "at": "foto kita",
+    "name": "ding",
+    "vol": 0.4,
+    "dur": 1.3
+   },
+   {
+    "at": "hai Indonesia",
+    "name": "kids_cheering",
+    "off": 1.0,
+    "vol": 0.3,
+    "dur": 2.0
+   }
+  ]
+ },
+ "L03": {
+  "sfx": [
+   {
+    "at": "jimat modal",
+    "name": "ding",
+    "vol": 0.4,
+    "dur": 1.3
+   },
+   {
+    "at": "barai Mat",
+    "name": "oof",
+    "off": 0.9,
+    "vol": 0.5
+   },
+   {
+    "at": "art berat",
+    "name": "heavenly_music",
+    "vol": 0.3,
+    "dur": 2.5
+   },
+   {
+    "at": "anda rasa kena bayar",
+    "name": "drum_roll",
+    "vol": 0.35,
+    "dur": 2.5
+   }
+  ]
+ },
+ "L04": {
+  "sfx": [
+   {
+    "at": "kurang ajar betul",
+    "name": "bruh",
+    "off": 1.4,
+    "vol": 0.5,
+    "dur": 0.9
+   },
+   {
+    "at": "layanlah",
+    "name": "cartoon_running",
+    "vol": 0.35,
+    "dur": 2.0
+   },
+   {
+    "at": "tapi malangnya tutup",
+    "name": "sad_moment",
+    "off": 0.8,
+    "vol": 0.35,
+    "dur": 3.5
+   }
+  ]
+ },
+ "L05": {
+  "sfx": [
+   {
+    "at": "we call the dome",
+    "name": "heavenly_music",
+    "vol": 0.3,
+    "dur": 2.5
+   },
+   {
+    "at": "kanan aku pergi",
+    "name": "cartoon_running",
+    "vol": 0.35,
+    "dur": 1.8
+   },
+   {
+    "at": "tapi bukan train",
+    "name": "ba_dun_tsss",
+    "off": 1.2,
+    "vol": 0.4,
+    "dur": 1.9
+   },
+   {
+    "at": "kena jalan lagi",
+    "name": "oof",
+    "off": 1.0,
+    "vol": 0.5
+   }
+  ]
+ },
+ "L06": {
+  "sfx": [
+   {
+    "at": "perangai dia macam",
+    "name": "dun_dun_dunn",
+    "vol": 0.4,
+    "dur": 2.0
+   },
+   {
+    "at": "tak faham dowh",
+    "name": "say_whattt",
+    "off": 1.0,
+    "vol": 0.4,
+    "dur": 1.6
+   },
+   {
+    "at": "pening ah",
+    "name": "record_scratch",
+    "vol": 0.35,
+    "dur": 1.2
+   },
+   {
+    "at": "angin macam nak terbang",
+    "name": "weeee",
+    "off": 1.2,
+    "vol": 0.35,
+    "dur": 1.8
+   },
+   {
+    "at": "jahat bos",
+    "name": "ba_dun_tsss",
+    "off": 0.9,
+    "vol": 0.4,
+    "dur": 1.9
+   }
+  ]
+ },
+ "L07": {
+  "sfx": [
+   {
+    "at": "besar memanglah",
+    "name": "bruh",
+    "off": 1.6,
+    "vol": 0.5,
+    "dur": 0.9
+   },
+   {
+    "at": "this is amazing",
+    "name": "heavenly_music",
+    "vol": 0.3,
+    "dur": 2.2
+   },
+   {
+    "at": "perfect combo",
+    "name": "ding",
+    "vol": 0.4,
+    "dur": 1.3
+   },
+   {
+    "at": "asal takde orang",
+    "name": "crickets",
+    "vol": 0.35,
+    "dur": 2.6
+   }
+  ]
+ },
+ "L08": {
+  "sfx": [
+   {
+    "at": "tak timbul",
+    "name": "ba_dun_tsss",
+    "off": 1.5,
+    "vol": 0.4,
+    "dur": 1.9
+   },
+   {
+    "at": "aku rasa aku silap",
+    "name": "gta5_wasted",
+    "off": 1.0,
+    "vol": 0.35,
+    "dur": 2.5
+   },
+   {
+    "at": "oh yo what",
+    "name": "dun_dun_dunn",
+    "vol": 0.4,
+    "dur": 2.0
+   }
+  ]
+ },
+ "L09": {
+  "sfx": [
+   {
+    "at": "ibu sama kakak cantik",
+    "name": "hehe_boi",
+    "off": 2.2,
+    "vol": 0.4,
+    "dur": 1.2
+   },
+   {
+    "at": "so kita tak jadi",
+    "name": "mission_failed",
+    "vol": 0.35,
+    "dur": 2.5
+   },
+   {
+    "at": "bule apa",
+    "name": "ba_dun_tsss",
+    "off": 1.0,
+    "vol": 0.4,
+    "dur": 1.9
+   },
+   {
+    "at": "tiba tiba hujan",
+    "name": "dramatic_sound",
+    "vol": 0.35,
+    "dur": 2.0
+   }
+  ]
+ },
+ "L10": {
+  "sfx": [
+   {
+    "at": "datang kan matahari",
+    "name": "heavenly_music",
+    "vol": 0.3,
+    "dur": 2.5
+   },
+   {
+    "at": "nak kena jalan jauh",
+    "name": "no_no_no_no",
+    "off": 1.8,
+    "vol": 0.35,
+    "dur": 1.6
+   },
+   {
+    "at": "makan",
+    "name": "ba_dun_tsss",
+    "off": 2.2,
+    "vol": 0.4,
+    "dur": 1.9
+   },
+   {
+    "at": "kena nasi",
+    "name": "ding",
+    "vol": 0.4,
+    "dur": 1.3
+   },
+   {
+    "at": "tapi bukan RM40",
+    "name": "dun_dun_dunn",
+    "vol": 0.4,
+    "dur": 2.0
+   },
+   {
+    "at": "jumpa esok",
+    "name": "well_be_right_back",
+    "off": 1.2,
+    "vol": 0.45,
+    "dur": 2.5
+   }
   ]
  }
 }

@@ -37,7 +37,12 @@ def run(cmd):
 def probe(path):
     out = run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height",
                "-of", "csv=p=0", path]).strip().split("\n")[0]
-    return tuple(int(x) for x in out.split(","))
+    w, h = tuple(int(x) for x in out.split(",") if x.strip())[:2]   # phone MOVs add a trailing empty field
+    rot = run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream_side_data=rotation",
+               "-of", "csv=p=0", path]).strip().replace(",", "")
+    if rot.lstrip("-").isdigit() and abs(int(rot)) % 180 == 90:      # portrait phone video: ffmpeg auto-rotates
+        w, h = h, w
+    return w, h
 
 
 def hexrgb(h):
@@ -164,13 +169,22 @@ def render_band(job, S, tmp):
         t1 = c.get("t1")
         if t1 is None and "src1" in c:
             t1 = c["src1"] / job.get("edl_fps", fps)
-        n = round((t1 - t0) * fps) if t1 else None
+        n = c.get("frames") or (round((t1 - t0) * fps) if t1 else None)   # "frames": exact count from the caller
         o = f"{tmp}/b{k:03d}.mp4"
+        if os.path.splitext(c["path"])[1].lower() in (".jpg", ".jpeg", ".png", ".webp"):
+            # still photo: whole picture fitted to the band height over a blurred cover copy of itself
+            run(["ffmpeg", "-v", "error", "-y", "-loop", "1", "-framerate", str(fps), "-i", c["path"], "-frames:v", str(n),
+                 "-filter_complex", f"[0:v]split[a][b];[a]scale={W}:{BAND_H}:force_original_aspect_ratio=increase,"
+                 f"crop={W}:{BAND_H},boxblur=30:2[bg];[b]scale=-2:{BAND_H}[fg];[bg][fg]overlay=(W-w)/2:0,{eq},"
+                 "format=yuv420p,setsar=1", "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", o])
+            return o
         cmd = ["ffmpeg", "-v", "error", "-y", "-ss", f"{t0:.4f}", "-i", c["path"]]
         if n:
             cmd += ["-frames:v", str(n)]
         vf = f"fps={fps}," + band_vf(w, h, c.get("f", 0.5), c.get("scale0", 1.0), c.get("scale1", c.get("scale0", 1.0)), n or 1)
-        cmd += ["-vf", f"{vf},{eq},format=yuv420p", "-an", "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", o]
+        # tpad: a clip that runs past the end of its file is padded, so the band never comes out short
+        cmd += ["-vf", f"{vf},{eq},tpad=stop_mode=clone:stop_duration=1,format=yuv420p", "-an",
+                "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", o]
         run(cmd)
         return o
 
