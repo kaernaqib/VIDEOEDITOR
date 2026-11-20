@@ -9,6 +9,7 @@ Claude skills untuk edit video pendek (Reels / TikTok / Shorts), bahasa Melayu.
 - `skills/reel-editor`: edit Reel 9:16 terus dalam projek CapCut (talking-head, vlog, faceless; style pack; format education, do & don't, before/after, story). Bergantung pada `capcut-talking-head-edit`.
 - `skills/capcut-talking-head-edit`: tulis fail timeline CapCut terus, tambah motion graphics.
 - `skills/voiceover-glass-reel`: voiceover jadi reel dokumentari 16:9 dalam After Effects.
+- `skills/caption`: caption "word behind head" (perkataan besar di belakang kepala via cut-out rembg, caption kecil ikut masa whisper) + cara bina gaya caption sendiri. Skrip `scripts/word_behind_head.py` (transcribe / render / --still).
 - `tools/weby-reel`: pipeline render ffmpeg + libass (`render.py`, `transcribe.py`, contoh job JSON).
 
 Skill yang dipakai sebenarnya disalin ke `~/.claude/skills/`. Kalau ubah skill dalam repo ni, salin semula ke situ (atau sebaliknya) supaya dua-dua sama.
