@@ -18,7 +18,7 @@ Nama brand / handle, jenis kandungan (vlog, tips, podcast), 2-3 reel rujukan yan
 
 ### 2. Pusingan 1
 1. Ambil satu still dari video dia: `ffmpeg -ss 5 -i <video> -frames:v 1 -vf scale=540:-2 <dir>/src_frame.jpg`.
-2. Tulis `brand/<brand>/round1.json` (contoh penuh: `data/round1_example.json`). 16-24 kad dalam 4-6 kategori. Setiap kad: `id` (cth. `FS-01`), `cat`, `title`, `desc` (Bahasa Melayu), `preset`, `p` (parameter).
+2. Tulis `brand/<brand>/round1.json` (contoh penuh: `data/round1_example.json`). 8-12 kad sahaja (lebih banyak memeningkan; dia nilai satu demi satu), setiap kad yang ada bunyi letak `sfx` terus pada kad itu. Setiap kad: `id` (cth. `FS-01`), `cat`, `title`, `desc` (Bahasa Melayu), `preset`, `p` (parameter).
 3. `python scripts/build_board.py brand/<brand>/round1.json <out_dir> --frame <dir>/src_frame.jpg` (`out_dir` dalam scratchpad).
 4. Terbitkan: `file_path` `<out_dir>/index.html`, `files` `{"frame.jpg": "<out_dir>/frame.jpg"}`, `capabilities` `{"db": {}, "user": {}}`, `icon` `"palette"`. Simpan url dalam `brand/<brand>/board.json`.
 5. Beri link. Dia pilih, tulis nota, tekan **Hantar semakan**, kemudian kata "dah review".
@@ -32,7 +32,7 @@ Nama brand / handle, jenis kandungan (vlog, tips, podcast), 2-3 reel rujukan yan
 Rumuskan kepada dia: berapa dikunci, berapa diubah, berapa dibuang.
 
 ### 4. Pusingan seterusnya
-Tulis `round<N+1>.json` (naikkan `round`): kad yang perlu diubah + 4-8 kad baru yang ikut arah yang dia suka. Bina dan terbitkan semula ke **url yang sama** (tanpa `capabilities`; ia kekal). Ulang sampai dia puas (biasanya 2-3 pusingan).
+Tulis `round<N+1>.json` (naikkan `round`): kad yang perlu diubah + 3-6 kad baru (jumlah tetap <= 12) yang ikut arah yang dia suka. Bina dan terbitkan semula ke **url yang sama** (tanpa `capabilities`; ia kekal). Ulang sampai dia puas (biasanya 2-3 pusingan).
 
 ### 5. Kunci gaya
 Tulis dua fail dalam `brand/<brand>/`:

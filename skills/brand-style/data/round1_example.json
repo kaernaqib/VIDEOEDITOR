@@ -1,35 +1,161 @@
 {
   "brand": "Contoh",
   "round": 1,
-  "intro": "Pusingan 1: 20 cadangan animasi. Pilih Simpan, Mungkin atau Buang, tulis nota, kemudian Hantar semakan.",
   "categories": [
-    {"name": "Skrin penuh", "desc": "Saat besar dan potongan yang ambil seluruh skrin"},
-    {"name": "Tajuk dan teks", "desc": "Perkataan dan tajuk atas video"},
-    {"name": "Graf dan papan", "desc": "Nombor, graf dan senarai"},
-    {"name": "Subtitle", "desc": "Gaya caption 1-3 perkataan"},
-    {"name": "Peralihan", "desc": "Cara tukar shot"},
-    {"name": "Bunyi", "desc": "SFX yang ikut animasi (klik untuk dengar)"}
+    {
+      "name": "Skrin penuh",
+      "desc": "Saat besar dan potongan yang ambil seluruh skrin"
+    },
+    {
+      "name": "Tajuk dan teks",
+      "desc": "Perkataan dan tajuk atas video"
+    },
+    {
+      "name": "Graf dan papan",
+      "desc": "Nombor, graf dan senarai"
+    },
+    {
+      "name": "Subtitle",
+      "desc": "Gaya caption 1-3 perkataan"
+    },
+    {
+      "name": "Peralihan",
+      "desc": "Cara tukar shot"
+    }
   ],
   "cards": [
-    {"id": "FS-01", "cat": "Skrin penuh", "title": "Kiraan potong", "desc": "3, 2, 1, CUT ikut rentak", "preset": "count", "p": {"items": ["3", "2", "1", "CUT"], "font": "serif", "color": "#f6d34a", "sfx": "click"}},
-    {"id": "FS-02", "cat": "Skrin penuh", "title": "Bam bertindan", "desc": "Perkataan bertindan tepat pada rentak", "preset": "stack", "p": {"words": ["BAM", "BAM", "BAM"], "font": "archivo", "sfx": "thud"}},
-    {"id": "FS-03", "cat": "Skrin penuh", "title": "Hentak satu perkataan", "desc": "Perkataan besar jatuh dengan gegar", "preset": "slam", "p": {"text": "BOOM", "color": "#f6d34a", "font": "anton", "sfx": "boom"}},
-    {"id": "FS-04", "cat": "Skrin penuh", "title": "Taip skrin", "desc": "Teks mono ditaip dengan kursor", "preset": "type", "p": {"text": "HARI 1: MELBOURNE. SEJUK GILA.", "sfx": "type"}},
-    {"id": "TX-01", "cat": "Tajuk dan teks", "title": "Kata kunci kuning", "desc": "Satu kata kunci besar atas muka", "preset": "slam", "p": {"text": "LONG.", "bg": "frame", "y": 18, "size": 20, "glow": true}},
-    {"id": "TX-02", "cat": "Tajuk dan teks", "title": "Serif lembut", "desc": "Italic serif naik perlahan", "preset": "fadeup", "p": {"text": "edits", "bg": "frame", "y": 16}},
-    {"id": "TX-03", "cat": "Tajuk dan teks", "title": "Tag nama", "desc": "Nama dan topik di bawah", "preset": "nametag", "p": {"name": "NAMA AWAK", "role": "Vlog Melbourne", "bg": "frame", "color": "#f6d34a", "sfx": "pop"}},
-    {"id": "TX-04", "cat": "Tajuk dan teks", "title": "Bracket kunci muka", "desc": "Bucu kamera kunci pada muka + REC", "preset": "brackets", "p": {"bg": "frame", "label": "REC 00:00:08"}},
-    {"id": "TX-05", "cat": "Tajuk dan teks", "title": "Tajuk ungu", "desc": "Hook ungu poster-frame", "preset": "slam", "p": {"text": "TAK SANGKA", "bg": "frame", "y": 14, "size": 16, "color": "#CA00FF", "font": "bebas"}},
-    {"id": "GB-01", "cat": "Graf dan papan", "title": "Graf naik", "desc": "Garis naik, nombor mengira", "preset": "graph", "p": {"label": "VIEWS", "to": 197, "suffix": "K", "bg": "dark"}},
-    {"id": "GB-02", "cat": "Graf dan papan", "title": "Bar mingguan", "desc": "Bar tumbuh satu-satu", "preset": "bars", "p": {"values": [30, 55, 48, 92], "label": "MINGGU 1-4"}},
-    {"id": "GB-03", "cat": "Graf dan papan", "title": "Graf atas video", "desc": "Graf hijau atas footage", "preset": "graph", "p": {"bg": "frame", "dim": 0.4, "to": 59, "suffix": "%", "label": "JIMAT"}},
-    {"id": "SB-01", "cat": "Subtitle", "title": "Ungu bercahaya", "desc": "Gaya sekarang: putih, satu perkataan ungu", "preset": "caption", "p": {"bg": "frame"}},
-    {"id": "SB-02", "cat": "Subtitle", "title": "Kuning tebal", "desc": "Satu perkataan kuning", "preset": "caption", "p": {"bg": "frame", "color": "#f6d34a", "chunks": [["INI"], ["TEMPAT"], ["PALING", "CANTIK"]], "highlight": "CANTIK"}},
-    {"id": "TR-01", "cat": "Peralihan", "title": "Kilat putih", "desc": "Kilat ke hitam putih", "preset": "flash", "p": {"bg": "frame", "text": "TAPI...", "sfx": "whoosh"}},
-    {"id": "TR-02", "cat": "Peralihan", "title": "Punch-in", "desc": "Zoom laju pada satu perkataan", "preset": "punch", "p": {"bg": "frame", "text": "SERIUS?", "zoom": 1.35, "sfx": "thud"}},
-    {"id": "SD-01", "cat": "Bunyi", "title": "Whoosh", "desc": "Untuk peralihan", "preset": "sound", "p": {"sfx": "whoosh"}},
-    {"id": "SD-02", "cat": "Bunyi", "title": "Pop", "desc": "Untuk teks muncul", "preset": "sound", "p": {"sfx": "pop", "color": "#7be08f"}},
-    {"id": "SD-03", "cat": "Bunyi", "title": "Ding", "desc": "Untuk poin penting", "preset": "sound", "p": {"sfx": "ding", "color": "#A773F8"}},
-    {"id": "SD-04", "cat": "Bunyi", "title": "Riser", "desc": "Bina suspens sebelum reveal", "preset": "sound", "p": {"sfx": "riser", "color": "#d9665e"}}
+    {
+      "id": "FS-01",
+      "cat": "Skrin penuh",
+      "title": "Kiraan potong",
+      "desc": "3, 2, 1, CUT ikut rentak",
+      "preset": "count",
+      "p": {
+        "items": [
+          "3",
+          "2",
+          "1",
+          "CUT"
+        ],
+        "font": "serif",
+        "color": "#f6d34a",
+        "sfx": "click"
+      }
+    },
+    {
+      "id": "FS-03",
+      "cat": "Skrin penuh",
+      "title": "Hentak satu perkataan",
+      "desc": "Perkataan besar jatuh dengan gegar",
+      "preset": "slam",
+      "p": {
+        "text": "BOOM",
+        "color": "#f6d34a",
+        "font": "anton",
+        "sfx": "boom"
+      }
+    },
+    {
+      "id": "TX-01",
+      "cat": "Tajuk dan teks",
+      "title": "Kata kunci kuning",
+      "desc": "Satu kata kunci besar atas muka",
+      "preset": "slam",
+      "p": {
+        "text": "LONG.",
+        "bg": "frame",
+        "y": 18,
+        "size": 20,
+        "glow": true
+      }
+    },
+    {
+      "id": "TX-03",
+      "cat": "Tajuk dan teks",
+      "title": "Tag nama",
+      "desc": "Nama dan topik di bawah",
+      "preset": "nametag",
+      "p": {
+        "name": "NAMA AWAK",
+        "role": "Vlog Melbourne",
+        "bg": "frame",
+        "color": "#f6d34a",
+        "sfx": "pop"
+      }
+    },
+    {
+      "id": "TX-04",
+      "cat": "Tajuk dan teks",
+      "title": "Bracket kunci muka",
+      "desc": "Bucu kamera kunci pada muka + REC",
+      "preset": "brackets",
+      "p": {
+        "bg": "frame",
+        "label": "REC 00:00:08"
+      }
+    },
+    {
+      "id": "TX-05",
+      "cat": "Tajuk dan teks",
+      "title": "Tajuk ungu",
+      "desc": "Hook ungu poster-frame",
+      "preset": "slam",
+      "p": {
+        "text": "TAK SANGKA",
+        "bg": "frame",
+        "y": 14,
+        "size": 16,
+        "color": "#CA00FF",
+        "font": "bebas"
+      }
+    },
+    {
+      "id": "GB-01",
+      "cat": "Graf dan papan",
+      "title": "Graf naik",
+      "desc": "Garis naik, nombor mengira",
+      "preset": "graph",
+      "p": {
+        "label": "VIEWS",
+        "to": 197,
+        "suffix": "K",
+        "bg": "dark"
+      }
+    },
+    {
+      "id": "SB-01",
+      "cat": "Subtitle",
+      "title": "Ungu bercahaya",
+      "desc": "Gaya sekarang: putih, satu perkataan ungu",
+      "preset": "caption",
+      "p": {
+        "bg": "frame"
+      }
+    },
+    {
+      "id": "TR-01",
+      "cat": "Peralihan",
+      "title": "Kilat putih",
+      "desc": "Kilat ke hitam putih",
+      "preset": "flash",
+      "p": {
+        "bg": "frame",
+        "text": "TAPI...",
+        "sfx": "whoosh"
+      }
+    },
+    {
+      "id": "TR-02",
+      "cat": "Peralihan",
+      "title": "Punch-in",
+      "desc": "Zoom laju pada satu perkataan",
+      "preset": "punch",
+      "p": {
+        "bg": "frame",
+        "text": "SERIUS?",
+        "zoom": 1.35,
+        "sfx": "thud"
+      }
+    }
   ]
 }
