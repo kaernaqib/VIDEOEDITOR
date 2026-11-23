@@ -21,6 +21,10 @@ Untuk: Education, Do & Don't, Before/After, listicle ("6 objections").
 
 ## Gaya B — "Cinematic Story" (omgadrian)
 Untuk: Vlog, cerita, launch/pengumuman.
+**Dikemas kini 23 Nov 2026 dari 2 reel rujukan (diukur frame demi frame), dan diluluskan pada sampel 1228.** Fon sebenar:
+tajuk Anton, frasa kecil Playfair Display Italic 600, subtitle EB Garamond 500 `#F3E3A0`. Animasi: setiap perkataan
+kabur→tajam ikut masa sebutan, keluar kabur, baris kotak kuning tersapu, tajuk belakang kepala. Render luar CapCut guna
+skill `cinematic-text` (`skills/cinematic-text/scripts/cinematic_text.py`). Butiran di bawah ni analisis asal.
 - **Tajuk**: font condensed sangat tebal (Anton / Bebas Neue) UPPERCASE kuning, besar (1/4 frame),
   dipasang dengan 1–3 perkataan serif italic kecil (Playfair Display Italic) di atasnya
   ("Do you wanna make / **BETTER**", "use it / **FOREVER**").

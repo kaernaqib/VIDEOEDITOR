@@ -1,0 +1,145 @@
+{
+ "out": "D:/CLAUDE/kerja/1228/preview/omg/omg_sample_01.mp4",
+ "video": "D:/melbourne/melbourne 1/DJI_20251201091303_0049_D.MP4",
+ "audio": "D:/CLAUDE/kerja/1228/work/long/r01/audio.wav",
+ "t0": 14.0,
+ "pieces": [
+  [
+   18.3,
+   23.9667
+  ],
+  [
+   43.967,
+   55.3
+  ]
+ ],
+ "video_width": 2160,
+ "video_top": 440,
+ "title_top": 120,
+ "whips": [
+  19.667
+ ],
+ "blocks": [
+  {
+   "small": [
+    [
+     "on",
+     15.0
+    ],
+    [
+     "the",
+     15.15
+    ],
+    [
+     "way",
+     15.3
+    ]
+   ],
+   "big": [
+    [
+     "SHRINE",
+     17.3
+    ]
+   ],
+   "out": 19.45
+  },
+  {
+   "small": [
+    [
+     "kita",
+     20.27
+    ],
+    [
+     "dah",
+     20.47
+    ]
+   ],
+   "big": [
+    [
+     "JUMPA!",
+     20.63
+    ]
+   ],
+   "out": 21.75
+  },
+  {
+   "small": [
+    [
+     "nama",
+     22.0
+    ],
+    [
+     "dia",
+     22.32
+    ]
+   ],
+   "big": [
+    [
+     "SHRINE",
+     22.76
+    ],
+    [
+     "OF",
+     23.44
+    ]
+   ],
+   "box": [
+    "REMEMBRANCE",
+    23.76
+   ],
+   "out": 26.9,
+   "leak": 22.7
+  },
+  {
+   "small": [
+    [
+     "so",
+     28.97
+    ],
+    [
+     "inilah",
+     29.15
+    ]
+   ],
+   "big": [
+    [
+     "TEMPATNYA",
+     29.6
+    ]
+   ],
+   "out": 30.85
+  }
+ ],
+ "subs": [
+  [
+   14.87,
+   16.35,
+   "remembrance of.."
+  ],
+  [
+   17.3,
+   19.29,
+   "shrine ke shrine of.."
+  ],
+  [
+   19.95,
+   21.19,
+   "okey kita dah jumpa dah"
+  ],
+  [
+   22.0,
+   24.68,
+   "nama dia Shrine of Remembrance"
+  ],
+  [
+   27.1,
+   27.94,
+   "ke bukan.."
+  ],
+  [
+   28.97,
+   30.6,
+   "so inilah tempat dia.."
+  ]
+ ]
+}
