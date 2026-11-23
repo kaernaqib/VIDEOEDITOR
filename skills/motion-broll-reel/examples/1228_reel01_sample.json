@@ -1,0 +1,41 @@
+{
+  "out": "D:/CLAUDE/kerja/1228/preview/newera/newera_sample_01.mp4",
+  "video": "D:/melbourne/melbourne 1/DJI_20251201091303_0049_D.MP4",
+  "audio": "D:/CLAUDE/kerja/1228/work/long/r01/audio.wav",
+  "t0": 9.6,
+  "pieces": [[13.894, 23.967], [43.967, 55.347], [56.4, 58.8], [58.9, 85.647]],
+  "theme": "gold",
+  "video_width": 2160,
+  "captions": [
+    {"small": [["so", 9.87], ["sekarang", 10.27], ["kita", 10.75]], "big": [["On", 11.11], ["The", 11.35], ["Way", 11.51]], "out": 13.9},
+    {"small": [["remembrance", 14.87], ["of..", 16.07]], "italic": true, "out": 16.9},
+    {"small": [["shrine", 17.3], ["ke", 18.1]], "big": [["Shrine", 18.57], ["Of..", 19.09]], "out": 19.8},
+    {"small": [["okey", 19.95], ["kita", 20.27], ["dah", 20.47]], "big": [["Jumpa!", 20.63]], "out": 21.85},
+    {"small": [["ke", 27.1], ["bukan..", 27.66]], "italic": true, "out": 28.8},
+    {"small": [["so", 28.97], ["inilah", 29.33]], "big": [["Tempat", 29.77], ["Dia", 30.09]], "out": 31.8},
+    {"small": [["ini", 34.27], ["tak", 34.71], ["tahulah", 34.87], ["tempat", 35.35]], "big": [["Bersejarah", 35.67]], "out": 37.3},
+    {"small": [["so", 54.97], ["tempat", 55.29], ["ni", 55.69], ["untuk", 55.93], ["kita", 56.29]], "big": [["Memperingati", 57.9]], "out": 59.9}
+  ],
+  "icons": [
+    {"icon": "round_pushpin", "t": 11.1, "out": 13.8, "side": "right"},
+    {"icon": "sparkles", "t": 20.6, "out": 21.8, "side": "left"},
+    {"icon": "books", "t": 35.6, "out": 37.2, "side": "right"},
+    {"icon": "hourglass_done", "t": 57.8, "out": 59.8, "side": "left"}
+  ],
+  "rings": [{"t": 55.0, "out": 57.7}],
+  "scenes": [
+    {"type": "title", "t": 22.0, "out": 26.9, "label": "Melbourne",
+     "pill": ["MELBOURNE · VICTORIA", 22.1], "pre": ["nama dia", 22.0],
+     "title": ["Shrine of Remembrance", 22.76], "post": ["tempat pertama hari ni", 24.4]},
+    {"type": "timeline", "t": 37.4, "out": 48.0, "label": "Tertulis di sini",
+     "items": [["Erected", "by a grateful people", 38.85], ["Honoured memory", "of the men and women", 43.34],
+               ["Victoria", "who served the Empire", 45.93]],
+     "subs": [[37.53, 42.8, "this monument was *erected* by a grateful people"],
+              [42.9, 45.9, "to the *honoured memory* of the men and women"],
+              [45.93, 48.0, "of *Victoria* who served"]]},
+    {"type": "hero", "t": 48.0, "out": 54.75, "label": "The Great War",
+     "icon": ["shield", 48.2], "pill": ["MONUMEN PERINGATAN", 48.6], "word": ["1914 – 1918", 51.59],
+     "subs": [[48.13, 50.9, "the Empire in the *Great War*"],
+              [51.07, 54.6, "of *nineteen fourteen* to *nineteen eighteen*"]]}
+  ]
+}
