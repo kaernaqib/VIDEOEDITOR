@@ -932,7 +932,8 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     left += `<div class="field"><label for="f-notes">Nota untuk agent</label><textarea class="input" id="f-notes" data-k="notes" placeholder="Apa-apa yang agent perlu tahu" ${dis}>${esc(d.notes)}</textarea></div>`;
     const c = d.checks || {};
     const right = `<div class="field"><span class="lbl">Arahan untuk ${esc(a.name)}</span><div class="prompt-box" id="prompt">${esc(promptFor(d))}</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn primary small" type="button" data-act="copy">Salin arahan</button><span class="note">Paste dalam chat baru di Claude desktop app.</span></div>
+        <div class="field"><label for="f-extra">Arahan tambahan untuk kali ni (pilihan)</label><textarea class="input" id="f-extra" placeholder="Contoh: render reel 02 guna gaya New Era tema gold, satu sampel dulu" maxlength="1500"></textarea></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn primary small" type="button" data-act="send" id="send-btn" disabled>${svg("spark", 14)} Hantar ke Claude</button><button class="btn small" type="button" data-act="copy">Salin</button><span class="note" id="send-note">Memeriksa sambungan ke Claude…</span></div>
         ${a.live ? "" : `<div class="warn-box">Skill <b>${esc(a.skill)}</b> belum dibina, jadi arahan ni belum boleh dijalankan lagi.</div>`}</div>
       ${checks.length ? `<div class="field"><span class="lbl">Checklist · ${esc(stages.find((s) => s.id === d.stage)?.name)}</span><div class="checks">${checks.map(([k, t, sub]) => { const on = !!c[ckey(k)]; return `<label class="check ${on ? "done" : ""}"><input type="checkbox" data-check="${ckey(k)}" ${on ? "checked" : ""} ${dis}><span>${esc(t)}${sub ? `<small>${esc(sub)}</small>` : ""}</span></label>`; }).join("")}</div></div>`
         : `<div class="note">${d.stage === "render" || d.stage === "jalan" ? "Agent sedang jalan. Bila hasil sampai, pindah ke Semak." : d.stage === "posted" ? "Isi prestasi supaya kau nampak hook dan format mana yang menang." : "Checklist muncul bila tugas sampai peringkat semak."}</div>`}`;
@@ -940,6 +941,44 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
       <div class="drawer-grid"><div class="stack">${left}</div><div class="stack">${right}</div></div>
       <div class="drawer-foot"><div>${!d.isNew && !readOnly ? `<button class="btn ghost small danger" type="button" data-act="delete">Padam</button>` : ""}</div>
         <div>${!readOnly && nextStage ? `<button class="btn small" type="button" data-act="advance">Pindah ke ${esc(nextStage.name)} →</button>` : ""}${!readOnly ? `<button class="btn primary small" type="button" data-act="save">${d.isNew ? "Tambah" : "Simpan"}</button>` : `<span class="note">Paparan baca sahaja</span>`}</div></div>`;
+    refreshSend();
+  }
+
+  // ------------------------------------------------------------------ send to Claude (artifact comments)
+  // The instruction is posted as a comment on this page and handed to the Claude session watching it;
+  // Claude replies in that comment thread.
+  let cm = null, cmTried = false;
+  const SEND_WHY = { writers_only: "Hanya editor studio boleh hantar.", no_session: "Tiada sesi Claude yang memantau studio ni sekarang. Buka chat Claude Code projek VIDEOEDITOR dulu, kemudian cuba lagi.", off: "Hantar ke Claude tak ada dalam paparan ni. Guna Salin." };
+  async function refreshSend() {
+    const b = $("#send-btn"), n = $("#send-note");
+    if (!b || !n) return;
+    if (!cmTried) { cmTried = true; cm = window.claude?.use ? await window.claude.use("comments").catch(() => null) : null; }
+    let st = "off";
+    if (cm) { try { st = await cm.canSendToClaude(); } catch (_) { st = "off"; } }
+    const ok = st === "available";
+    if (!$("#send-btn")) return;
+    b.disabled = !ok;
+    n.textContent = ok ? "Claude terima terus dan balas dalam komen halaman ni." : (SEND_WHY[st] || SEND_WHY.off);
+  }
+  async function sendToClaude() {
+    const b = $("#send-btn"), n = $("#send-note");
+    if (!cm || !draft) return;
+    const extra = ($("#f-extra")?.value || "").trim();
+    let text = `[Agent Studio · ${AGENTS[draft.agent]?.name || "Agent"} · ${draft.title || "Tanpa tajuk"}]\n${promptFor(draft)}${extra ? `\n\nArahan tambahan: ${extra}` : ""}`;
+    text = text.replace(new RegExp("[\u0000-\u0009\u000b-\u001f\u007f\u200b-\u200f\u2028-\u202e\u2060-\u206f\ufeff]", "g"), " ");
+    while (new TextEncoder().encode(text).length > 3900) text = text.slice(0, -50);
+    b.disabled = true; n.textContent = "Menghantar…";
+    try {
+      const anchor = await cm.anchorFor($("#prompt"));
+      try { await cm.sendToClaude({ anchor, text }); }
+      catch (e) { if (e?.code !== "invalid") throw e; await cm.sendToClaude({ anchor, text: text.replace(/\n+/g, " · ") }); }
+      if ($("#f-extra")) $("#f-extra").value = "";
+      n.textContent = "Dihantar. Balasan Claude muncul dalam komen halaman ni.";
+      toast("Dihantar ke Claude");
+    } catch (e) {
+      const why = { claude_unavailable: "Claude tak dapat terima sekarang. Pastikan chat Claude Code projek ni terbuka.", rate_limited: "Terlalu cepat. Tunggu sekejap.", consent_required: "Benarkan komen dulu, kemudian cuba lagi.", forbidden: SEND_WHY.writers_only };
+      n.textContent = why[e?.code] || "Tak berjaya hantar. Guna Salin sebagai ganti.";
+    } finally { setTimeout(refreshSend, 1500); }
   }
 
   // ---- resources
@@ -1068,6 +1107,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
       if (t.dataset.confirm !== "1") { t.dataset.confirm = "1"; t.textContent = "Tekan sekali lagi untuk padam"; return; }
       try { await deleteItem(draft); draft = null; selectedKey = null; update(); renderDrawer(); toast("Dipadam"); } catch (e) { fail(e); }
     } else if (act === "copy") copyText(promptFor(draft), $("#prompt"));
+    else if (act === "send") sendToClaude();
   });
 
   document.addEventListener("input", (ev) => {
