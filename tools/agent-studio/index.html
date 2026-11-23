@@ -618,8 +618,8 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
   try { const p = localStorage.getItem("as-period"); if (PERIODS[p]) period = p; } catch (_) {}
 
   const allItems = () => [
-    ...projects.map((p) => ({ ...p, agent: "video", kind: "video", done: p.stage === "posted", review: p.stage === "semak", doneAt: p.postedAt })),
-    ...tasks.map((t) => ({ ...t, kind: "task", done: t.stage === "siap", review: t.stage === "semak" })),
+    ...projects.map((p) => ({ ...p, agent: "video", kind: "video", done: p.stage === "posted", inReview: p.stage === "semak", doneAt: p.postedAt })),
+    ...tasks.map((t) => ({ ...t, kind: "task", done: t.stage === "siap", inReview: t.stage === "semak" })),
   ];
   const isLate = (x) => x.due && !x.done && x.due < ymd(new Date());
   const itemColor = (x) => AGENTS[x.agent]?.color || "var(--accent)";
@@ -662,7 +662,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
       <div class="nav-label">Sumber</div>
       ${link("hooks", "Hook Bank", "hook", `<span class="count">${hooks.length}</span>`)}
       ${link("style", "Gaya & Brand", "palette")}`;
-    const attn = items.filter((x) => isLate(x) || x.review).length;
+    const attn = items.filter((x) => isLate(x) || x.inReview).length;
     const b = $("#bell-n"); b.hidden = !attn; b.textContent = attn;
   }
 
@@ -746,7 +746,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
   // ---- overview parts
   function renderKpis() {
     const items = allItems(), since = periodStart();
-    const active = items.filter((x) => !x.done), review = items.filter((x) => x.review);
+    const active = items.filter((x) => !x.done), review = items.filter((x) => x.inReview);
     const doneP = items.filter((x) => x.done && (x.doneAt || 0) >= since);
     const posted = projects.filter((p) => p.stage === "posted" && (p.postedAt || 0) >= since);
     const live = Object.values(AGENTS).filter((a) => a.live).length;
@@ -766,14 +766,14 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
       return `<article class="glass agent-card" style="--ac:${a.color}">
         <div class="agent-top"><span class="agent-ic">${svg(a.icon, 20)}</span><div><h3>${esc(a.name)}</h3><span class="pill ${a.live ? "live" : "plan"}" style="margin-left:0">${a.live ? "Aktif" : "Skill belum dibina"}</span></div></div>
         <p>${esc(a.desc)}</p>
-        <div class="agent-stats"><div><b>${mine.filter((x) => !x.done).length}</b><span>Aktif</span></div><div><b>${mine.filter((x) => x.review).length}</b><span>Semak</span></div><div><b>${mine.filter((x) => x.done && (x.doneAt || 0) >= since).length}</b><span>Siap</span></div></div>
+        <div class="agent-stats"><div><b>${mine.filter((x) => !x.done).length}</b><span>Aktif</span></div><div><b>${mine.filter((x) => x.inReview).length}</b><span>Semak</span></div><div><b>${mine.filter((x) => x.done && (x.doneAt || 0) >= since).length}</b><span>Siap</span></div></div>
         <div class="agent-actions"><a class="btn small" href="#${k}">Buka</a><button class="btn small primary" type="button" data-newfor="${k}">+ ${k === "video" ? "Video" : "Tugas"}</button></div>
       </article>`;
     }).join("");
   }
   const liRow = (x, tag) => `<button type="button" class="li" style="--lc:${itemColor(x)}" data-open="${x.kind}:${x.id}"><span class="li-ic">${svg(AGENTS[x.agent]?.icon || "spark", 16)}</span><div><b>${esc(x.title || "Tanpa tajuk")}</b><small>${esc(AGENTS[x.agent]?.short || "")} · ${esc(stageName(x))}${x.updated ? " · " + ago(x.updated) : ""}</small></div>${tag}</button>`;
   function renderAttention() {
-    const l = allItems().filter((x) => isLate(x) || x.review).sort((a, b) => (isLate(b) - isLate(a)) || (a.due || "9").localeCompare(b.due || "9")).slice(0, 7);
+    const l = allItems().filter((x) => isLate(x) || x.inReview).sort((a, b) => (isLate(b) - isLate(a)) || (a.due || "9").localeCompare(b.due || "9")).slice(0, 7);
     $("#ov-attn").innerHTML = l.length ? l.map((x) => liRow(x, isLate(x) ? `<span class="tag late">Lewat ${fmtDate(x.due)}</span>` : `<span class="tag review">Semak</span>`)).join("") : `<div class="empty">Tiada apa yang tersangkut. Bila agent hantar hasil untuk disemak, ia muncul di sini.</div>`;
   }
   function renderActivity() {
@@ -1063,7 +1063,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
   }
 
   // ------------------------------------------------------------------ data ops
-  const strip = (x) => { const o = { ...x }; for (const k of ["id", "isNew", "kind", "done", "review", "doneAt"]) delete o[k]; return o; };
+  const strip = (x) => { const o = { ...x }; for (const k of ["id", "isNew", "kind", "done", "inReview", "doneAt"]) delete o[k]; return o; };
   async function saveItem(d) {
     const body = strip(d); body.updated = Date.now();
     const isVideo = d.kind === "video";
@@ -1081,6 +1081,10 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
   async function deleteItem(d) {
     const coll = d.kind === "video" ? "projects" : "tasks";
     if (!db) { if (d.kind === "video") projects = projects.filter((x) => x.id !== d.id); else tasks = tasks.filter((x) => x.id !== d.id); return; }
+    // soft delete: keep a copy in trash/ and an audit row, so a lost card can be traced and restored
+    const body = strip(d); const at = Date.now();
+    await db.doc(`trash/${coll}-${d.id}`).set({ ...body, _coll: coll, _id: d.id, _deletedAt: at });
+    await db.collection("audit").add({ op: "delete", coll, id: d.id, title: d.title || "", at, ua: navigator.userAgent.slice(0, 120) });
     await db.doc(`${coll}/${d.id}`).delete();
   }
   async function addHook(text) { if (!db) { hooks.unshift({ id: "h" + ++memId, text, used: 0, created: Date.now() }); return; } await db.collection("hooks").add({ text, used: 0, created: Date.now() }); }

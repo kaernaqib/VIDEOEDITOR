@@ -850,7 +850,7 @@ def transition(cv, kind, dt):
 # ---- plan objects ----------------------------------------------------------------------------------------
 CAPS = [Caption(c) for c in P.get("captions", [])]
 SCENES = [Scene(s) for s in P.get("scenes", [])]
-ICON_EV = [dict(c) for c in P.get("icons", [])]
+ICON_EV = [dict(c, _fixed="pos" in c) for c in P.get("icons", [])]   # "pos": [x, y] pins an icon (scenery, crowds)
 RINGS = P.get("rings", [])
 if END:
     vend = T0 + NV / FPS
@@ -1010,8 +1010,9 @@ def still(ts):
             bimg, face = base(fr, smooth=False)
         else:
             bimg, face = None, None
-        for ev in ICON_EV:                     # let icons place themselves on this frame's face
-            ev.pop("pos", None)
+        for ev in ICON_EV:                     # let unpinned icons place themselves on this frame's face
+            if not ev["_fixed"]:
+                ev.pop("pos", None)
         cv = compose(t, bimg, face)
         out = os.path.splitext(OUT)[0] + f"_still_{t:.2f}.png"
         cv2.imwrite(out, cv2.cvtColor(np.clip(cv, 0, 255).astype(np.uint8), cv2.COLOR_RGB2BGR))

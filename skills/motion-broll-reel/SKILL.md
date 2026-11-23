@@ -55,7 +55,8 @@ Icon ikut kata: `scripts/icon_map.json` (Melayu + Inggeris → nama icon). Icon 
    - `video_width` 2160 (footage 16:9, muka tak besar + latar kabur), `video_top`; footage menegak diisi penuh skrin automatik
    - `caption_y` (default 1430 untuk 16:9, 1060 untuk menegak = paras dada bawah muka)
    - `captions` [{`small` [[kata, t]], `big` [[Kata, t]], `out`, `italic`, `box`}]
-   - `icons` [{`icon`, `t`, `out`, `side` left/right, `size` 230, `tint` gold/red/none}]
+   - `icons` [{`icon`, `t`, `out`, `side` left/right, `size` 230, `tint` gold/red/none, `pos` [x, y] pilihan}]. Icon ikut muka secara automatik; untuk shot pemandangan atau ramai orang (muka kecil), tetapkan `pos` (cth kanan [820, 560], kiri [260, 560])
+   - Vlog tanpa orang bercakap (banyak klip pendek): bina dulu satu video 9:16 dari senarai shot (`[[klip, mula, tempoh]]`, potret cover-crop, landskap atas latar kabur), kemudian beri video tu sebagai `video`; caption jadi teks cerita (baris kecil + kata kunci), audio = muzik + bunyi asal perlahan
    - `rings` [{`t`, `out`}]
    - `scenes` [...], `endcard` {`text`, `sub`, `dur`}
    - `sfx` [[fail dalam D:\CLAUDE\kerja\_sfx, t, vol]]; `auto_sfx` true (whoosh peralihan, pop icon, tick kata kunci)
