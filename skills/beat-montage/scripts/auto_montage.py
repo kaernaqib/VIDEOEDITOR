@@ -10,7 +10,7 @@ clips = json.load(open(CFG["clips"], encoding="utf-8"))
 idx = json.load(open(CFG["index"]))
 dur = {i + 1: next((c["dur"] for c in clips if c["file"] == f), 0) for i, f in enumerate(idx)}
 EX = set(CFG.get("exclude", []))
-cursor = {}
+cursor = {int(k): v for k, v in CFG.get("minstart", {}).items()}
 
 
 def pick(pool, d, i):
@@ -21,7 +21,7 @@ def pick(pool, d, i):
     c = ok[i % len(ok)]
     s = cursor.get(c, 0.2)
     if s + d > dur[c] - 0.1:
-        s = 0.2
+        s = float(CFG.get("minstart", {}).get(str(c), 0.2))
     cursor[c] = s + d + 0.4
     return c, round(s, 2)
 

@@ -1,7 +1,8 @@
 {
   "clips": "D:/CLAUDE/kerja/berekeh/clips.json",
   "index": "D:/CLAUDE/kerja/berekeh/sheets/index.json",
-  "exclude": [80, 46, 48, 84, 85],
+  "exclude": [80, 46, 48, 84, 85, 126],
+  "minstart": {"83": 4.0},
   "reels": [
     {"id": "02", "title": "Night hike dalam gelap",
      "intro": [2, 3, 4, 6], "build": [9, 10, 12, 13, 14, 7, 11], "drop1": [16, 17, 13, 9, 10, 36, 37],
