@@ -845,7 +845,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     const list = projects.filter((p) => (fmtFilter === "all" || normMode(p.mode) === fmtFilter) && (!seriesFilter || p.series === seriesFilter)).map((p) => ({ ...p, kind: "video", agent: "video" }));
     $("#board").innerHTML = boardHtml(VSTAGES, list, (p) => {
       const f = FORMATS[p.format] || FORMATS.education;
-      return cardHtml(p, `${p.series ? `<span class="chip k" style="--kc:var(--c-poster)">${esc(p.series)}</span>` : ""}<span class="chip k" style="--kc:var(--c-video)">${esc(MODES[normMode(p.mode)].name)}</span><span class="chip">${esc(STYLES[normStyle(p.style, p.format)].name)}</span>${p.review ? '<span class="chip">Ada semakan</span>' : ""}`, vCheckPct(p), p.length ? `${p.length} s` : ((p.platforms || []).map((k) => ({ ig: "IG", tiktok: "TT", yt: "YT" }[k])).join(" · ") || "—"));
+      return cardHtml(p, `${p.series ? `<span class="chip k" style="--kc:var(--c-poster)">${esc(p.series)}</span>` : ""}<span class="chip k" style="--kc:var(--c-video)">${esc(MODES[normMode(p.mode)].name)}</span><span class="chip">${esc(STYLES[normStyle(p.style, p.format)].name)}</span>${p.review ? '<span class="chip">Ada semakan</span>' : ""}${p.preview ? '<span class="chip">▶ Preview</span>' : ""}${p.approved && p.stage !== "posted" ? '<span class="chip k" style="--kc:var(--good)">Lulus</span>' : ""}`, vCheckPct(p), p.length ? `${p.length} s` : ((p.platforms || []).map((k) => ({ ig: "IG", tiktok: "TT", yt: "YT" }[k])).join(" · ") || "—"));
     }, "Tekan “+ Video baru” untuk mula.");
   }
   function renderTaskBoard() {
@@ -931,7 +931,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     }
     left += `<div class="field"><label for="f-notes">Nota untuk agent</label><textarea class="input" id="f-notes" data-k="notes" placeholder="Apa-apa yang agent perlu tahu" ${dis}>${esc(d.notes)}</textarea></div>`;
     const c = d.checks || {};
-    const right = `<div class="field"><span class="lbl">Arahan untuk ${esc(a.name)}</span><div class="prompt-box" id="prompt">${esc(promptFor(d))}</div>
+    const right = (d.kind === "video" ? videoPanel(d, dis) : "") + `<div class="field"><span class="lbl">Arahan untuk ${esc(a.name)}</span><div class="prompt-box" id="prompt">${esc(promptFor(d))}</div>
         <div class="field"><label for="f-extra">Arahan tambahan untuk kali ni (pilihan)</label><textarea class="input" id="f-extra" placeholder="Contoh: render reel 02 guna gaya New Era tema gold, satu sampel dulu" maxlength="1500"></textarea></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn primary small" type="button" data-act="send" id="send-btn" disabled>${svg("spark", 14)} Hantar ke Claude</button><button class="btn small" type="button" data-act="copy">Salin</button><span class="note" id="send-note">Memeriksa sambungan ke Claude…</span></div>
         ${a.live ? "" : `<div class="warn-box">Skill <b>${esc(a.skill)}</b> belum dibina, jadi arahan ni belum boleh dijalankan lagi.</div>`}</div>
@@ -942,6 +942,43 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
       <div class="drawer-foot"><div>${!d.isNew && !readOnly ? `<button class="btn ghost small danger" type="button" data-act="delete">Padam</button>` : ""}</div>
         <div>${!readOnly && nextStage ? `<button class="btn small" type="button" data-act="advance">Pindah ke ${esc(nextStage.name)} →</button>` : ""}${!readOnly ? `<button class="btn primary small" type="button" data-act="save">${d.isNew ? "Tambah" : "Simpan"}</button>` : `<span class="note">Paparan baca sahaja</span>`}</div></div>`;
     refreshSend();
+  }
+
+  // ------------------------------------------------------------------ result preview + approve -> caption -> Zernio post
+  // Claude uploads the 720p phone copy to this page's asset store and writes its url to projects/<id>.preview.
+  // Zernio accounts are written by Claude to settings/main.zernio = [{id, platform, username}].
+  const ZPLAT = { instagram: "Instagram", tiktok: "TikTok", youtube: "YouTube", facebook: "Facebook", threads: "Threads" };
+  function videoPanel(d, dis) {
+    const acc = Array.isArray(settings.zernio) ? settings.zernio : [];
+    const sel = d.zAccounts || [];
+    const canPost = d.approved && (d.caption || "").trim() && sel.length && (d.postWhen !== "jadual" || d.postAt);
+    const posted = Array.isArray(d.posts) && d.posts.length;
+    let h = `<div class="field"><span class="lbl">Hasil</span>${d.preview
+      ? `<video src="${esc(d.preview)}" controls playsinline preload="metadata" style="width:100%;max-height:480px;border-radius:12px;background:#000;border:1px solid var(--stroke)"></video>`
+      : `<div class="empty">Belum ada preview. Lepas render, Claude muat naik versi telefon ke sini.</div>`}
+      ${d.review && /^https:\/\/claude\.ai\//.test(d.review) ? `<a class="btn small" href="${esc(d.review)}" target="_blank" rel="noopener" style="justify-self:start">${svg("eye", 14)} Buka semakan (komen ikut saat)</a>` : ""}</div>`;
+    if (["semak", "final", "posted"].includes(d.stage) || d.approved) {
+      h += `<div class="field"><span class="lbl">Workflow post</span><div class="checks">
+        <div class="check ${d.approved ? "done" : ""}" style="cursor:default"><span>${svg("check", 14)}</span><span>1. Lulus video${d.approved ? ` <small>Diluluskan ${esc(fmtDate(ymd(new Date(d.approvedAt || Date.now()))))}</small>` : `<small>Tonton hasil di atas dulu</small>`}</span></div></div>
+        ${!d.approved && !dis ? `<button class="btn primary small" type="button" data-act="approve" style="justify-self:start">${svg("check", 14)} Lulus video ni</button>` : ""}</div>`;
+      if (d.approved) {
+        h += `<div class="field"><label for="f-caption">2. Caption post</label><textarea class="input" id="f-caption" data-k="caption" rows="6" placeholder="Tekan Jana caption, atau tulis sendiri" ${dis}>${esc(d.caption)}</textarea>
+            <div class="copy-line"><button class="btn small" type="button" data-send="caption" ${dis}>${svg("spark", 14)} ${d.caption ? "Jana semula caption" : "Jana caption"}</button><span class="note">Claude tulis caption + hashtag dan isi kotak ni.</span></div></div>
+          <div class="field"><span class="lbl">3. Akaun Zernio</span>${acc.length ? `<div class="seg">${acc.map((x) => `<button type="button" data-multi="zAccounts" data-val="${esc(x.id)}" aria-pressed="${sel.includes(x.id)}" ${dis}>${esc(ZPLAT[x.platform] || x.platform)} · @${esc(x.username)}</button>`).join("")}</div>`
+            : `<div class="note">Belum ada senarai akaun. Tekan Jana caption dan Claude akan isi akaun Zernio kau.</div>`}</div>
+          <div class="field"><span class="lbl">4. Bila</span><div class="seg"><button type="button" data-seg="postWhen" data-val="sekarang" aria-pressed="${d.postWhen !== "jadual"}" ${dis}>Sekarang</button><button type="button" data-seg="postWhen" data-val="jadual" aria-pressed="${d.postWhen === "jadual"}" ${dis}>Jadual</button></div>
+            ${d.postWhen === "jadual" ? `<input class="input" type="datetime-local" data-k="postAt" value="${esc(d.postAt)}" ${dis}>` : ""}</div>
+          <div class="field">${posted ? `<div class="note">Dah dipost: ${d.posts.map((p) => esc(`${ZPLAT[p.platform] || p.platform}${p.when ? " · " + p.when : ""}`)).join(", ")}</div>` : ""}
+            <div class="copy-line"><button class="btn primary small" type="button" data-send="post" ${canPost && !dis ? "" : "disabled"}>${svg("ads", 14)} Post guna Zernio</button><span class="note">${canPost ? "Claude upload video, kemudian sahkan dengan kau sekali sebelum post." : "Perlu: lulus, caption, sekurang-kurangnya satu akaun" + (d.postWhen === "jadual" ? ", masa" : "") + "."}</span></div></div>`;
+      }
+    }
+    return h;
+  }
+  function sendText(kind, d) {
+    const acc = (Array.isArray(settings.zernio) ? settings.zernio : []).filter((x) => (d.zAccounts || []).includes(x.id));
+    const base = `Projek Agent Studio projects/${d.id} "${d.title}" (siri ${d.series || "-"}, fail final ${d.finalDir || "-"}).`;
+    if (kind === "caption") return `[Agent Studio · Jana caption]\n${base}\nTulis caption post untuk ${(d.platforms || []).map((p) => PLATFORMS[p]).join(", ") || "Instagram dan TikTok"}: baris pertama hook, 2-4 ayat santai ikut isi reel (baca transkrip), satu CTA, 3-6 hashtag. Hook video: ${d.hook || "-"}.\nSimpan dalam db projects/${d.id} medan "caption" guna ArtifactData. Kalau settings/main belum ada "zernio", isi senarai akaun Zernio [{id, platform, username}]. Balas ringkas di sini.`;
+    return `[Agent Studio · Post guna Zernio]\n${base}\nVideo dah diluluskan. Akaun: ${acc.map((x) => `${x.platform} @${x.username} (${x.id})`).join(", ") || "-"}.\nBila: ${d.postWhen === "jadual" ? `jadual ${d.postAt}` : "sekarang"}.\nCaption:\n${d.caption || "-"}\nLangkah: cari fail final versi penuh dalam ${d.finalDir || "folder final"}, upload ke Zernio (presigned URL), sahkan dengan aku sekali (akaun, caption, masa) sebelum post, kemudian posts_create. Lepas berjaya, kemas kini projects/${d.id}: stage "posted", posts [{platform, id, when}].`;
   }
 
   // ------------------------------------------------------------------ send to Claude (artifact comments)
@@ -960,11 +997,13 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     b.disabled = !ok;
     n.textContent = ok ? "Claude terima terus dan balas dalam komen halaman ni." : (SEND_WHY[st] || SEND_WHY.off);
   }
-  async function sendToClaude() {
-    const b = $("#send-btn"), n = $("#send-note");
-    if (!cm || !draft) return;
+  async function sendToClaude(kind, btn) {
+    const b = btn || $("#send-btn"), n = $("#send-note") || { set textContent(_) {} };
+    if (!draft) return;
+    if (!cm) { toast("Hantar ke Claude tak ada dalam paparan ni"); return; }
+    if (kind && (draft.isNew || !draft.id)) { toast("Simpan video ni dulu"); return; }
     const extra = ($("#f-extra")?.value || "").trim();
-    let text = `[Agent Studio · ${AGENTS[draft.agent]?.name || "Agent"} · ${draft.title || "Tanpa tajuk"}]\n${promptFor(draft)}${extra ? `\n\nArahan tambahan: ${extra}` : ""}`;
+    let text = kind ? sendText(kind, draft) : `[Agent Studio · ${AGENTS[draft.agent]?.name || "Agent"} · ${draft.title || "Tanpa tajuk"}]\n${promptFor(draft)}${extra ? `\n\nArahan tambahan: ${extra}` : ""}`;
     text = text.replace(new RegExp("[\u0000-\u0009\u000b-\u001f\u007f\u200b-\u200f\u2028-\u202e\u2060-\u206f\ufeff]", "g"), " ");
     while (new TextEncoder().encode(text).length > 3900) text = text.slice(0, -50);
     b.disabled = true; n.textContent = "Menghantar…";
@@ -972,12 +1011,15 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
       const anchor = await cm.anchorFor($("#prompt"));
       try { await cm.sendToClaude({ anchor, text }); }
       catch (e) { if (e?.code !== "invalid") throw e; await cm.sendToClaude({ anchor, text: text.replace(/\n+/g, " · ") }); }
-      if ($("#f-extra")) $("#f-extra").value = "";
+      if ($("#f-extra") && !kind) $("#f-extra").value = "";
       n.textContent = "Dihantar. Balasan Claude muncul dalam komen halaman ni.";
-      toast("Dihantar ke Claude");
+      toast(kind === "caption" ? "Diminta: caption" : kind === "post" ? "Diminta: post. Claude akan sahkan dulu." : "Dihantar ke Claude");
+      if (kind && !readOnly) saveItem(draft).catch(() => {});
     } catch (e) {
       const why = { claude_unavailable: "Claude tak dapat terima sekarang. Pastikan chat Claude Code projek ni terbuka.", rate_limited: "Terlalu cepat. Tunggu sekejap.", consent_required: "Benarkan komen dulu, kemudian cuba lagi.", forbidden: SEND_WHY.writers_only };
       n.textContent = why[e?.code] || "Tak berjaya hantar. Guna Salin sebagai ganti.";
+      if (kind) toast(why[e?.code] || "Tak berjaya hantar");
+      if (btn) btn.disabled = false;
     } finally { setTimeout(refreshSend, 1500); }
   }
 
@@ -1081,6 +1123,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     if (t.dataset.jumpcol) { document.querySelector(`.col[data-stage="${t.dataset.jumpcol}"]`)?.scrollIntoView({ behavior: "auto", block: "nearest", inline: "center" }); return; }
     if (t.dataset.filter) { fmtFilter = t.dataset.filter; renderFilter(); renderVideoBoard(); return; }
     if (t.dataset.filterSeries !== undefined) { seriesFilter = seriesFilter === t.dataset.filterSeries ? "" : t.dataset.filterSeries; renderFilter(); renderVideoBoard(); toast(seriesFilter ? `Tunjuk siri ${seriesFilter} sahaja` : "Tunjuk semua siri"); return; }
+    if (t.dataset.send) { sendToClaude(t.dataset.send, t); return; }
     if (t.dataset.preview) { const k = t.dataset.preview[0] === "@" ? $("#" + t.dataset.preview.slice(1))?.value : t.dataset.preview; return openPreview(k); }
     if (t.dataset.prevtab) { openPreview(t.dataset.prevtab); return; }
     if (t.dataset.act === "prev-close") { $("#prev")?.close(); return; }
@@ -1108,6 +1151,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
       try { await deleteItem(draft); draft = null; selectedKey = null; update(); renderDrawer(); toast("Dipadam"); } catch (e) { fail(e); }
     } else if (act === "copy") copyText(promptFor(draft), $("#prompt"));
     else if (act === "send") sendToClaude();
+    else if (act === "approve") { draft.approved = true; draft.approvedAt = Date.now(); if (["footage", "pecah", "render", "semak"].includes(draft.stage)) draft.stage = "final"; await commit(); }
   });
 
   document.addEventListener("input", (ev) => {
@@ -1167,10 +1211,18 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     const ready = (fromCache) => { if (fromCache) return; if (--pending <= 0) { clearTimeout(timer); setStatus("ok", "Tersimpan"); } };
     const err = () => { clearTimeout(timer); setStatus("off", "Storan terputus. Muat semula halaman."); };
     const keepDraft = () => { if (draft && !draft.isNew && !findItem(selectedKey)) { draft = null; selectedKey = null; renderDrawer(); } };
-    db.collection("projects").onSnapshot((s) => { projects = s.docs.map((d) => { const x = { id: d.id, ...d.data() }; x.stage = normStage(x.stage); return x; }); keepDraft(); update(); ready(s.metadata.fromCache); }, err);
+    const syncDraft = () => {               // pull fields Claude writes (preview, caption, posts) into the open drawer
+      if (!draft || draft.kind !== "video" || draft.isNew) return;
+      const x = projects.find((p) => p.id === draft.id); if (!x) return;
+      let changed = false;
+      for (const k of ["preview", "posts", "stage"]) if (JSON.stringify(x[k]) !== JSON.stringify(draft[k]) && x[k] !== undefined) { draft[k] = x[k]; changed = true; }
+      if (x.caption && x.caption !== draft.caption && document.activeElement?.id !== "f-caption") { draft.caption = x.caption; changed = true; }
+      if (changed) renderDrawer();
+    };
+    db.collection("projects").onSnapshot((s) => { projects = s.docs.map((d) => { const x = { id: d.id, ...d.data() }; x.stage = normStage(x.stage); return x; }); keepDraft(); syncDraft(); update(); ready(s.metadata.fromCache); }, err);
     db.collection("tasks").onSnapshot((s) => { tasks = s.docs.map((d) => ({ id: d.id, ...d.data() })).filter((t) => AGENTS[t.agent] && t.agent !== "video"); keepDraft(); update(); ready(s.metadata.fromCache); }, err);
     db.collection("hooks").orderBy("created", "desc").onSnapshot((s) => { hooks = s.docs.map((d) => ({ id: d.id, ...d.data() })); update(); ready(s.metadata.fromCache); }, err);
-    db.doc("settings/main").onSnapshot((s) => { if (s.exists) settings = { weeklyTarget: 4, ...s.data() }; if (view === "video") renderTarget(); ready(s.metadata.fromCache); }, err);
+    db.doc("settings/main").onSnapshot((s) => { const had = JSON.stringify(settings.zernio); if (s.exists) settings = { weeklyTarget: 4, ...s.data() }; if (view === "video") renderTarget(); if (draft && JSON.stringify(settings.zernio) !== had) renderDrawer(); ready(s.metadata.fromCache); }, err);
   })();
 })();
 </script>
