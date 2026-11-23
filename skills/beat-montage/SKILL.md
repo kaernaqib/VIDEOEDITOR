@@ -34,6 +34,21 @@ Plan keys untuk `montage.py`: `out`, `music`, `music_vol` (0.9), `footage`, `ind
 
 PY = `~/.claude/skills/video-effect/.venv/Scripts/python.exe`. Fon `D:\CLAUDE\kerja\_fonts\Montserrat-VF.ttf`.
 
+## Lagu sebenar (NCS) - pilihan dia untuk post
+
+Dia mahu lagu popular tanpa masalah hak cipta. Guna **NoCopyrightSounds** dari laman rasmi (bukan rip YouTube):
+- Polisi ncs.io/usage-policy: percuma untuk pencipta bebas di YouTube, Facebook, Instagram, Snapchat, TikTok; Reels/TikTok/Shorts tak perlu kredit; boleh potong, tak boleh ubah lain; brand / iklan berbayar / tajaan perlu lesen.
+- Muat turun: `https://ncs.io/api/download/<slug>` (slug dari halaman lagu, cth onandon, ht, skyhigh, mortals, invincible, feelgoodfunk). Simpan dalam `D:\CLAUDE\kerja\_music\ncs\`. Minta izin dia dulu sebelum muat turun lagu baru.
+- Lagu trending sebenar (berhak cipta): jangan masukkan dalam video; cadangkan dia tambah sound dalam app IG/TikTok masa post.
+
+Langkah:
+1. `PY scripts/songinfo.py lagu.mp3 BPM` → fasa beat + calon drop (BPM dari halaman lagu NCS).
+2. **Sahkan drop dengan mata**: lukis sampul frekuensi rendah (lowpass) seluruh lagu dengan tanda saat; drop sebenar = permulaan kick berdenyut selepas bahagian senyap/build. Pengesan boleh tersalah (Heroes Tonight: dikesan 52.5 s, sebenar 67.4 s; Feel Good Funk: 9.4 s riser, sebenar 17.6 s).
+3. `PY scripts/retime.py plan.json lagu.mp3 BPM DROP plan_ncs.json` → semua tempoh x (beat lagu / 0.5 s), drop video (16 s) jatuh tepat pada drop lagu, potongan lagu jadi `music.wav`. Lagu 120-130 BPM paling sesuai (reel ~56-60 s); 101 BPM → 71 s; 88-90 BPM terlalu perlahan (82 s).
+4. Render, kemudian semak gelombang audio output dengan garis pada 7.44/14.88/... s (masa bahagian x faktor) sebelum hantar.
+
+Berekeh: Heroes Tonight 129 BPM (drop 22.3 / 67.4 / 156.7), Sky High 129 (46.3 / 191.0), Feel Good Funk 124 (17.6 / 46.2), Invincible 101 (70.3 / 145.2 / 204.0).
+
 ## Nota
 - Epidemic Sound yang bersambung tiada lesen muat turun (FORBIDDEN). Jangan guna preview mp3 berkualiti rendah untuk post.
 - Saya tak boleh dengar audio: semak beat dengan `showwavespic` / `showspectrumpic` (riser jangan lebih kuat dari kick).
