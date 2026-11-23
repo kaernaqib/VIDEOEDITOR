@@ -858,11 +858,12 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
   }
 
   // ---- drawer
+  const projName = (p) => p.series || (p.title || "projek").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 24) || "projek";
   function videoPrompt(p) {
     const f = FORMATS[p.format] || FORMATS.education;
     const mode = normMode(p.mode), style = normStyle(p.style, p.format);
     if (style === "newera" || style === "omgadrian") {
-      const proj = p.series || "PROJEK", t = p.title || "reel ni", sk = STYLES[style].skill;
+      const proj = projName(p), t = p.title || "reel ni", sk = STYLES[style].skill;
       const src = p.source || `D:\\CLAUDE\\kerja\\${proj}`;
       const step = {
         footage: `Projek ${proj}: footage di ${src} (salin ke D:\\CLAUDE\\kerja\\${proj}, folder asal jangan diusik). Transkrip dan pecah jadi reel 60-120 s, setiap satu satu situasi penuh. Cadang senarai reel (tajuk + hook) dan tunjuk pada aku dulu.`,
@@ -879,7 +880,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
       return lines.join("\n");
     }
     if (style === "utama") {
-      const proj = p.series || "PROJEK", t = p.title || "reel ni";
+      const proj = projName(p), t = p.title || "reel ni";
       const step = {
         footage: `Projek ${proj}: footage ada di ${p.source || "D:\\CLAUDE\\kerja\\" + proj}. Transkrip dan pecah jadi reel 60-140 s, setiap satu satu situasi penuh. Tulis pelan (julat masa + headline 2 baris) dan tunjuk pada aku dulu.`,
         pecah: `Projek ${proj}, "${t}": render guna skill poster-frame-reel (poster siri, hook ungu, subtitle ungu, SFX meme), kemudian pasang lapisan gaya Utama dengan brand_fx.py (skill brand-style). Semak still dulu. Satu sampel dulu.`,
