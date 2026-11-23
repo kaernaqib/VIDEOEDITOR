@@ -861,6 +861,23 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
   function videoPrompt(p) {
     const f = FORMATS[p.format] || FORMATS.education;
     const mode = normMode(p.mode), style = normStyle(p.style, p.format);
+    if (style === "newera" || style === "omgadrian") {
+      const proj = p.series || "PROJEK", t = p.title || "reel ni", sk = STYLES[style].skill;
+      const src = p.source || `D:\\CLAUDE\\kerja\\${proj}`;
+      const step = {
+        footage: `Projek ${proj}: footage di ${src} (salin ke D:\\CLAUDE\\kerja\\${proj}, folder asal jangan diusik). Transkrip dan pecah jadi reel 60-120 s, setiap satu satu situasi penuh. Cadang senarai reel (tajuk + hook) dan tunjuk pada aku dulu.`,
+        pecah: `Projek ${proj}, "${t}": tulis pelan dan render guna skill ${sk} (gaya ${STYLES[style].name}). Semak still dulu. Satu sampel dulu.`,
+        render: `Projek ${proj}, "${t}": render guna skill ${sk}, semak still, muat naik preview 720p ke studio (projects/${p.id || "<id>"}.preview) dan hantar ke video-review.`,
+        semak: `Projek ${proj}, "${t}": ${p.review ? `baca komen dalam ${p.review}` : "baca komen video-review"}, betulkan, render semula dan terbitkan versi baru di link yang sama.`,
+        final: `Projek ${proj}, "${t}" dah lulus. Copy versi final ke ${p.finalDir || "D:\\Video\\" + proj} (copy, semak saiz sama).`,
+        posted: `Projek ${proj}, "${t}" dah dipost. Catat prestasi bila ada.`,
+      }[p.stage] || "";
+      const lines = [step];
+      if (p.hook) lines.push(`Hook: "${p.hook}".`);
+      if (p.notes) lines.push(`Nota: ${p.notes}`);
+      lines.push("Ikut CLAUDE.md dalam repo VIDEOEDITOR (subtitle bawah muka, satu sampel dulu, video siap ke D:\\Video).");
+      return lines.join("\n");
+    }
     if (style === "utama") {
       const proj = p.series || "PROJEK", t = p.title || "reel ni";
       const step = {
@@ -910,7 +927,8 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
         <div class="row2"><div class="field"><label for="f-series">Siri / projek</label><input class="input" id="f-series" data-k="series" value="${esc(d.series)}" placeholder="1228" ${dis}></div>
           <div class="field"><label for="f-length">Panjang (saat)</label><input class="input" type="number" min="0" id="f-length" data-k="length" value="${esc(d.length ?? "")}" ${dis}></div></div>
         <div class="field"><label for="f-review">Link semakan (video-review)</label><div class="copy-line"><input class="input" id="f-review" data-k="review" value="${esc(d.review)}" placeholder="https://claude.ai/artifact/..." style="flex:1;min-width:0" ${dis}>${d.review && /^https:\/\/claude\.ai\//.test(d.review) ? `<a class="btn small" href="${esc(d.review)}" target="_blank" rel="noopener">${svg("eye", 14)} Buka</a>` : ""}</div></div>
-        <div class="row2"><div class="field"><label for="f-source">Footage / fail kerja</label><input class="input" id="f-source" data-k="source" value="${esc(d.source)}" placeholder="D:\\CLAUDE\\kerja\\1228" ${dis}></div>
+        ${folderPicker(d, dis)}
+        <div class="row2"><div class="field"><label for="f-source">Footage / fail kerja</label><input class="input" id="f-source" data-k="source" value="${esc(d.source)}" placeholder="Pilih di atas, atau cerita: folder berekeh dalam D" ${dis}></div>
           <div class="field"><label for="f-final">Folder final</label><input class="input" id="f-final" data-k="finalDir" value="${esc(d.finalDir)}" placeholder="D:\\Video\\1228" ${dis}></div></div>
         <div class="field"><label for="f-hook">Hook (saat 0–2)</label><input class="input" id="f-hook" data-k="hook" value="${esc(d.hook)}" placeholder="Apa kau jawab bila customer kata mahal?" list="hook-list" ${dis}><datalist id="hook-list">${hooks.map((h) => `<option value="${esc(h.text)}"></option>`).join("")}</datalist></div>
         <div class="field"><label for="f-broll">Folder B-roll sendiri (kosongkan untuk stok Pixabay)</label><input class="input" id="f-broll" data-k="broll" value="${esc(d.broll)}" placeholder="D:\\B-roll" ${dis}></div>
@@ -948,6 +966,18 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
   // Claude uploads the 720p phone copy to this page's asset store and writes its url to projects/<id>.preview.
   // Zernio accounts are written by Claude to settings/main.zernio = [{id, platform, username}].
   const ZPLAT = { instagram: "Instagram", tiktok: "TikTok", youtube: "YouTube", facebook: "Facebook", threads: "Threads" };
+  // Footage folders on D: (Claude scans with tools/agent-studio/scan_footage.py -> settings/main.folders)
+  function folderPicker(d, dis) {
+    const fs = Array.isArray(settings.folders) ? settings.folders : [];
+    if (!fs.length) return "";
+    const groups = {};
+    for (const f of fs) { const top = f.label.split(" › ")[0].replace(/ \(.*$/, ""); (groups[top] = groups[top] || []).push(f); }
+    const known = fs.some((f) => f.path === d.source);
+    return `<div class="field"><label for="f-folder">Pilih folder footage (dari D:)</label><select class="select" id="f-folder" ${dis}>
+      <option value="">${d.source && !known ? "Lain: " + esc(d.source) : "— Pilih folder —"}</option>
+      ${Object.entries(groups).map(([g, list]) => `<optgroup label="${esc(g)}">${list.map((f) => `<option value="${esc(f.path)}" ${f.path === d.source ? "selected" : ""}>${esc(f.label.includes(" › ") ? f.label.split(" › ").slice(1).join(" › ") : f.label)}</option>`).join("")}</optgroup>`).join("")}
+    </select><span class="note">Tiada dalam senarai? Taip atau cerita dalam ruangan Footage di bawah. Senarai dikemas kini ${esc(settings.foldersAt || "")}.</span></div>`;
+  }
   function videoPanel(d, dis) {
     const acc = Array.isArray(settings.zernio) ? settings.zernio : [];
     const sel = d.zAccounts || [];
@@ -1167,6 +1197,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
   document.addEventListener("change", (ev) => {
     const el = ev.target;
     if (el.id === "period") { period = el.value; try { localStorage.setItem("as-period", period); } catch (_) {} update(); return; }
+    if (draft && el.id === "f-folder") { if (el.value) { draft.source = el.value; const i = $("#f-source"); if (i) i.value = el.value; const pb = $("#prompt"); if (pb) pb.textContent = promptFor(draft); } return; }
     if (draft && el.dataset.k && el.tagName === "SELECT" && el.dataset.k !== "stage") { draft[el.dataset.k] = el.value; const pb = $("#prompt"); if (pb) pb.textContent = promptFor(draft); }
     if (!draft || !el.dataset.check) return;
     draft.checks = { ...(draft.checks || {}), [el.dataset.check]: el.checked };
@@ -1222,7 +1253,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     db.collection("projects").onSnapshot((s) => { projects = s.docs.map((d) => { const x = { id: d.id, ...d.data() }; x.stage = normStage(x.stage); return x; }); keepDraft(); syncDraft(); update(); ready(s.metadata.fromCache); }, err);
     db.collection("tasks").onSnapshot((s) => { tasks = s.docs.map((d) => ({ id: d.id, ...d.data() })).filter((t) => AGENTS[t.agent] && t.agent !== "video"); keepDraft(); update(); ready(s.metadata.fromCache); }, err);
     db.collection("hooks").orderBy("created", "desc").onSnapshot((s) => { hooks = s.docs.map((d) => ({ id: d.id, ...d.data() })); update(); ready(s.metadata.fromCache); }, err);
-    db.doc("settings/main").onSnapshot((s) => { const had = JSON.stringify(settings.zernio); if (s.exists) settings = { weeklyTarget: 4, ...s.data() }; if (view === "video") renderTarget(); if (draft && JSON.stringify(settings.zernio) !== had) renderDrawer(); ready(s.metadata.fromCache); }, err);
+    db.doc("settings/main").onSnapshot((s) => { const sig = () => JSON.stringify([settings.zernio, settings.folders]); const had = sig(); if (s.exists) settings = { weeklyTarget: 4, ...s.data() }; if (view === "video") renderTarget(); if (draft && sig() !== had) renderDrawer(); ready(s.metadata.fromCache); }, err);
   })();
 })();
 </script>
