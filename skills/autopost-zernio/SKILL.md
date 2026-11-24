@@ -24,7 +24,7 @@ zAccounts [id akaun Zernio], postAt "YYYY-MM-DDTHH:mm" (waktu Malaysia),
 captions [A, B, C], pick (0-2 | null), caption (teks akhir),
 status  baru | pilih | jadual | posted | gagal,
 waiting caption | jadual | batal | null   (Claude set null bila siap),
-zernioPostId, error, posts [{platform, url}], created, updated
+zernioPostId, error, posts [{platform, url}], preview (/_blob/<id>), created, updated
 ```
 
 Tulis dengan `ArtifactData` (update + `if_version` dari bacaan terakhir). Jangan republish halaman untuk tukar data.
@@ -38,6 +38,7 @@ Tulis dengan `ArtifactData` (update + `if_version` dari bacaan terakhir). Jangan
    `ffmpeg -v error -i v.mp4 -vf "fps=1/<durasi/20>,scale=300:-1,tile=5x4" -frames:v 1 -y s.jpg`
 4. Baca teks atas skrin + apa yang disebut. Ringkaskan isi dalam satu ayat.
 5. Semak kesesuaian: `mcp__Zernio__validate_media` dengan link Drive (format, saiz, had platform). Video 9:16 paling sesuai.
+6. **Preview untuk halaman Jadual Post** (supaya dia boleh semak video betul): `ffmpeg -i v.mp4 -vf scale=540:-2 -c:v libx264 -preset veryfast -crf 30 -c:a aac -b:a 64k -movflags +faststart <id>.mp4` (bawah 20 MB). Salin ke folder sementara dalam repo (cth. `_prev_tmp/`, padam selepas), muat naik dengan Artifact `asset: true` + `file_paths` (sampai 25 sekali) ke url Agent Studio, kemudian tulis `/_blob/<id>` ke medan `preview` dokumen.
 
 ## Langkah 2: 3 caption
 

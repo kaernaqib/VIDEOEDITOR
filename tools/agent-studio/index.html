@@ -403,6 +403,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
 .ap-stages { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 @media (max-width: 700px) { .ap-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .ap-opts { display: grid; gap: 8px; }
+.ap-prev { width: 100%; max-width: 280px; aspect-ratio: 9 / 16; max-height: 500px; border-radius: 12px; background: #000; border: 1px solid var(--stroke); justify-self: start; }
 .ap-opt { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; text-align: left; padding: 12px; border-radius: var(--r-md); background: rgba(255, 255, 255, .04); border: 1px solid var(--stroke); color: var(--fg); white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.5; }
 .ap-opt:hover { border-color: var(--stroke-2); }
 .ap-opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
@@ -1172,7 +1173,7 @@ table.bulk .seg button { padding: 5px 11px; }
     return `<div class="ap-summary" id="ap-sum"><span><b>Akaun:</b> ${(d.zAccounts || []).length ? esc(d.zAccounts.map(accLabel).join(", ")) : "belum dipilih"}</span>
       <span><b>Masa:</b> ${esc(fmtWhen(d.postAt))} (waktu Malaysia)</span>
       <span><b>Caption:</b> ${d.caption ? esc(d.caption.split("\n")[0].slice(0, 90)) + (d.caption.length > 90 ? "…" : "") : "belum dipilih"}</span>
-      ${miss.length ? `<span class="note">Perlu: ${esc(miss.join(", "))}.</span>` : `<span class="note">Butang di bawah ialah pengesahan kau. Claude terus jadualkan dalam Zernio.</span>`}</div>`;
+      ${d.status === "posted" ? `<span class="note">Dah keluar.</span>` : d.status === "jadual" ? `<span class="note">Dah dijadualkan dalam Zernio. Nak ubah masa atau caption? Minta Claude, atau batalkan jadual dulu.</span>` : miss.length ? `<span class="note">Perlu: ${esc(miss.join(", "))}.</span>` : `<span class="note">Butang di bawah ialah pengesahan kau. Claude terus jadualkan dalam Zernio.</span>`}</div>`;
   }
   function renderApDrawer() {
     const el = $("#ap-drawer"); if (!el) return;
@@ -1186,6 +1187,8 @@ table.bulk .seg button { padding: 5px 11px; }
         <button class="icon-btn" type="button" data-act="ap-close" aria-label="Tutup">${svg("plus", 16).replace("<svg", '<svg style="transform:rotate(45deg)"')}</button></div>
       ${d.status === "gagal" ? `<div class="warn-box">Gagal: ${esc(d.error || "Zernio tak dapat post video ni.")} Betulkan dan tekan Jadualkan semula, atau minta Claude cuba lagi.</div>` : ""}
       <div class="drawer-grid"><div class="stack">
+        <div class="field"><span class="lbl">Preview video</span>${/^(\/_blob\/[0-9a-f]{32}|https:\/\/)/.test(d.preview || "") ? `<video class="ap-prev" src="${esc(d.preview)}" controls playsinline preload="metadata"></video>` : `<div class="empty">${d.isNew ? "Preview muncul lepas Claude tengok video ni (Jana 3 caption)." : "Belum ada preview. Claude buat preview bila tulis caption."}</div>`}
+          ${/^https:\/\/drive\.google\.com\//.test(d.link || "") ? `<a class="btn small" href="${esc(d.link)}" target="_blank" rel="noopener" style="justify-self:start">${svg("link", 14)} Buka di Google Drive</a>` : ""}</div>
         <div class="field"><label for="f-ap-title">Tajuk</label><input class="input" id="f-ap-title" data-apk="title" value="${esc(d.title)}" placeholder="Contoh: NEW ERA content 8" ${dis}></div>
         <div class="field"><label for="f-ap-link">Link video (Google Drive)</label><input class="input" id="f-ap-link" data-apk="link" value="${esc(d.link)}" placeholder="https://drive.google.com/file/d/…" ${dis} ${locked ? "readonly" : ""}>
           <span class="note">Fail mesti dikongsi "Anyone with the link". Zernio salin video ke storan dia masa dijadualkan.</span></div>
@@ -1639,7 +1642,7 @@ table.bulk .seg button { padding: 5px 11px; }
         if (!x) apDraft = null;
         else {
           let changed = false;
-          for (const k of ["captions", "status", "waiting", "zernioPostId", "error", "posts"]) if (JSON.stringify(x[k]) !== JSON.stringify(apDraft[k])) { apDraft[k] = x[k]; changed = true; }
+          for (const k of ["captions", "status", "waiting", "zernioPostId", "error", "posts", "preview"]) if (JSON.stringify(x[k]) !== JSON.stringify(apDraft[k])) { apDraft[k] = x[k]; changed = true; }
           if (x.caption && x.caption !== apDraft.caption && document.activeElement?.id !== "f-ap-caption" && (x.status === "jadual" || x.status === "posted")) { apDraft.caption = x.caption; changed = true; }
           if (changed) renderApDrawer();
         }
