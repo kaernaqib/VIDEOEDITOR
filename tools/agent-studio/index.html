@@ -410,8 +410,25 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
 .ap-opt[aria-pressed="true"] .ap-letter { background: var(--accent); color: var(--accent-ink); }
 .ap-summary { display: grid; gap: 4px; padding: 12px 14px; border-radius: var(--r-md); background: rgba(255, 255, 255, .04); border: 1px solid var(--stroke); font-size: 13px; color: var(--sub); overflow-wrap: anywhere; }
 .ap-summary b { color: var(--fg); }
-.ap-import { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 10px; align-items: end; }
-@media (max-width: 760px) { .ap-import { grid-template-columns: minmax(0, 1fr); } }
+.ap-import { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 12px; align-items: end; }
+.ap-import .wide { grid-column: 1 / -1; }
+.ap-import .row3 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) auto; gap: 12px; align-items: end; grid-column: 1 / -1; }
+@media (max-width: 760px) { .ap-import, .ap-import .row3 { grid-template-columns: minmax(0, 1fr); } }
+.bulk-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
+.bulk-bar .btn.primary { margin-left: auto; }
+.bulk-wrap { overflow-x: auto; border: 1px solid var(--stroke); border-radius: var(--r-md); }
+table.bulk { width: 100%; border-collapse: collapse; min-width: 720px; font-size: 13px; }
+table.bulk th { text-align: left; color: var(--dim); font-size: 10.5px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; padding: 10px 12px; border-bottom: 1px solid var(--stroke); }
+table.bulk td { padding: 10px 12px; border-bottom: 1px solid var(--stroke); vertical-align: top; }
+table.bulk tr:last-child td { border-bottom: 0; }
+table.bulk td:first-child { width: 34px; }
+table.bulk td:last-child { width: 220px; }
+table.bulk input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); margin-top: 3px; }
+table.bulk small { display: block; color: var(--dim); font-size: 11.5px; margin-top: 4px; }
+table.bulk .seg button { padding: 5px 11px; }
+.bulk-cap { max-width: 360px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.late-t { color: var(--bad) !important; }
+.linkish { background: none; border: 0; padding: 0; color: var(--fg); font-weight: 700; text-align: left; text-decoration: underline; text-decoration-color: var(--stroke-2); text-underline-offset: 3px; }
 </style>
 
 <div class="app">
@@ -746,11 +763,16 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     } else if (view === "jadual") {
       page.innerHTML = banner({ icon: "clock", color: "var(--c-copy)", title: "Jadual Post", pill: '<span class="pill live">Aktif</span>', sub: "Video yang dah siap: Claude tulis 3 caption, kau pilih, Zernio post ikut masa ke TikTok & Instagram", actions: `<button class="btn" type="button" data-ap-send="sync">${svg("refresh", 16)} Semak status Zernio</button><button class="btn primary" type="button" data-act="ap-new">+ Video siap</button>` }) +
         `<section class="glass stages ap-stages" id="ap-stages"></section>
-         <section class="glass block"><div class="sec-head"><div><h2>Import folder Google Drive</h2><p>Tampal link folder. Claude tambah setiap video ke senarai dan siapkan 3 caption untuk setiap satu.</p></div></div>
-           <form id="ap-import" class="ap-import"><div class="field"><label for="f-ap-folder">Link folder Drive</label><input class="input" id="f-ap-folder" placeholder="https://drive.google.com/drive/folders/…" autocomplete="off"></div>
-             <div class="field"><label for="f-ap-fnote">Konteks (pilihan)</label><input class="input" id="f-ap-fnote" placeholder="Contoh: promo event 28 Nov" autocomplete="off"></div>
-             <button class="btn primary" type="submit" id="ap-import-btn">${svg("folder", 15)} Import & jana caption</button></form>
-           <p class="note" id="ap-import-note" style="margin:8px 0 0">Folder mesti dikongsi "Anyone with the link" supaya Zernio boleh ambil video.</p></section>
+         <section class="glass block"><div class="sec-head"><div><h2>Banyak video sekali gus</h2><p>Tampal link folder Google Drive atau folder dalam PC (D:\\…). Claude masukkan setiap video dan siapkan caption.</p></div></div>
+           <form id="ap-import" class="ap-import">
+             <div class="field"><label for="f-ap-folder">Folder video</label><input class="input" id="f-ap-folder" placeholder="https://drive.google.com/drive/folders/…  atau  D:\\NEW ERA 28HB\\countdown new era" autocomplete="off"></div>
+             <div class="field"><label for="f-ap-fnote">Konteks (pilihan)</label><input class="input" id="f-ap-fnote" placeholder="Contoh: countdown launching NEW ERA 28 Nov" autocomplete="off"></div>
+             <div class="row3"><div class="field"><label for="f-ap-start">Mula dari</label><input class="input" type="date" id="f-ap-start"></div>
+               <div class="field"><label for="f-ap-times">Slot masa setiap hari</label><input class="input" id="f-ap-times" value="10:00, 13:00, 18:00" autocomplete="off"></div>
+               <div class="field"><span class="lbl">Cara</span><div class="seg"><button type="button" data-apmode="pilih" aria-pressed="true">Aku pilih caption</button><button type="button" data-apmode="auto" aria-pressed="false">Terus jadual</button></div></div></div>
+             <div class="wide copy-line"><button class="btn primary" type="submit" id="ap-import-btn">${svg("folder", 15)} Import & jana 3 caption</button><span class="note" id="ap-mode-note"></span></div></form>
+           <p class="note" id="ap-import-note" style="margin:10px 0 0">Folder Drive mesti dikongsi "Anyone with the link". Folder PC hanya boleh dibaca bila Claude jalan di PC kau (Claude Code desktop).</p></section>
+         <section class="glass block"><div class="sec-head"><div><h2>Pilih caption & masa</h2><p>Semua video yang ada 3 caption. Pilih A/B/C, isi masa, kemudian jadualkan sekali gus.</p></div></div><div id="ap-bulk"></div></section>
          <section class="glass block"><div class="sec-head"><div><h2>7 hari akan datang</h2><p>Post yang ada masa, ikut waktu Malaysia.</p></div></div><div class="days-scroll"><div class="days" id="ap-week"></div></div></section>
          <section class="glass block"><div class="sec-head"><div><h2>Senarai video</h2><p>Klik kad untuk pilih caption, akaun dan masa.</p></div></div><div class="board" id="ap-board"></div></section>
          <section class="glass drawer" id="ap-drawer" hidden></section>`;
@@ -775,7 +797,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     else if (view === "video") { renderTarget(); renderStageTiles(); renderSeries(); renderFilter(); renderVideoBoard(); if (!draft) renderDrawer(); }
     else if (AGENTS[view]) { renderTaskBoard(); if (!draft) renderDrawer(); }
     else if (view === "hooks") renderHooks();
-    else if (view === "jadual") { renderJadual(); if (!apDraft) renderApDrawer(); }
+    else if (view === "jadual") { if ($("#f-ap-start") && !$("#f-ap-start").value) { $("#f-ap-start").value = ymd(new Date()); loadBulkForm(); } renderJadual(); if (!apDraft) renderApDrawer(); }
   }
 
   // ---- overview parts
@@ -1114,7 +1136,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     if (d.status === "jadual" || d.status === "posted") miss.push("video ni belum dijadualkan");
     return miss;
   }
-  function renderJadual() { renderApStages(); renderApWeek(); renderApBoard(); }
+  function renderJadual() { renderApStages(); renderApBulk(); renderApWeek(); renderApBoard(); }
   function renderApStages() {
     const el = $("#ap-stages"); if (!el) return;
     el.innerHTML = APCOLS.map((c) => `<button class="stage-tile" type="button" data-jumpcol="ap-${c.id}"><span><i style="background:${c.color}"></i>${c.name}</span><b>${autoposts.filter((x) => apCol(x) === c.id).length}</b></button>`).join("");
@@ -1292,6 +1314,97 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     return false;
   }
 
+  // ---- Jadual Post: bulk (many videos at once). Rows = autopost docs in status "pilih"; picks/times write straight to db.
+  let bulkSel = new Set();
+  let apMode = "pilih";
+  const AP_FORM_KEY = "as-ap-bulk";
+  const apNatural = (a, b) => String(a.title || "").localeCompare(String(b.title || ""), undefined, { numeric: true, sensitivity: "base" });
+  const apRows = () => autoposts.filter((x) => x.status === "pilih" || (x.status === "baru" && x.waiting === "caption")).sort(apNatural);
+  const apTimes = () => String($("#f-ap-times")?.value || "10:00, 13:00, 18:00").split(/[,\s]+/).map((t) => t.trim()).filter((t) => /^\d{1,2}:\d{2}$/.test(t)).map((t) => t.padStart(5, "0")).sort();
+  function apRowOk(x) { return (x.caption || "").trim() && (x.zAccounts || []).length && x.postAt && new Date(x.postAt).getTime() > Date.now() + 5 * 6e4 && !x.waiting; }
+  async function apPatch(id, fields) {
+    const x = autoposts.find((p) => p.id === id); if (!x) return;
+    Object.assign(x, fields);
+    if (apDraft && apDraft.id === id) Object.assign(apDraft, fields);
+    if (!db) return;
+    try { await db.doc(`autopost/${id}`).update({ ...fields, updated: Date.now() }); } catch (e) { fail(e); }
+  }
+  function renderApBulk() {
+    const el = $("#ap-bulk"); if (!el) return;
+    const rows = apRows();
+    for (const id of [...bulkSel]) { const x = rows.find((r) => r.id === id); if (!x || !apRowOk(x)) bulkSel.delete(id); }
+    const ready = rows.filter(apRowOk).length;
+    if (!rows.length) { el.innerHTML = `<div class="empty">Tiada video menunggu caption. Import folder di atas, dan video dengan 3 caption akan muncul di sini untuk dipilih sekali gus.</div>`; return; }
+    el.innerHTML = `<div class="bulk-bar">
+        <div class="seg"><span class="note" style="align-self:center">Semua guna:</span>${["A", "B", "C"].map((l, i) => `<button type="button" data-act="ap-all" data-val="${i}">${l}</button>`).join("")}</div>
+        <button class="btn small" type="button" data-act="ap-autotime">${svg("clock", 14)} Isi masa auto</button>
+        <label class="check" style="padding:7px 10px"><input type="checkbox" id="ap-sel-all" ${ready && bulkSel.size === ready ? "checked" : ""} ${ready ? "" : "disabled"}><span>Pilih semua yang lengkap (${ready})</span></label>
+        <button class="btn primary" type="button" data-act="ap-bulk-go" ${bulkSel.size && !readOnly ? "" : "disabled"}>${svg("clock", 15)} Jadualkan ${bulkSel.size || ""} video</button></div>
+      <div class="bulk-wrap"><table class="bulk"><thead><tr><th></th><th>Video</th><th>Caption</th><th>Masa (MYT)</th></tr></thead><tbody>
+      ${rows.map((x) => { const caps = x.captions || []; const ok = apRowOk(x); return `<tr>
+        <td><input type="checkbox" data-apb-sel="${esc(x.id)}" aria-label="Pilih ${esc(x.title)}" ${bulkSel.has(x.id) ? "checked" : ""} ${ok ? "" : "disabled"}></td>
+        <td><button class="linkish" type="button" data-ap-open="${esc(x.id)}">${esc(x.title || "Tanpa tajuk")}</button>
+          <small>${x.waiting ? esc(AP_WAIT[x.waiting] || "Menunggu Claude") : esc((x.zAccounts || []).map(accLabel).join(" · ") || "Tiada akaun")}</small></td>
+        <td>${caps.length ? `<div class="seg">${caps.map((c, i) => `<button type="button" data-apb-pick="${esc(x.id)}:${i}" aria-pressed="${x.pick === i}" title="${esc(c)}" ${readOnly ? "disabled" : ""}>${"ABC"[i] || i + 1}</button>`).join("")}</div>
+          <small class="bulk-cap">${x.caption ? esc(x.caption.split("\n")[0]) : "Belum pilih"}</small>` : `<small>${x.waiting === "caption" ? "Claude sedang tulis…" : "Belum ada caption"}</small>`}</td>
+        <td><input class="input" type="datetime-local" data-apb-when="${esc(x.id)}" value="${esc(x.postAt || "")}" aria-label="Masa ${esc(x.title)}" ${readOnly ? "disabled" : ""}>
+          ${x.postAt && new Date(x.postAt).getTime() <= Date.now() + 5 * 6e4 ? `<small class="late-t">Masa dah lepas</small>` : ""}</td></tr>`; }).join("")}
+      </tbody></table></div>`;
+  }
+  function autoTimes() {
+    const rows = apRows().filter((x) => !x.waiting);
+    const times = apTimes(); if (!times.length) { toast("Isi slot masa, contoh 10:00, 13:00, 18:00"); return; }
+    const startV = $("#f-ap-start")?.value || ymd(new Date());
+    const taken = new Set(autoposts.filter((x) => x.status === "jadual" || x.status === "posted").map((x) => x.postAt));
+    const day = new Date(startV + "T00:00");
+    let di = 0, ti = 0, n = 0;
+    for (const x of rows) {
+      let slot;
+      for (let guard = 0; guard < 400; guard++) {
+        const d = new Date(day.getTime() + di * 864e5);
+        slot = `${ymd(d)}T${times[ti]}`;
+        ti++; if (ti >= times.length) { ti = 0; di++; }
+        if (new Date(slot).getTime() > Date.now() + 15 * 6e4 && !taken.has(slot)) break;
+      }
+      taken.add(slot);
+      if (x.postAt !== slot) { apPatch(x.id, { postAt: slot }); n++; }
+    }
+    renderApBulk(); renderApWeek(); renderApBoard();
+    toast(n ? `Masa diisi untuk ${n} video` : "Semua masa dah sama");
+  }
+  async function bulkGo(btn) {
+    const ids = [...bulkSel].filter((id) => { const x = autoposts.find((p) => p.id === id); return x && apRowOk(x); });
+    if (!ids.length) return toast("Pilih video yang lengkap dulu");
+    const list = ids.map((id) => { const x = autoposts.find((p) => p.id === id); return `${id} (${x.title}, ${x.postAt}, ${"ABC"[x.pick] ?? "ubah"})`; }).join("; ");
+    const text = `[Agent Studio · Jadual Post · Jadual pukal]\n${ids.length} video. Aku dah sahkan dalam studio.\n${list}\nUntuk setiap id: baca autopost/<id> (link, caption, zAccounts, postAt), validate_post, posts_create_post dengan scheduled_for + timezone Asia/Kuala_Lumpur, external_id AP-<id>. Kemas kini status "jadual", zernioPostId, waiting null (gagal: status "gagal", error). Ikut skill autopost-zernio. Balas ringkas berapa berjaya.`;
+    if (!(await sendAp(text, $("#ap-bulk"), btn))) return;
+    for (const id of ids) apPatch(id, { waiting: "jadual", waitingAt: Date.now() });
+    bulkSel.clear(); renderApBulk(); renderApBoard();
+    toast(`Diminta: jadual ${ids.length} video`);
+  }
+  function saveBulkForm() { try { localStorage.setItem(AP_FORM_KEY, JSON.stringify({ times: $("#f-ap-times")?.value, mode: apMode })); } catch (_) {} }
+  function loadBulkForm() { try { const v = JSON.parse(localStorage.getItem(AP_FORM_KEY) || "{}"); if (v.times && $("#f-ap-times")) $("#f-ap-times").value = v.times; if (v.mode) apMode = v.mode; } catch (_) {} renderApMode(); }
+  function renderApMode() {
+    document.querySelectorAll("[data-apmode]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.apmode === apMode)));
+    const btn = $("#ap-import-btn"); if (btn) btn.innerHTML = `${svg("folder", 15)} ${apMode === "auto" ? "Import, caption & jadual terus" : "Import & jana 3 caption"}`;
+    const n = $("#ap-mode-note"); if (n) n.textContent = apMode === "auto" ? "Claude pilih caption terbaik dan terus jadualkan ikut slot masa. Kau tak semak satu-satu." : "Claude tulis 3 caption setiap video. Kau pilih A/B/C dalam jadual di bawah, kemudian jadualkan sekali gus.";
+  }
+  async function bulkClick(t, act) {
+    if (t.dataset.apmode) { apMode = t.dataset.apmode; renderApMode(); saveBulkForm(); return true; }
+    if (t.dataset.apbPick) {
+      const [id, i] = t.dataset.apbPick.split(":"); const x = autoposts.find((p) => p.id === id); if (!x) return true;
+      await apPatch(id, { pick: +i, caption: (x.captions || [])[+i] || "" }); renderApBulk(); return true;
+    }
+    if (act === "ap-all") {
+      const i = +t.dataset.val;
+      for (const x of apRows()) if ((x.captions || [])[i] && !x.waiting) apPatch(x.id, { pick: i, caption: x.captions[i] });
+      renderApBulk(); toast(`Semua guna caption ${"ABC"[i]}`); return true;
+    }
+    if (act === "ap-autotime") { autoTimes(); return true; }
+    if (act === "ap-bulk-go") { bulkGo(t); return true; }
+    return false;
+  }
+
   // ---- resources
   function renderHooks() {
     $("#formulas").innerHTML = FORMULAS.map((f, i) => `<div class="formula"><b>${esc(f.name)}</b><code>${esc(f.tpl)}</code><span class="ex-line">${esc(f.ex)}</span><div class="formula-actions"><button class="btn small ghost" type="button" data-usef="${i}">Guna formula ni</button></div></div>`).join("");
@@ -1412,6 +1525,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
       settings.weeklyTarget = Math.max(1, Math.min(21, (settings.weeklyTarget || 4) + (act === "tgt+" ? 1 : -1)));
       renderTarget(); clearTimeout(window.__tgt); window.__tgt = setTimeout(() => { if (db) db.doc("settings/main").set(settings).catch(fail); }, 600); return;
     }
+    if (await bulkClick(t, act)) return;
     if (await apClick(t, act)) return;
     if (!draft) return;
     if (t.dataset.fmt) { draft.format = t.dataset.fmt; draft.style = FORMATS[t.dataset.fmt].style; return renderDrawer(); }
@@ -1441,6 +1555,10 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
   });
   document.addEventListener("change", (ev) => {
     const el = ev.target;
+    if (el.dataset.apbWhen) { apPatch(el.dataset.apbWhen, { postAt: el.value }); renderApBulk(); renderApWeek(); return; }
+    if (el.dataset.apbSel) { el.checked ? bulkSel.add(el.dataset.apbSel) : bulkSel.delete(el.dataset.apbSel); renderApBulk(); return; }
+    if (el.id === "ap-sel-all") { bulkSel = el.checked ? new Set(apRows().filter(apRowOk).map((x) => x.id)) : new Set(); renderApBulk(); return; }
+    if (el.id === "f-ap-times") { saveBulkForm(); return; }
     if (el.id === "period") { period = el.value; try { localStorage.setItem("as-period", period); } catch (_) {} update(); return; }
     if (draft && el.id === "f-folder") { if (el.value) { draft.source = el.value; const i = $("#f-source"); if (i) i.value = el.value; const pb = $("#prompt"); if (pb) pb.textContent = promptFor(draft); } return; }
     if (draft && el.dataset.k && el.tagName === "SELECT" && el.dataset.k !== "stage") { draft[el.dataset.k] = el.value; const pb = $("#prompt"); if (pb) pb.textContent = promptFor(draft); }
@@ -1452,11 +1570,18 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
   document.addEventListener("submit", async (ev) => {
     if (ev.target.id !== "ap-import") return;
     ev.preventDefault();
-    const link = $("#f-ap-folder").value.trim(), note = $("#f-ap-fnote").value.trim();
-    if (!/^https:\/\/drive\.google\.com\//.test(link)) { toast("Tampal link folder Google Drive"); $("#f-ap-folder").focus(); return; }
+    const src = $("#f-ap-folder").value.trim(), note = $("#f-ap-fnote").value.trim();
+    const isDrive = /^https:\/\/drive\.google\.com\//.test(src), isPc = /^[A-Za-z]:[\\/]/.test(src);
+    if (!isDrive && !isPc) { toast("Tampal link folder Google Drive atau path folder PC (D:\\…)"); $("#f-ap-folder").focus(); return; }
     if (readOnly) return toast("Paparan baca sahaja");
-    const text = `[Agent Studio · Jadual Post · Import folder]\nFolder Drive: ${link}\nKonteks: ${note || "-"}\nUntuk setiap video dalam folder yang belum ada dalam autopost (semak link), tambah dokumen autopost {title: nama fail, link: link fail, note: konteks, status "baru", zAccounts: semua akaun settings/main.zernio, captions [], pick null, caption "", postAt "", waiting "caption", created}. Kemudian tengok setiap video dan tulis 3 caption (captions, status "pilih", waiting null). Ikut skill autopost-zernio. Balas ringkas berapa video ditambah.`;
-    if (await sendAp(text, $("#ap-import"), $("#ap-import-btn"))) { $("#f-ap-folder").value = ""; $("#f-ap-fnote").value = ""; $("#ap-import-note").textContent = "Dihantar. Kad video muncul dalam Senarai video bila Claude siap."; toast("Diminta: import folder"); }
+    const times = apTimes(), start = $("#f-ap-start").value || ymd(new Date());
+    if (apMode === "auto" && !times.length) { toast("Isi slot masa dulu"); $("#f-ap-times").focus(); return; }
+    saveBulkForm();
+    const how = apMode === "auto"
+      ? `Mod TERUS JADUAL (aku dah sahkan): tulis 3 caption, pilih yang paling sesuai (set pick + caption), isi postAt ikut slot ${times.join(", ")} mula ${start} (waktu Malaysia, langkau slot yang dah lepas atau dah dipakai, ikut susunan nama fail), kemudian posts_create_post setiap satu dan set status "jadual", zernioPostId, waiting null.`
+      : `Mod PILIH: tulis 3 caption setiap video (captions, status "pilih", waiting null). Isi postAt ikut slot ${times.join(", ") || "-"} mula ${start} sebagai cadangan. JANGAN jadualkan.`;
+    const text = `[Agent Studio · Jadual Post · Import ${isPc ? "folder PC" : "folder Drive"}]\nSumber: ${src}\nKonteks: ${note || "-"}\nUntuk setiap video dalam folder yang belum ada dalam autopost (semak link / path), tambah dokumen autopost {title: nama fail, link: ${isPc ? "path penuh fail" : "link fail"}, source: "${isPc ? "pc" : "drive"}", note: konteks, status "baru", zAccounts: semua akaun settings/main.zernio, captions [], pick null, caption "", postAt "", waiting "caption", created}. Tengok setiap video. ${how} Ikut skill autopost-zernio. Balas ringkas.`;
+    if (await sendAp(text, $("#ap-import"), $("#ap-import-btn"))) { $("#f-ap-folder").value = ""; $("#ap-import-note").textContent = "Dihantar. Video muncul dalam jadual di bawah bila Claude siap."; toast(apMode === "auto" ? "Diminta: import & jadual terus" : "Diminta: import & caption"); }
   });
   document.addEventListener("submit", async (ev) => {
     if (ev.target.id !== "hook-form") return;

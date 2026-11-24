@@ -71,9 +71,28 @@ Setiap satu: baris pertama hook, isi ikut video (jangan reka fakta yang tiada da
 - Batal: `posts_delete` (cari dengan `search_tools`) pada `zernioPostId`, kemudian `status: "pilih"`, `zernioPostId: null`, `waiting: null`.
 - Semak: untuk setiap `status: "jadual"`, `mcp__Zernio__posts_get`, atau `posts_list_posts` sekali gus. Dah keluar → `status: "posted"`, `posts` dari `platformPostUrl`. Gagal → `status: "gagal"` + `error`, tawar `posts_retry`.
 
-## Import folder Drive
+## Banyak video sekali gus (pukal)
 
-Senaraikan video dalam folder. Untuk setiap video yang `link`-nya belum ada dalam `autopost`, buat dokumen baru (`status: "baru"`, `zAccounts` = semua akaun, `waiting: "caption"`), kemudian buat Langkah 1-2 untuk setiap satu. Video dengan nama sama atau tak sesuai format (bukan video, terlalu pendek) beritahu dia, jangan tambah.
+Komen `[Agent Studio · Jadual Post · Import folder Drive]` atau `[… · Import folder PC]`, atau dia beri folder dalam chat.
+
+1. Senaraikan video dalam folder (susun ikut nama, nombor ikut nilai: countdown 2 sebelum countdown 10). Langkau yang dah ada dalam `autopost` (sama `link`/path) dan yang bukan video. Beritahu dia apa yang dilangkau.
+2. Buat semua dokumen dulu dalam satu `ArtifactData` batch (`status: "baru"`, `waiting: "caption"`, `zAccounts` = semua akaun, `source: "drive"|"pc"`), supaya kad muncul serta-merta.
+3. Untuk setiap video: Langkah 1-2. Tulis caption setiap video sebaik siap (batch kecil 3-5 dokumen), jangan tunggu semua siap.
+4. Masa: isi `postAt` ikut slot dalam komen (cth. `10:00, 13:00, 18:00` mula tarikh X), ikut susunan nama fail, langkau slot yang dah lepas atau dah dipakai post lain (`status` jadual/posted).
+5. Ikut mod dalam komen:
+   - **Mod PILIH** (default): `status: "pilih"`, jangan jadualkan. Dia pilih A/B/C dalam jadual "Pilih caption & masa", kemudian tekan "Jadualkan N video" yang hantar komen `Jadual pukal` dengan senarai id.
+   - **Mod TERUS JADUAL**: dia dah sahkan dengan pilih mod ni. Pilih caption paling sesuai (`pick`, `caption`), kemudian Langkah 3 untuk setiap video. Dalam balasan, senaraikan video + caption dipilih + masa supaya dia boleh semak.
+6. `Jadual pukal`: untuk setiap id, baca dokumen, Langkah 3. Satu gagal tak menghentikan yang lain. Balas: berapa berjaya, mana gagal dan kenapa.
+
+### Sumber folder PC (D:\…)
+
+Fail dalam PC hanya boleh dibaca bila Claude jalan di PC dia (Claude Code desktop). Dalam sesi cloud, beritahu dia dan cadang buka chat di PC, atau salin folder ke Google Drive (ingat: CLAUDE.md kata jangan simpan video dalam Drive kerana storan terhad; Zernio salin video ke storan sendiri, jadi fail Drive boleh dipadam selepas dijadualkan).
+
+Upload dari PC:
+1. `mcp__Zernio__media_get_media_presigned_url` (`filename`, `content_type` "video/mp4" atau "video/quicktime", `size`).
+2. `curl -X PUT -H "Content-Type: video/mp4" --data-binary @"<path>" "<uploadUrl>"`.
+3. Guna `publicUrl` sebagai url video dalam `posts_create_post`, dan simpan dalam `autopost/<id>.mediaUrl` supaya tak upload dua kali.
+Contact sheet terus dari path fail (ffmpeg boleh baca path Windows dalam petikan).
 
 ## Perangkap
 
