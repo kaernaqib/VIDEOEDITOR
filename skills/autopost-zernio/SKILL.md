@@ -11,10 +11,18 @@ Satu-satunya tempat state disimpan: db Agent Studio, koleksi `autopost`.
 ## Fakta tetap
 
 - Agent Studio: https://claude.ai/artifact/KaAo8haEaqFCnNngfYV4WR (salinan `tools/agent-studio/index.html`). Halaman `#jadual`.
-- Akaun Zernio (pelan percuma, had 2 akaun): IG `@firaworldwide` id `6b03c59aabc9e71e8c3932e5`, TikTok `@firaindicator` id `6b03c5b9ee6b9703e7344a9d`. Senarai sama ada dalam db `settings/main.zernio`.
-- Facebook TIDAK disambung dalam Zernio. FB dapat Reel melalui kongsi automatik Instagram (Accounts Center). Jangan cadang buka akaun Zernio kedua untuk elak had.
+- **Dia guna lebih dari satu akaun Zernio** (setiap satu pelan percuma, 2 akaun sosial) dan tukar sambungan connector Zernio dalam Claude. Dia dah tahu risiko terma Zernio dan dah buat keputusan; jangan ulang amaran tu. Analytics dan semak status tak penting bagi dia; yang penting senang jadualkan.
+- **Jangan guna ID akaun tetap.** Setiap kali mula kerja Zernio (dan bila dia kata "dah tukar ke Zernio N"): `mcp__Zernio__accounts_list`, kemudian padankan dengan `settings/main.zernioWorkspaces` dalam db Agent Studio:
+  - Akaun yang sama dengan satu workspace → itu yang bersambung. Set `active: true` padanya, `false` pada yang lain, kemas kini `checkedAt`.
+  - Akaun yang belum dikenali → tambah workspace baru `{id: "zernio-N", name: "Zernio N", accounts, active: true}` (N seterusnya; tanya dia kalau nak nama lain).
+  - Salin `accounts` workspace aktif ke `settings/main.zernio` (butang akaun dalam halaman baca dari situ).
+  - Beritahu dia ringkas: "Bersambung: Zernio N (IG @…, TikTok @…)".
+- Rekod setakat 24 Nov 2026: **Zernio 1** = IG `@firaworldwide` + TikTok `@firaindicator` (semua post NEW ERA / countdown / tiket / launching ada di sini).
+- Hanya jadualkan, batal atau ubah post dalam workspace yang aktif. Kalau dokumen `autopost` guna akaun dari workspace lain, beritahu dia perlu tukar sambungan dulu. Post dalam workspace yang tak aktif tetap keluar sendiri.
+- Tukar akaun dalam Zernio (unlink/link IG/TikTok): dalam 1 jam, akaun kekal sama dan post masa depan kekal; lebih dari 1 jam, akaun dipadam, post untuk akaun tu sahaja dibatalkan, post berbilang akaun buang akaun tu. Semak post tertunggak sebelum dia unlink.
+- Facebook TIDAK disambung dalam Zernio. FB dapat Reel melalui kongsi automatik Instagram (Accounts Center).
 - Zon masa sentiasa `Asia/Kuala_Lumpur` (UTC+8). Semak masa sekarang dengan `TZ=Asia/Kuala_Lumpur date` sebelum jadual.
-- Akaun ni akaun brand trading (FIRA / Fira Indicator). Jangan post vlog peribadi ke situ tanpa dia sahkan.
+- Akaun Zernio 1 ialah akaun brand trading (FIRA / Fira Indicator). Jangan post vlog peribadi ke situ tanpa dia sahkan.
 
 ## Dokumen `autopost/<id>`
 
@@ -59,8 +67,8 @@ Setiap satu: baris pertama hook, isi ikut video (jangan reka fakta yang tiada da
 3. `mcp__Zernio__call_tool` `posts_create_post`:
    ```json
    {"content": "<caption>", "media_items": [{"type": "video", "url": "<link Drive>"}],
-    "platforms": [{"platform": "tiktok", "accountId": "6b03c5b9ee6b9703e7344a9d"},
-                  {"platform": "instagram", "accountId": "6b03c59aabc9e71e8c3932e5"}],
+    "platforms": [{"platform": "tiktok", "accountId": "<id TikTok workspace aktif>"},
+                  {"platform": "instagram", "accountId": "<id IG workspace aktif>"}],
     "scheduled_for": "2026-11-27T10:00:00+08:00", "timezone": "Asia/Kuala_Lumpur",
     "external_id": "AP-<id>"}
    ```

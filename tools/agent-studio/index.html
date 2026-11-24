@@ -403,6 +403,10 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
 .ap-stages { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 @media (max-width: 700px) { .ap-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .ap-opts { display: grid; gap: 8px; }
+.ws-list { display: grid; gap: 8px; }
+.ws-row { display: grid; grid-template-columns: minmax(90px, auto) minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 14px; border-radius: var(--r-md); background: rgba(255, 255, 255, .035); border: 1px solid var(--stroke); }
+.ws-row.on { border-color: rgba(95, 211, 154, .4); }
+@media (max-width: 560px) { .ws-row { grid-template-columns: minmax(0, 1fr); } }
 .ap-prev { width: 100%; max-width: 280px; aspect-ratio: 9 / 16; max-height: 500px; border-radius: 12px; background: #000; border: 1px solid var(--stroke); justify-self: start; }
 .ap-opt { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; text-align: left; padding: 12px; border-radius: var(--r-md); background: rgba(255, 255, 255, .04); border: 1px solid var(--stroke); color: var(--fg); white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.5; }
 .ap-opt:hover { border-color: var(--stroke-2); }
@@ -764,6 +768,7 @@ table.bulk .seg button { padding: 5px 11px; }
     } else if (view === "jadual") {
       page.innerHTML = banner({ icon: "clock", color: "var(--c-copy)", title: "Jadual Post", pill: '<span class="pill live">Aktif</span>', sub: "Video yang dah siap: Claude tulis 3 caption, kau pilih, Zernio post ikut masa ke TikTok & Instagram", actions: `<button class="btn" type="button" data-ap-send="sync">${svg("refresh", 16)} Semak status Zernio</button><button class="btn primary" type="button" data-act="ap-new">+ Video siap</button>` }) +
         `<section class="glass stages ap-stages" id="ap-stages"></section>
+         <section class="glass block"><div class="sec-head"><div><h2>Akaun Zernio</h2><p>Setiap akaun Zernio dan akaun IG / TikTok di dalamnya. Claude cuma boleh jadualkan ke akaun Zernio yang tengah bersambung.</p></div></div><div id="ap-ws"></div></section>
          <section class="glass block"><div class="sec-head"><div><h2>Banyak video sekali gus</h2><p>Tampal link folder Google Drive atau folder dalam PC (D:\\…). Claude masukkan setiap video dan siapkan caption.</p></div></div>
            <form id="ap-import" class="ap-import">
              <div class="field"><label for="f-ap-folder">Folder video</label><input class="input" id="f-ap-folder" placeholder="https://drive.google.com/drive/folders/…  atau  D:\\NEW ERA 28HB\\countdown new era" autocomplete="off"></div>
@@ -1124,10 +1129,27 @@ table.bulk .seg button { padding: 5px 11px; }
   const apCol = (x) => (x.status === "gagal" ? "jadual" : APCOLS.some((c) => c.id === x.status) ? x.status : "baru");
   const fmtWhen = (s) => { if (!s) return "Belum ada masa"; const d = new Date(s); if (isNaN(d)) return s; return `${HARI[d.getDay()].slice(0, 3)} ${d.getDate()} ${BULAN[d.getMonth()]} · ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
   const zAcc = () => (Array.isArray(settings.zernio) ? settings.zernio : []);
-  const accLabel = (id) => { const a = zAcc().find((x) => x.id === id); return a ? `${ZPLAT[a.platform] || a.platform} @${a.username}` : id; };
+  // Zernio workspaces (separate Zernio logins). Claude writes settings/main.zernioWorkspaces = [{id, name, accounts[], active}];
+  // the active one is the login the Claude connector is signed in to, and settings/main.zernio mirrors its accounts.
+  const zWs = () => (Array.isArray(settings.zernioWorkspaces) && settings.zernioWorkspaces.length ? settings.zernioWorkspaces : (zAcc().length ? [{ id: "zernio-1", name: "Zernio 1", accounts: zAcc(), active: true }] : []));
+  const allAcc = () => zWs().flatMap((w) => (w.accounts || []).map((a) => ({ ...a, ws: w.name, active: !!w.active })));
+  const wsOfAcc = (id) => allAcc().find((a) => a.id === id);
+  const accLabel = (id) => { const a = wsOfAcc(id); return a ? `${ZPLAT[a.platform] || a.platform} @${a.username}` : id; };
+  const offAcc = (d) => (d.zAccounts || []).filter((id) => !zAcc().some((a) => a.id === id));
+  function renderApWs() {
+    const el = $("#ap-ws"); if (!el) return;
+    const ws = zWs();
+    el.innerHTML = ws.length ? `<div class="ws-list">${ws.map((w) => `<div class="ws-row ${w.active ? "on" : ""}"><b>${esc(w.name)}</b>
+        <span class="chips">${(w.accounts || []).map((a) => `<span class="chip" style="text-transform:none;letter-spacing:0">${esc(ZPLAT[a.platform] || a.platform)} @${esc(a.username)}</span>`).join("") || '<span class="note">Tiada akaun</span>'}</span>
+        <span class="tag ${w.active ? "done" : "neutral"}">${w.active ? "Bersambung dengan Claude" : "Tak bersambung"}</span></div>`).join("")}</div>
+      <p class="note" style="margin:10px 0 0">Tukar akaun: claude.ai → Settings → Connectors → Zernio → Disconnect, log keluar zernio.com dalam browser, sambung semula dengan akaun lain, kemudian bagitahu Claude. Post yang dah dijadualkan dalam akaun lain tetap keluar.</p>`
+      : `<div class="empty">Belum ada akaun Zernio. Minta Claude semak akaun yang bersambung.</div>`;
+  }
   const apNeedsAction = () => autoposts.filter((x) => (x.status === "baru" || x.status === "pilih" || x.status === "gagal") && !x.waiting).length;
   function apGate(d) {
     const miss = [];
+    const off = offAcc(d);
+    if (off.length && d.status !== "jadual" && d.status !== "posted") miss.push(`sambung Claude ke ${wsOfAcc(off[0])?.ws || "akaun Zernio lain"}`);
     if (d.isNew || !d.id) miss.push("simpan dulu");
     if (!(d.link || "").trim()) miss.push("link video");
     if (!(d.caption || "").trim()) miss.push("caption");
@@ -1137,7 +1159,7 @@ table.bulk .seg button { padding: 5px 11px; }
     if (d.status === "jadual" || d.status === "posted") miss.push("video ni belum dijadualkan");
     return miss;
   }
-  function renderJadual() { renderApStages(); renderApBulk(); renderApWeek(); renderApBoard(); }
+  function renderJadual() { renderApStages(); renderApWs(); renderApBulk(); renderApWeek(); renderApBoard(); }
   function renderApStages() {
     const el = $("#ap-stages"); if (!el) return;
     el.innerHTML = APCOLS.map((c) => `<button class="stage-tile" type="button" data-jumpcol="ap-${c.id}"><span><i style="background:${c.color}"></i>${c.name}</span><b>${autoposts.filter((x) => apCol(x) === c.id).length}</b></button>`).join("");
@@ -1161,7 +1183,7 @@ table.bulk .seg button { padding: 5px 11px; }
       return `<div class="col" data-stage="ap-${c.id}"><div class="col-head"><span class="dot" style="background:${c.color}"></span>${c.name}<small>${its.length}</small></div>
         ${its.length ? its.map((x) => `<button class="card ${x.id === sel ? "sel" : ""}" type="button" data-ap-open="${esc(x.id)}">
           <span class="card-title">${esc(x.title || "Tanpa tajuk")}</span>
-          <span class="chips">${(x.zAccounts || []).map((a) => { const z = zAcc().find((q) => q.id === a); return `<span class="chip">${esc(z ? (ZPLAT[z.platform] || z.platform) : "Akaun")}</span>`; }).join("")}
+          <span class="chips">${zWs().length > 1 && wsOfAcc((x.zAccounts || [])[0]) ? `<span class="chip k" style="--kc:var(--c-copy)">${esc(wsOfAcc(x.zAccounts[0]).ws)}</span>` : ""}${(x.zAccounts || []).map((a) => { const z = wsOfAcc(a); return `<span class="chip">${esc(z ? (ZPLAT[z.platform] || z.platform) : "Akaun")}</span>`; }).join("")}
             ${x.waiting ? `<span class="chip k" style="--kc:var(--accent)">${esc(AP_WAIT[x.waiting] || "Menunggu Claude")}</span>` : ""}
             ${x.status === "gagal" ? `<span class="chip late">Gagal</span>` : ""}</span>
           <span class="card-meta"><span>${svg("clock", 12)} ${esc(fmtWhen(x.postAt))}</span><span>${x.captions && x.captions.length ? `${x.captions.length} caption` : ""}</span></span></button>`).join("")
@@ -1195,6 +1217,7 @@ table.bulk .seg button { padding: 5px 11px; }
         <div class="field"><label for="f-ap-note">Konteks untuk caption (pilihan)</label><textarea class="input" id="f-ap-note" data-apk="note" rows="3" placeholder="Contoh: promo event 28 Nov, CTA link di bio, jangan sebut harga" ${dis}>${esc(d.note)}</textarea></div>
         <div class="field"><span class="lbl">Akaun</span>${acc.length ? `<div class="seg">${acc.map((x) => `<button type="button" data-ap-multi="${esc(x.id)}" aria-pressed="${sel.includes(x.id)}" ${dis || (locked ? "disabled" : "")}>${esc(ZPLAT[x.platform] || x.platform)} · @${esc(x.username)}</button>`).join("")}</div>`
           : `<div class="note">Belum ada senarai akaun Zernio. Tekan Jana 3 caption dan Claude akan isi senarai akaun.</div>`}
+          ${offAcc(d).length ? `<span class="note">Juga dipilih: ${esc(offAcc(d).map((id) => `${accLabel(id)} (${wsOfAcc(id)?.ws || "akaun Zernio lain"})`).join(", "))}. Akaun Zernio tu tak bersambung dengan Claude sekarang.</span>` : ""}
           <span class="note">Facebook dapat post IG melalui kongsi automatik Instagram.</span></div>
         <div class="field"><label for="f-ap-when">Masa post (waktu Malaysia)</label><input class="input" type="datetime-local" id="f-ap-when" data-apk="postAt" value="${esc(d.postAt)}" ${dis} ${locked ? "readonly" : ""}></div>
       </div><div class="stack">
@@ -1650,7 +1673,7 @@ table.bulk .seg button { padding: 5px 11px; }
       renderNav(); if (view === "jadual") { renderJadual(); if (!apDraft) renderApDrawer(); }
       ready(s.metadata.fromCache);
     }, err);
-    db.doc("settings/main").onSnapshot((s) => { const sig = () => JSON.stringify([settings.zernio, settings.folders]); const had = sig(); if (s.exists) settings = { weeklyTarget: 4, ...s.data() }; if (view === "video") renderTarget(); if (draft && sig() !== had) renderDrawer(); if (sig() !== had && view === "jadual") { renderApBoard(); if (apDraft) renderApDrawer(); } ready(s.metadata.fromCache); }, err);
+    db.doc("settings/main").onSnapshot((s) => { const sig = () => JSON.stringify([settings.zernio, settings.zernioWorkspaces, settings.folders]); const had = sig(); if (s.exists) settings = { weeklyTarget: 4, ...s.data() }; if (view === "video") renderTarget(); if (draft && sig() !== had) renderDrawer(); if (sig() !== had && view === "jadual") { renderApBoard(); if (apDraft) renderApDrawer(); } ready(s.metadata.fromCache); }, err);
   })();
 })();
 </script>
