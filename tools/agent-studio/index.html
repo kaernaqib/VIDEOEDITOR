@@ -398,6 +398,20 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
   .side { transition: transform .22s ease; }
   .card, .btn, .li, .nav a, .icon-btn { transition: border-color .15s, background .15s, color .15s, filter .15s; }
 }
+/* Jadual Post */
+.btn:disabled, .seg button:disabled, .ap-opt:disabled { opacity: .45; cursor: not-allowed; filter: none; box-shadow: none; }
+.ap-stages { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 700px) { .ap-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.ap-opts { display: grid; gap: 8px; }
+.ap-opt { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; text-align: left; padding: 12px; border-radius: var(--r-md); background: rgba(255, 255, 255, .04); border: 1px solid var(--stroke); color: var(--fg); white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.5; }
+.ap-opt:hover { border-color: var(--stroke-2); }
+.ap-opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.ap-letter { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; font-weight: 800; font-size: 11.5px; background: rgba(255, 255, 255, .08); }
+.ap-opt[aria-pressed="true"] .ap-letter { background: var(--accent); color: var(--accent-ink); }
+.ap-summary { display: grid; gap: 4px; padding: 12px 14px; border-radius: var(--r-md); background: rgba(255, 255, 255, .04); border: 1px solid var(--stroke); font-size: 13px; color: var(--sub); overflow-wrap: anywhere; }
+.ap-summary b { color: var(--fg); }
+.ap-import { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 10px; align-items: end; }
+@media (max-width: 760px) { .ap-import { grid-template-columns: minmax(0, 1fr); } }
 </style>
 
 <div class="app">
@@ -602,7 +616,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     { f: "ba", rows: [["0–2s", "Tunjuk AFTER 1 s dulu"], ["BEFORE", "Label, B-roll keadaan asal"], ["Turn", "Wipe kiri→kanan + pop"], ["AFTER", "Label kuning, kata kunci besar"]] },
     { f: "vlog", rows: [["0–2s", "Tajuk besar atas shot terbaik"], ["Cerita", "B-roll setiap ~2 s, subtitle serif"], ["Beat", "Tajuk perkataan untuk bab"], ["Hujung", "Satu perkataan besar + hit muzik"]] },
   ];
-  const VIEWS = ["overview", "video", "poster", "copy", "ads", "hooks", "style", "agent-baru"];
+  const VIEWS = ["overview", "jadual", "video", "poster", "copy", "ads", "hooks", "style", "agent-baru"];
 
   // ------------------------------------------------------------------ helpers
   const $ = (s, r = document) => r.querySelector(s);
@@ -622,6 +636,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
   let projects = [], tasks = [], hooks = [], settings = { weeklyTarget: 4 };
   let view = "overview", period = "week", fmtFilter = "all";
   let draft = null, selectedKey = null;
+  let autoposts = [], apDraft = null;
   try { const p = localStorage.getItem("as-period"); if (PERIODS[p]) period = p; } catch (_) {}
 
   const allItems = () => [
@@ -663,6 +678,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     $("#nav").innerHTML = `
       <div class="nav-label">Utama</div>
       ${link("overview", "Overview", "home")}
+      ${link("jadual", "Jadual Post", "clock", `<span class="count">${apNeedsAction()}</span>`, "var(--c-copy)")}
       <div class="nav-label">Agent</div>
       ${Object.entries(AGENTS).map(([k, a]) => link(k, a.short, a.icon, a.live ? `<span class="count">${active(k)}</span>` : `<span class="soon">BINA</span>`, a.color)).join("")}
       ${link("agent-baru", "Tambah agent", "plus")}
@@ -686,7 +702,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
   // ------------------------------------------------------------------ views
   function mount() {
     const page = $("#page");
-    draft = null; selectedKey = null;
+    draft = null; selectedKey = null; apDraft = null;
     if (view === "overview") {
       page.innerHTML = banner({ icon: "spark", title: "Overview", sub: "Semua agent dan tugas kau dalam satu skrin", actions: periodSelect() + refreshBtn }) +
         `<section class="kpis" id="ov-kpis"></section>
@@ -727,6 +743,17 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
           <div class="eyebrow" style="margin:16px 0 10px">Spesifikasi export</div>
           <div class="chips"><span class="chip">9:16 · 1080×1920</span><span class="chip">30 fps</span><span class="chip">Suara −14 LUFS</span><span class="chip">Muzik ~15 dB bawah suara</span></div></section>
          <section class="grid2">${FORMAT_GUIDE.map((g) => `<div class="glass block"><div class="sec-head"><div><h2>${esc(FORMATS[g.f].name)}</h2><p>Style default: ${esc(STYLES[FORMATS[g.f].style].name)}</p></div></div><div class="timeline">${g.rows.map(([a, b]) => `<div class="tl-row"><b>${esc(a)}</b><span>${esc(b)}</span></div>`).join("")}</div></div>`).join("")}</section>`;
+    } else if (view === "jadual") {
+      page.innerHTML = banner({ icon: "clock", color: "var(--c-copy)", title: "Jadual Post", pill: '<span class="pill live">Aktif</span>', sub: "Video yang dah siap: Claude tulis 3 caption, kau pilih, Zernio post ikut masa ke TikTok & Instagram", actions: `<button class="btn" type="button" data-ap-send="sync">${svg("refresh", 16)} Semak status Zernio</button><button class="btn primary" type="button" data-act="ap-new">+ Video siap</button>` }) +
+        `<section class="glass stages ap-stages" id="ap-stages"></section>
+         <section class="glass block"><div class="sec-head"><div><h2>Import folder Google Drive</h2><p>Tampal link folder. Claude tambah setiap video ke senarai dan siapkan 3 caption untuk setiap satu.</p></div></div>
+           <form id="ap-import" class="ap-import"><div class="field"><label for="f-ap-folder">Link folder Drive</label><input class="input" id="f-ap-folder" placeholder="https://drive.google.com/drive/folders/…" autocomplete="off"></div>
+             <div class="field"><label for="f-ap-fnote">Konteks (pilihan)</label><input class="input" id="f-ap-fnote" placeholder="Contoh: promo event 28 Nov" autocomplete="off"></div>
+             <button class="btn primary" type="submit" id="ap-import-btn">${svg("folder", 15)} Import & jana caption</button></form>
+           <p class="note" id="ap-import-note" style="margin:8px 0 0">Folder mesti dikongsi "Anyone with the link" supaya Zernio boleh ambil video.</p></section>
+         <section class="glass block"><div class="sec-head"><div><h2>7 hari akan datang</h2><p>Post yang ada masa, ikut waktu Malaysia.</p></div></div><div class="days-scroll"><div class="days" id="ap-week"></div></div></section>
+         <section class="glass block"><div class="sec-head"><div><h2>Senarai video</h2><p>Klik kad untuk pilih caption, akaun dan masa.</p></div></div><div class="board" id="ap-board"></div></section>
+         <section class="glass drawer" id="ap-drawer" hidden></section>`;
     } else if (view === "agent-baru") {
       const ideas = [["Thumbnail Agent", "Cover reel & thumbnail YouTube dari frame terbaik"], ["Caption & Hashtag Agent", "Caption post + hashtag ikut platform, terus dari transkrip video"], ["Content Calendar Agent", "Rancang 30 hari konten dari satu topik"], ["Analytics Agent", "Baca prestasi post & ads, cadang apa nak buat seterusnya"]];
       page.innerHTML = banner({ icon: "plus", title: "Tambah agent", sub: "Setiap agent = satu skill Claude + satu ruang kerja di sini." }) +
@@ -748,6 +775,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     else if (view === "video") { renderTarget(); renderStageTiles(); renderSeries(); renderFilter(); renderVideoBoard(); if (!draft) renderDrawer(); }
     else if (AGENTS[view]) { renderTaskBoard(); if (!draft) renderDrawer(); }
     else if (view === "hooks") renderHooks();
+    else if (view === "jadual") { renderJadual(); if (!apDraft) renderApDrawer(); }
   }
 
   // ---- overview parts
@@ -1061,6 +1089,209 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     } finally { setTimeout(refreshSend, 1500); }
   }
 
+  // ------------------------------------------------------------------ Jadual Post (finished videos -> 3 captions -> pick -> Zernio schedule)
+  // Data: db autopost/<id> = {title, link, note, zAccounts[], postAt "YYYY-MM-DDTHH:mm" (Asia/Kuala_Lumpur), captions[3], pick, caption,
+  //   status baru|pilih|jadual|posted|gagal, waiting caption|jadual|batal|null, zernioPostId, error, posts[{platform,url}]}.
+  // Claude writes captions/status/zernioPostId with ArtifactData (skill autopost-zernio).
+  const APCOLS = [
+    { id: "baru", name: "Perlu caption", color: "#8a8fa6" }, { id: "pilih", name: "Pilih caption", color: "#f0b955" },
+    { id: "jadual", name: "Dijadualkan", color: "#6aa6f4" }, { id: "posted", name: "Dah keluar", color: "#5fd39a" },
+  ];
+  const AP_WAIT = { caption: "Claude sedang tulis caption", jadual: "Claude sedang jadualkan", batal: "Claude sedang batalkan", sync: "Claude sedang semak" };
+  const apCol = (x) => (x.status === "gagal" ? "jadual" : APCOLS.some((c) => c.id === x.status) ? x.status : "baru");
+  const fmtWhen = (s) => { if (!s) return "Belum ada masa"; const d = new Date(s); if (isNaN(d)) return s; return `${HARI[d.getDay()].slice(0, 3)} ${d.getDate()} ${BULAN[d.getMonth()]} · ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+  const zAcc = () => (Array.isArray(settings.zernio) ? settings.zernio : []);
+  const accLabel = (id) => { const a = zAcc().find((x) => x.id === id); return a ? `${ZPLAT[a.platform] || a.platform} @${a.username}` : id; };
+  const apNeedsAction = () => autoposts.filter((x) => (x.status === "baru" || x.status === "pilih" || x.status === "gagal") && !x.waiting).length;
+  function apGate(d) {
+    const miss = [];
+    if (d.isNew || !d.id) miss.push("simpan dulu");
+    if (!(d.link || "").trim()) miss.push("link video");
+    if (!(d.caption || "").trim()) miss.push("caption");
+    if (!(d.zAccounts || []).length) miss.push("akaun");
+    if (!d.postAt) miss.push("masa");
+    else if (new Date(d.postAt).getTime() < Date.now() + 5 * 6e4) miss.push("masa yang belum lepas");
+    if (d.status === "jadual" || d.status === "posted") miss.push("video ni belum dijadualkan");
+    return miss;
+  }
+  function renderJadual() { renderApStages(); renderApWeek(); renderApBoard(); }
+  function renderApStages() {
+    const el = $("#ap-stages"); if (!el) return;
+    el.innerHTML = APCOLS.map((c) => `<button class="stage-tile" type="button" data-jumpcol="ap-${c.id}"><span><i style="background:${c.color}"></i>${c.name}</span><b>${autoposts.filter((x) => apCol(x) === c.id).length}</b></button>`).join("");
+  }
+  function renderApWeek() {
+    const el = $("#ap-week"); if (!el) return;
+    const start = new Date(); start.setHours(0, 0, 0, 0);
+    let h = "";
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start.getTime() + i * 864e5), key = ymd(d);
+      const its = autoposts.filter((x) => x.postAt && x.postAt.slice(0, 10) === key && x.status !== "baru").sort((a, b) => a.postAt.localeCompare(b.postAt));
+      h += `<div class="day ${i === 0 ? "today" : ""}"><div class="day-label">${HARI[d.getDay()].slice(0, 3)} <b>${d.getDate()}</b></div>${its.map((x) => `<button class="day-item" type="button" data-ap-open="${esc(x.id)}" style="--ic:${(APCOLS.find((c) => c.id === apCol(x)) || APCOLS[0]).color}" title="${esc(x.title)}">${esc(x.postAt.slice(11, 16))} ${esc(x.title)}</button>`).join("")}</div>`;
+    }
+    el.innerHTML = h;
+  }
+  function renderApBoard() {
+    const el = $("#ap-board"); if (!el) return;
+    const sel = apDraft && !apDraft.isNew ? apDraft.id : null;
+    el.innerHTML = APCOLS.map((c) => {
+      const its = autoposts.filter((x) => apCol(x) === c.id).sort((a, b) => (a.postAt || "9").localeCompare(b.postAt || "9"));
+      return `<div class="col" data-stage="ap-${c.id}"><div class="col-head"><span class="dot" style="background:${c.color}"></span>${c.name}<small>${its.length}</small></div>
+        ${its.length ? its.map((x) => `<button class="card ${x.id === sel ? "sel" : ""}" type="button" data-ap-open="${esc(x.id)}">
+          <span class="card-title">${esc(x.title || "Tanpa tajuk")}</span>
+          <span class="chips">${(x.zAccounts || []).map((a) => { const z = zAcc().find((q) => q.id === a); return `<span class="chip">${esc(z ? (ZPLAT[z.platform] || z.platform) : "Akaun")}</span>`; }).join("")}
+            ${x.waiting ? `<span class="chip k" style="--kc:var(--accent)">${esc(AP_WAIT[x.waiting] || "Menunggu Claude")}</span>` : ""}
+            ${x.status === "gagal" ? `<span class="chip late">Gagal</span>` : ""}</span>
+          <span class="card-meta"><span>${svg("clock", 12)} ${esc(fmtWhen(x.postAt))}</span><span>${x.captions && x.captions.length ? `${x.captions.length} caption` : ""}</span></span></button>`).join("")
+          : `<div class="col-hint">${c.id === "baru" ? "Tambah video siap atau import folder Drive." : "Kosong"}</div>`}</div>`;
+    }).join("");
+  }
+  function apSummary(d) {
+    const miss = apGate(d);
+    return `<div class="ap-summary" id="ap-sum"><span><b>Akaun:</b> ${(d.zAccounts || []).length ? esc(d.zAccounts.map(accLabel).join(", ")) : "belum dipilih"}</span>
+      <span><b>Masa:</b> ${esc(fmtWhen(d.postAt))} (waktu Malaysia)</span>
+      <span><b>Caption:</b> ${d.caption ? esc(d.caption.split("\n")[0].slice(0, 90)) + (d.caption.length > 90 ? "…" : "") : "belum dipilih"}</span>
+      ${miss.length ? `<span class="note">Perlu: ${esc(miss.join(", "))}.</span>` : `<span class="note">Butang di bawah ialah pengesahan kau. Claude terus jadualkan dalam Zernio.</span>`}</div>`;
+  }
+  function renderApDrawer() {
+    const el = $("#ap-drawer"); if (!el) return;
+    if (!apDraft) { el.hidden = true; el.innerHTML = ""; return; }
+    const d = apDraft, dis = readOnly ? "disabled" : "", acc = zAcc(), sel = d.zAccounts || [];
+    const locked = d.status === "jadual" || d.status === "posted";
+    const caps = Array.isArray(d.captions) ? d.captions : [];
+    el.hidden = false;
+    el.innerHTML = `<div class="sec-head"><div><div class="eyebrow">Jadual Post</div><h2>${d.isNew ? "Video siap baru" : esc(d.title || "Tanpa tajuk")}</h2>
+        <p>${d.isNew ? "Isi link video dan simpan. Lepas tu minta Claude tulis 3 caption." : esc((APCOLS.find((c) => c.id === apCol(d)) || {}).name || "")}${d.waiting ? " · " + esc(AP_WAIT[d.waiting] || "") : ""}</p></div>
+        <button class="icon-btn" type="button" data-act="ap-close" aria-label="Tutup">${svg("plus", 16).replace("<svg", '<svg style="transform:rotate(45deg)"')}</button></div>
+      ${d.status === "gagal" ? `<div class="warn-box">Gagal: ${esc(d.error || "Zernio tak dapat post video ni.")} Betulkan dan tekan Jadualkan semula, atau minta Claude cuba lagi.</div>` : ""}
+      <div class="drawer-grid"><div class="stack">
+        <div class="field"><label for="f-ap-title">Tajuk</label><input class="input" id="f-ap-title" data-apk="title" value="${esc(d.title)}" placeholder="Contoh: NEW ERA content 8" ${dis}></div>
+        <div class="field"><label for="f-ap-link">Link video (Google Drive)</label><input class="input" id="f-ap-link" data-apk="link" value="${esc(d.link)}" placeholder="https://drive.google.com/file/d/…" ${dis} ${locked ? "readonly" : ""}>
+          <span class="note">Fail mesti dikongsi "Anyone with the link". Zernio salin video ke storan dia masa dijadualkan.</span></div>
+        <div class="field"><label for="f-ap-note">Konteks untuk caption (pilihan)</label><textarea class="input" id="f-ap-note" data-apk="note" rows="3" placeholder="Contoh: promo event 28 Nov, CTA link di bio, jangan sebut harga" ${dis}>${esc(d.note)}</textarea></div>
+        <div class="field"><span class="lbl">Akaun</span>${acc.length ? `<div class="seg">${acc.map((x) => `<button type="button" data-ap-multi="${esc(x.id)}" aria-pressed="${sel.includes(x.id)}" ${dis || (locked ? "disabled" : "")}>${esc(ZPLAT[x.platform] || x.platform)} · @${esc(x.username)}</button>`).join("")}</div>`
+          : `<div class="note">Belum ada senarai akaun Zernio. Tekan Jana 3 caption dan Claude akan isi senarai akaun.</div>`}
+          <span class="note">Facebook dapat post IG melalui kongsi automatik Instagram.</span></div>
+        <div class="field"><label for="f-ap-when">Masa post (waktu Malaysia)</label><input class="input" type="datetime-local" id="f-ap-when" data-apk="postAt" value="${esc(d.postAt)}" ${dis} ${locked ? "readonly" : ""}></div>
+      </div><div class="stack">
+        <div class="field"><span class="lbl">Pilih caption</span>${caps.length ? `<div class="ap-opts">${caps.map((c, i) => `<button class="ap-opt" type="button" data-ap-pick="${i}" aria-pressed="${d.pick === i}" ${dis || (locked ? "disabled" : "")}><span class="ap-letter">${"ABC"[i] || i + 1}</span><span>${esc(c)}</span></button>`).join("")}</div>`
+          : `<div class="empty">${d.waiting === "caption" ? "Claude sedang tengok video dan tulis 3 caption. Ia muncul di sini sendiri." : "Belum ada caption. Simpan, kemudian tekan Jana 3 caption."}</div>`}
+          <div class="copy-line"><button class="btn small" type="button" data-ap-send="caption" ${dis || (locked || !(d.link || "").trim() ? "disabled" : "")}>${svg("spark", 14)} ${caps.length ? "Jana semula 3 caption" : "Jana 3 caption"}</button></div></div>
+        <div class="field"><label for="f-ap-caption">Caption akhir (boleh ubah)</label><textarea class="input" id="f-ap-caption" data-apk="caption" rows="7" placeholder="Pilih A, B atau C di atas, atau tulis sendiri" ${dis} ${locked ? "readonly" : ""}>${esc(d.caption)}</textarea></div>
+        ${apSummary(d)}
+        ${d.zernioPostId ? `<div class="note">Post Zernio: <code>${esc(d.zernioPostId)}</code></div>` : ""}
+        ${Array.isArray(d.posts) && d.posts.length ? `<div class="links">${d.posts.filter((p) => /^https:\/\//.test(p.url || "")).map((p) => `<a class="btn small" href="${esc(p.url)}" target="_blank" rel="noopener">${svg("link", 14)} ${esc(ZPLAT[p.platform] || p.platform)}</a>`).join("")}</div>` : ""}
+      </div></div>
+      <div class="drawer-foot"><div>
+          ${locked && d.status === "jadual" ? `<button class="btn small" type="button" data-ap-send="batal" ${dis}>Batalkan jadual</button>` : `<button class="btn primary" type="button" id="ap-go" data-ap-send="jadual" ${dis || (apGate(d).length ? "disabled" : "")}>${svg("clock", 15)} Jadualkan guna Zernio</button>`}
+          <button class="btn" type="button" data-act="ap-save" ${dis}>Simpan</button></div>
+        <div>${d.isNew ? "" : `<button class="btn small ghost danger" type="button" data-act="ap-delete" ${dis}>Padam</button>`}</div></div>
+      <p class="note" id="ap-send-note" style="margin:0"></p>`;
+  }
+  function refreshApGate() {
+    if (!apDraft) return;
+    const s = $("#ap-sum"); if (s) s.outerHTML = apSummary(apDraft);
+    const g = $("#ap-go"); if (g) g.disabled = readOnly || apGate(apDraft).length > 0;
+  }
+  function openAp(id) {
+    const x = autoposts.find((p) => p.id === id); if (!x) return;
+    if (view !== "jadual") go("jadual");
+    apDraft = JSON.parse(JSON.stringify(x));
+    renderApBoard(); renderApDrawer();
+    $("#ap-drawer")?.scrollIntoView({ behavior: "auto", block: "start" });
+  }
+  function newAp() {
+    apDraft = { isNew: true, title: "", link: "", note: "", zAccounts: zAcc().map((a) => a.id), postAt: "", captions: [], pick: null, caption: "", status: "baru", waiting: null };
+    renderApBoard(); renderApDrawer();
+    $("#ap-drawer")?.scrollIntoView({ behavior: "auto", block: "start" });
+    setTimeout(() => $("#f-ap-title")?.focus(), 0);
+  }
+  async function saveAp(d) {
+    const body = { ...d }; delete body.id; delete body.isNew; body.updated = Date.now();
+    if (!db) {
+      if (d.isNew) { const id = "a" + ++memId; autoposts.push({ id, ...body, created: Date.now() }); return id; }
+      const i = autoposts.findIndex((x) => x.id === d.id); autoposts[i] = { id: d.id, ...body }; return d.id;
+    }
+    if (d.isNew) { body.created = Date.now(); const ref = await db.collection("autopost").add(body); return ref.id; }
+    await db.doc(`autopost/${d.id}`).set(body); return d.id;
+  }
+  async function commitAp(quiet) {
+    if (!apDraft.title.trim()) { toast("Isi tajuk dulu"); $("#f-ap-title")?.focus(); return false; }
+    if (!apDraft.link.trim()) { toast("Isi link video dulu"); $("#f-ap-link")?.focus(); return false; }
+    try {
+      const wasNew = apDraft.isNew;
+      const id = await saveAp(apDraft);
+      apDraft = { ...apDraft, id, isNew: false };
+      if (!quiet) toast(wasNew ? "Ditambah" : "Disimpan");
+      if (!db) renderJadual();
+      renderApDrawer(); return true;
+    } catch (e) { fail(e); return false; }
+  }
+  function apText(kind, d) {
+    const base = d ? `autopost/${d.id} "${d.title}"\nVideo: ${d.link}` : "";
+    if (kind === "caption") return `[Agent Studio · Jadual Post · Jana caption]\n${base}\nKonteks: ${d.note || "-"}\nTengok video (frame + teks atas skrin), tulis 3 caption berbeza gaya: A hook / rasa ingin tahu, B pendek terus ke point, C bercerita masalah ke penyelesaian. BM santai ikut gaya akaun, CTA "link di bio", 4-7 hashtag. Simpan dalam db autopost/${d.id}: captions [A, B, C], status "pilih", waiting null. Kalau settings/main belum ada "zernio", isi senarai akaun. Ikut skill autopost-zernio. Balas ringkas di sini.`;
+    if (kind === "jadual") return `[Agent Studio · Jadual Post · Jadualkan]\n${base}\nAkaun: ${(d.zAccounts || []).map((a) => `${accLabel(a)} (${a})`).join(", ")}\nMasa: ${d.postAt} (Asia/Kuala_Lumpur)\nCaption:\n${d.caption}\nAku dah sahkan butiran ni dalam studio. validate_post, kemudian posts_create_post dengan scheduled_for + timezone Asia/Kuala_Lumpur dan external_id AP-${d.id}. Kemas kini autopost/${d.id}: status "jadual", zernioPostId, waiting null. Kalau gagal: status "gagal", error, waiting null. Ikut skill autopost-zernio.`;
+    if (kind === "batal") return `[Agent Studio · Jadual Post · Batal]\n${base}\nBatalkan post Zernio ${d.zernioPostId || "-"} (posts_delete), kemudian set autopost/${d.id}: status "pilih", zernioPostId null, waiting null. Ikut skill autopost-zernio.`;
+    if (kind === "sync") return `[Agent Studio · Jadual Post · Semak status]\nSemak setiap dokumen autopost berstatus "jadual" dengan posts_get (zernioPostId). Yang dah keluar: status "posted" dan posts [{platform, url}]. Yang gagal: status "gagal" dan error. Ikut skill autopost-zernio. Balas ringkas.`;
+    return "";
+  }
+  async function sendAp(text, anchorEl, btn) {
+    const n = $("#ap-send-note") || $("#ap-import-note") || { set textContent(_) {} };
+    if (!cmTried) { cmTried = true; cm = window.claude?.use ? await window.claude.use("comments").catch(() => null) : null; }
+    if (!cm) { toast("Hantar ke Claude tak ada dalam paparan ni"); return false; }
+    text = text.replace(new RegExp("[\u0000-\u0009\u000b-\u001f\u007f​-‏ -‮⁠-⁯﻿]", "g"), " ");
+    while (new TextEncoder().encode(text).length > 3900) text = text.slice(0, -50);
+    if (btn) btn.disabled = true;
+    try {
+      const anchor = await cm.anchorFor(anchorEl || $("#page"));
+      try { await cm.sendToClaude({ anchor, text }); }
+      catch (e) { if (e?.code !== "invalid") throw e; await cm.sendToClaude({ anchor, text: text.replace(/\n+/g, " · ") }); }
+      n.textContent = "Dihantar. Balasan Claude muncul dalam komen halaman ni.";
+      return true;
+    } catch (e) {
+      const why = { claude_unavailable: "Claude tak dapat terima sekarang. Buka chat Claude Code projek VIDEOEDITOR dulu.", rate_limited: "Terlalu cepat. Tunggu sekejap.", consent_required: "Benarkan komen dulu, kemudian cuba lagi.", forbidden: SEND_WHY.writers_only };
+      const m = why[e?.code] || "Tak berjaya hantar. Cuba lagi.";
+      n.textContent = m; toast(m); return false;
+    } finally { if (btn) btn.disabled = false; }
+  }
+  async function apSendKind(kind, btn) {
+    if (kind === "sync") { if (await sendAp(apText("sync"), $("#ap-board"), btn)) toast("Diminta: semak status Zernio"); return; }
+    if (!apDraft) return;
+    if (readOnly) return toast("Paparan baca sahaja");
+    if (apDraft.isNew) { if (!(await commitAp(true))) return; }
+    if (kind === "jadual" && apGate(apDraft).length) return toast("Lengkapkan dulu: " + apGate(apDraft).join(", "));
+    if (kind === "batal" && !apDraft.zernioPostId) return toast("Tiada post Zernio untuk dibatalkan");
+    const ok = await sendAp(apText(kind, apDraft), $("#ap-drawer"), btn);
+    if (!ok) return;
+    apDraft.waiting = kind; apDraft.waitingAt = Date.now();
+    toast(kind === "caption" ? "Diminta: 3 caption" : kind === "jadual" ? "Diminta: jadual ke Zernio" : "Diminta: batal jadual");
+    try { await saveAp(apDraft); } catch (e) { fail(e); }
+    renderApDrawer();
+  }
+  async function deleteAp(d) {
+    if (!db) { autoposts = autoposts.filter((x) => x.id !== d.id); return; }
+    const body = { ...d }; delete body.id; delete body.isNew; const at = Date.now();
+    await db.doc(`trash/autopost-${d.id}`).set({ ...body, _coll: "autopost", _id: d.id, _deletedAt: at });
+    await db.collection("audit").add({ op: "delete", coll: "autopost", id: d.id, title: d.title || "", at, ua: navigator.userAgent.slice(0, 120) });
+    await db.doc(`autopost/${d.id}`).delete();
+  }
+  async function apClick(t, act) {
+    if (t.dataset.apOpen) { $("#results").hidden = true; openAp(t.dataset.apOpen); return true; }
+    if (act === "ap-new") { if (view !== "jadual") go("jadual"); newAp(); return true; }
+    if (t.dataset.apSend) { apSendKind(t.dataset.apSend, t); return true; }
+    if (!apDraft) return false;
+    if (t.dataset.apMulti) { const s = new Set(apDraft.zAccounts || []); s.has(t.dataset.apMulti) ? s.delete(t.dataset.apMulti) : s.add(t.dataset.apMulti); apDraft.zAccounts = [...s]; renderApDrawer(); return true; }
+    if (t.dataset.apPick !== undefined) { const i = +t.dataset.apPick; apDraft.pick = i; apDraft.caption = (apDraft.captions || [])[i] || ""; renderApDrawer(); return true; }
+    if (act === "ap-save") { commitAp(); return true; }
+    if (act === "ap-close") { apDraft = null; renderApDrawer(); renderApBoard(); return true; }
+    if (act === "ap-delete") {
+      if (t.dataset.confirm !== "1") { t.dataset.confirm = "1"; t.textContent = "Tekan sekali lagi untuk padam"; return true; }
+      if (apDraft.zernioPostId && apDraft.status === "jadual") { toast("Batalkan jadual Zernio dulu"); return true; }
+      try { await deleteAp(apDraft); apDraft = null; if (!db) renderJadual(); renderApDrawer(); toast("Dipadam"); } catch (e) { fail(e); }
+      return true;
+    }
+    return false;
+  }
+
   // ---- resources
   function renderHooks() {
     $("#formulas").innerHTML = FORMULAS.map((f, i) => `<div class="formula"><b>${esc(f.name)}</b><code>${esc(f.tpl)}</code><span class="ex-line">${esc(f.ex)}</span><div class="formula-actions"><button class="btn small ghost" type="button" data-usef="${i}">Guna formula ni</button></div></div>`).join("");
@@ -1159,7 +1390,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     if (t.id === "open-side") return openSide();
     if (t.id === "close-side") return closeSide();
     if (t.id === "bell") { go("overview"); setTimeout(() => $("#ov-attn")?.scrollIntoView({ behavior: "auto", block: "center" }), 0); return; }
-    if (t.id === "quick-new") return newItem(AGENTS[view] ? view : "video");
+    if (t.id === "quick-new") { if (view === "jadual") { newAp(); return; } return newItem(AGENTS[view] ? view : "video"); }
     if (t.dataset.newfor) return newItem(t.dataset.newfor);
     if (t.dataset.open) { $("#results").hidden = true; $("#q").value = ""; return openItem(t.dataset.open); }
     if (t.dataset.jumpcol) { document.querySelector(`.col[data-stage="${t.dataset.jumpcol}"]`)?.scrollIntoView({ behavior: "auto", block: "nearest", inline: "center" }); return; }
@@ -1181,6 +1412,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
       settings.weeklyTarget = Math.max(1, Math.min(21, (settings.weeklyTarget || 4) + (act === "tgt+" ? 1 : -1)));
       renderTarget(); clearTimeout(window.__tgt); window.__tgt = setTimeout(() => { if (db) db.doc("settings/main").set(settings).catch(fail); }, 600); return;
     }
+    if (await apClick(t, act)) return;
     if (!draft) return;
     if (t.dataset.fmt) { draft.format = t.dataset.fmt; draft.style = FORMATS[t.dataset.fmt].style; return renderDrawer(); }
     if (t.dataset.seg) { draft[t.dataset.seg] = t.dataset.val; return renderDrawer(); }
@@ -1199,6 +1431,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
   document.addEventListener("input", (ev) => {
     const el = ev.target;
     if (el.id === "q") return renderSearch(el.value);
+    if (apDraft && el.dataset.apk) { apDraft[el.dataset.apk] = el.value; refreshApGate(); return; }
     if (!draft) return;
     if (el.dataset.k) {
       draft[el.dataset.k] = el.type === "number" ? (el.value === "" ? "" : Number(el.value)) : el.value;
@@ -1215,6 +1448,15 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     draft.checks = { ...(draft.checks || {}), [el.dataset.check]: el.checked };
     el.closest(".check").classList.toggle("done", el.checked);
     if (!draft.isNew) commit();
+  });
+  document.addEventListener("submit", async (ev) => {
+    if (ev.target.id !== "ap-import") return;
+    ev.preventDefault();
+    const link = $("#f-ap-folder").value.trim(), note = $("#f-ap-fnote").value.trim();
+    if (!/^https:\/\/drive\.google\.com\//.test(link)) { toast("Tampal link folder Google Drive"); $("#f-ap-folder").focus(); return; }
+    if (readOnly) return toast("Paparan baca sahaja");
+    const text = `[Agent Studio · Jadual Post · Import folder]\nFolder Drive: ${link}\nKonteks: ${note || "-"}\nUntuk setiap video dalam folder yang belum ada dalam autopost (semak link), tambah dokumen autopost {title: nama fail, link: link fail, note: konteks, status "baru", zAccounts: semua akaun settings/main.zernio, captions [], pick null, caption "", postAt "", waiting "caption", created}. Kemudian tengok setiap video dan tulis 3 caption (captions, status "pilih", waiting null). Ikut skill autopost-zernio. Balas ringkas berapa video ditambah.`;
+    if (await sendAp(text, $("#ap-import"), $("#ap-import-btn"))) { $("#f-ap-folder").value = ""; $("#f-ap-fnote").value = ""; $("#ap-import-note").textContent = "Dihantar. Kad video muncul dalam Senarai video bila Claude siap."; toast("Diminta: import folder"); }
   });
   document.addEventListener("submit", async (ev) => {
     if (ev.target.id !== "hook-form") return;
@@ -1250,7 +1492,7 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     const timer = setTimeout(() => setStatus("", "Storan lambat menjawab…"), 10000);
     db = window.claude?.use ? await window.claude.use("db").catch(() => null) : null;
     if (!db) { clearTimeout(timer); setStatus("off", "Mod sementara: data tak disimpan"); return; }
-    let pending = 4;
+    let pending = 5;
     const ready = (fromCache) => { if (fromCache) return; if (--pending <= 0) { clearTimeout(timer); setStatus("ok", "Tersimpan"); } };
     const err = () => { clearTimeout(timer); setStatus("off", "Storan terputus. Muat semula halaman."); };
     const keepDraft = () => { if (draft && !draft.isNew && !findItem(selectedKey)) { draft = null; selectedKey = null; renderDrawer(); } };
@@ -1265,7 +1507,22 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
     db.collection("projects").onSnapshot((s) => { projects = s.docs.map((d) => { const x = { id: d.id, ...d.data() }; x.stage = normStage(x.stage); return x; }); keepDraft(); syncDraft(); update(); ready(s.metadata.fromCache); }, err);
     db.collection("tasks").onSnapshot((s) => { tasks = s.docs.map((d) => ({ id: d.id, ...d.data() })).filter((t) => AGENTS[t.agent] && t.agent !== "video"); keepDraft(); update(); ready(s.metadata.fromCache); }, err);
     db.collection("hooks").orderBy("created", "desc").onSnapshot((s) => { hooks = s.docs.map((d) => ({ id: d.id, ...d.data() })); update(); ready(s.metadata.fromCache); }, err);
-    db.doc("settings/main").onSnapshot((s) => { const sig = () => JSON.stringify([settings.zernio, settings.folders]); const had = sig(); if (s.exists) settings = { weeklyTarget: 4, ...s.data() }; if (view === "video") renderTarget(); if (draft && sig() !== had) renderDrawer(); ready(s.metadata.fromCache); }, err);
+    db.collection("autopost").onSnapshot((s) => {
+      autoposts = s.docs.map((d) => ({ id: d.id, ...d.data() }));
+      if (apDraft && !apDraft.isNew) {
+        const x = autoposts.find((p) => p.id === apDraft.id);
+        if (!x) apDraft = null;
+        else {
+          let changed = false;
+          for (const k of ["captions", "status", "waiting", "zernioPostId", "error", "posts"]) if (JSON.stringify(x[k]) !== JSON.stringify(apDraft[k])) { apDraft[k] = x[k]; changed = true; }
+          if (x.caption && x.caption !== apDraft.caption && document.activeElement?.id !== "f-ap-caption" && (x.status === "jadual" || x.status === "posted")) { apDraft.caption = x.caption; changed = true; }
+          if (changed) renderApDrawer();
+        }
+      }
+      renderNav(); if (view === "jadual") { renderJadual(); if (!apDraft) renderApDrawer(); }
+      ready(s.metadata.fromCache);
+    }, err);
+    db.doc("settings/main").onSnapshot((s) => { const sig = () => JSON.stringify([settings.zernio, settings.folders]); const had = sig(); if (s.exists) settings = { weeklyTarget: 4, ...s.data() }; if (view === "video") renderTarget(); if (draft && sig() !== had) renderDrawer(); if (sig() !== had && view === "jadual") { renderApBoard(); if (apDraft) renderApDrawer(); } ready(s.metadata.fromCache); }, err);
   })();
 })();
 </script>

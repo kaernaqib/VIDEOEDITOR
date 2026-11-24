@@ -7,6 +7,7 @@ Claude skills untuk edit video (Reels / TikTok / Shorts).
 | `skills/reel-editor` | Edit Reel 9:16 dalam projek CapCut sendiri (format education, vlog, do & don't, before/after). Bergantung pada `capcut-talking-head-edit`. |
 | `skills/capcut-talking-head-edit` | Edit video talking-head dalam CapCut dengan tulis fail timeline terus, tambah motion graphics. |
 | `skills/voiceover-glass-reel` | Tukar voiceover jadi reel dokumentari 16:9 dalam After Effects. |
+| `skills/autopost-zernio` | Jadual / post video siap dari Google Drive ke TikTok & Instagram guna Zernio: 3 pilihan caption, pilih, jadual. Halaman "Jadual Post" dalam Agent Studio. |
 
 ## Pasang
 
