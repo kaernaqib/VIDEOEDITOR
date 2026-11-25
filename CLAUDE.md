@@ -25,6 +25,8 @@ Skill yang dipakai sebenarnya disalin ke `~/.claude/skills/`. Kalau ubah skill d
 
 ## Peraturan
 
+- **Satu video baru = satu chat baru.** Bila komen `[Agent Studio · Video Agent · …]` untuk kad video baru (atau brief video baru) sampai ke sesi yang memantau Agent Studio, JANGAN buat kerja video dalam sesi tu. Panggil `start_session` (initiation "user_asked", tajuk `Video: <tajuk kad>`) dengan prompt penuh: isi komen (brief, folder footage, gaya, format), id kad `projects/<id>`, url Agent Studio, dan arahan untuk ikut CLAUDE.md, kemas kini kad dengan ArtifactData (preview, stage, caption) dan balas sebarang soalan dalam chat baru tu. Kemudian balas dalam thread komen: "Chat baru dibuka: Video: <tajuk>. Tekan kad dalam app Claude desktop (buka di PC supaya D: boleh dibaca)." dan resolve thread. Komen Jadual Post (`[Agent Studio · Jadual Post · …]`) dan tugas kecil lain dibuat terus dalam sesi pemantau.
+
 - Jangan simpan API key dalam repo. Guna env var `PIXABAY_API_KEY`, `PEXELS_API_KEY`.
 - Output render (`renders/`, `*.mp4`, `*.mov`) tak masuk git.
 - Projek CapCut sendiri ada dalam folder CapCut kat PC, bukan dalam repo ni.
