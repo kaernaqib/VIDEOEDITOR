@@ -404,6 +404,8 @@ dialog.prev::backdrop { background: rgba(0, 0, 0, .6); }
 @media (max-width: 700px) { .ap-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .ap-opts { display: grid; gap: 8px; }
 .ws-list { display: grid; gap: 8px; }
+.ws-pick { display: grid; gap: 5px; }
+.ws-pick small { color: var(--dim); font-size: 11px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; }
 .ws-row { display: grid; grid-template-columns: minmax(90px, auto) minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 14px; border-radius: var(--r-md); background: rgba(255, 255, 255, .035); border: 1px solid var(--stroke); }
 .ws-row.on { border-color: rgba(95, 211, 154, .4); }
 @media (max-width: 560px) { .ws-row { grid-template-columns: minmax(0, 1fr); } }
@@ -776,6 +778,7 @@ table.bulk .seg button { padding: 5px 11px; }
              <div class="row3"><div class="field"><label for="f-ap-start">Mula dari</label><input class="input" type="date" id="f-ap-start"></div>
                <div class="field"><label for="f-ap-times">Slot masa setiap hari</label><input class="input" id="f-ap-times" value="10:00, 13:00, 18:00" autocomplete="off"></div>
                <div class="field"><span class="lbl">Cara</span><div class="seg"><button type="button" data-apmode="pilih" aria-pressed="true">Aku pilih caption</button><button type="button" data-apmode="auto" aria-pressed="false">Terus jadual</button></div></div></div>
+             <div class="field"><label for="f-ap-ws">Post ke akaun Zernio</label><select class="select" id="f-ap-ws"></select></div>
              <div class="wide copy-line"><button class="btn primary" type="submit" id="ap-import-btn">${svg("folder", 15)} Import & jana 3 caption</button><span class="note" id="ap-mode-note"></span></div></form>
            <p class="note" id="ap-import-note" style="margin:10px 0 0">Folder Drive mesti dikongsi "Anyone with the link". Folder PC hanya boleh dibaca bila Claude jalan di PC kau (Claude Code desktop).</p></section>
          <section class="glass block"><div class="sec-head"><div><h2>Pilih caption & masa</h2><p>Semua video yang ada 3 caption. Pilih A/B/C, isi masa, kemudian jadualkan sekali gus.</p></div></div><div id="ap-bulk"></div></section>
@@ -1139,6 +1142,8 @@ table.bulk .seg button { padding: 5px 11px; }
   function renderApWs() {
     const el = $("#ap-ws"); if (!el) return;
     const ws = zWs();
+    const pick = $("#f-ap-ws");
+    if (pick) { const v = pick.value; pick.innerHTML = ws.filter((w) => w.active && (w.accounts || []).length).map((w) => `<option value="${esc(w.id)}" ${w.id === v ? "selected" : ""}>${esc(w.name)}: ${esc((w.accounts || []).map((a) => `${ZPLAT[a.platform] || a.platform} @${a.username}`).join(", "))}</option>`).join(""); }
     el.innerHTML = ws.length ? `<div class="ws-list">${ws.map((w) => `<div class="ws-row ${w.active ? "on" : ""}"><b>${esc(w.name)}</b>
         <span class="chips">${(w.accounts || []).map((a) => `<span class="chip" style="text-transform:none;letter-spacing:0">${esc(ZPLAT[a.platform] || a.platform)} @${esc(a.username)}</span>`).join("") || '<span class="note">Tiada akaun</span>'}</span>
         <span class="tag ${w.active ? "done" : "neutral"}">${w.active ? "Bersambung dengan Claude" : "Tak bersambung"}</span></div>`).join("")}</div>
@@ -1149,6 +1154,7 @@ table.bulk .seg button { padding: 5px 11px; }
   function apGate(d) {
     const miss = [];
     const off = offAcc(d);
+    if (new Set((d.zAccounts || []).map((x) => wsOfAcc(x)?.ws)).size > 1) miss.push("akaun dari satu akaun Zernio sahaja");
     if (off.length && d.status !== "jadual" && d.status !== "posted") miss.push(`sambung Claude ke ${wsOfAcc(off[0])?.ws || "akaun Zernio lain"}`);
     if (d.isNew || !d.id) miss.push("simpan dulu");
     if (!(d.link || "").trim()) miss.push("link video");
@@ -1215,7 +1221,7 @@ table.bulk .seg button { padding: 5px 11px; }
         <div class="field"><label for="f-ap-link">Link video (Google Drive)</label><input class="input" id="f-ap-link" data-apk="link" value="${esc(d.link)}" placeholder="https://drive.google.com/file/d/…" ${dis} ${locked ? "readonly" : ""}>
           <span class="note">Fail mesti dikongsi "Anyone with the link". Zernio salin video ke storan dia masa dijadualkan.</span></div>
         <div class="field"><label for="f-ap-note">Konteks untuk caption (pilihan)</label><textarea class="input" id="f-ap-note" data-apk="note" rows="3" placeholder="Contoh: promo event 28 Nov, CTA link di bio, jangan sebut harga" ${dis}>${esc(d.note)}</textarea></div>
-        <div class="field"><span class="lbl">Akaun</span>${acc.length ? `<div class="seg">${acc.map((x) => `<button type="button" data-ap-multi="${esc(x.id)}" aria-pressed="${sel.includes(x.id)}" ${dis || (locked ? "disabled" : "")}>${esc(ZPLAT[x.platform] || x.platform)} · @${esc(x.username)}</button>`).join("")}</div>`
+        <div class="field"><span class="lbl">Akaun</span>${acc.length ? zWs().filter((w) => w.active && (w.accounts || []).length).map((w) => `<div class="ws-pick"><small>${esc(w.name)}</small><div class="seg">${w.accounts.map((x) => `<button type="button" data-ap-multi="${esc(x.id)}" aria-pressed="${sel.includes(x.id)}" ${dis || (locked ? "disabled" : "")}>${esc(ZPLAT[x.platform] || x.platform)} · @${esc(x.username)}</button>`).join("")}</div></div>`).join("")
           : `<div class="note">Belum ada senarai akaun Zernio. Tekan Jana 3 caption dan Claude akan isi senarai akaun.</div>`}
           ${offAcc(d).length ? `<span class="note">Juga dipilih: ${esc(offAcc(d).map((id) => `${accLabel(id)} (${wsOfAcc(id)?.ws || "akaun Zernio lain"})`).join(", "))}. Akaun Zernio tu tak bersambung dengan Claude sekarang.</span>` : ""}
           <span class="note">Facebook dapat post IG melalui kongsi automatik Instagram.</span></div>
@@ -1248,7 +1254,7 @@ table.bulk .seg button { padding: 5px 11px; }
     $("#ap-drawer")?.scrollIntoView({ behavior: "auto", block: "start" });
   }
   function newAp() {
-    apDraft = { isNew: true, title: "", link: "", note: "", zAccounts: zAcc().map((a) => a.id), postAt: "", captions: [], pick: null, caption: "", status: "baru", waiting: null };
+    apDraft = { isNew: true, title: "", link: "", note: "", zAccounts: ((zWs().find((w) => w.active && (w.accounts || []).length) || {}).accounts || []).map((a) => a.id), postAt: "", captions: [], pick: null, caption: "", status: "baru", waiting: null };
     renderApBoard(); renderApDrawer();
     $("#ap-drawer")?.scrollIntoView({ behavior: "auto", block: "start" });
     setTimeout(() => $("#f-ap-title")?.focus(), 0);
@@ -1275,7 +1281,7 @@ table.bulk .seg button { padding: 5px 11px; }
     } catch (e) { fail(e); return false; }
   }
   function apText(kind, d) {
-    const base = d ? `autopost/${d.id} "${d.title}"\nVideo: ${d.link}` : "";
+    const base = d ? `autopost/${d.id} "${d.title}"\nVideo: ${d.link}\nAkaun Zernio: ${(() => { const w = zWs().find((q) => (q.accounts || []).some((a) => a.id === (d.zAccounts || [])[0])); return w ? `${w.name} (${w.via === "api" ? "guna API key" : "guna connector"})` : "-"; })()}` : "";
     if (kind === "caption") return `[Agent Studio · Jadual Post · Jana caption]\n${base}\nKonteks: ${d.note || "-"}\nTengok video (frame + teks atas skrin), tulis 3 caption berbeza gaya: A hook / rasa ingin tahu, B pendek terus ke point, C bercerita masalah ke penyelesaian. BM santai ikut gaya akaun, CTA "link di bio", 4-7 hashtag. Simpan dalam db autopost/${d.id}: captions [A, B, C], status "pilih", waiting null. Kalau settings/main belum ada "zernio", isi senarai akaun. Ikut skill autopost-zernio. Balas ringkas di sini.`;
     if (kind === "jadual") return `[Agent Studio · Jadual Post · Jadualkan]\n${base}\nAkaun: ${(d.zAccounts || []).map((a) => `${accLabel(a)} (${a})`).join(", ")}\nMasa: ${d.postAt} (Asia/Kuala_Lumpur)\nCaption:\n${d.caption}\nAku dah sahkan butiran ni dalam studio. validate_post, kemudian posts_create_post dengan scheduled_for + timezone Asia/Kuala_Lumpur dan external_id AP-${d.id}. Kemas kini autopost/${d.id}: status "jadual", zernioPostId, waiting null. Kalau gagal: status "gagal", error, waiting null. Ikut skill autopost-zernio.`;
     if (kind === "batal") return `[Agent Studio · Jadual Post · Batal]\n${base}\nBatalkan post Zernio ${d.zernioPostId || "-"} (posts_delete), kemudian set autopost/${d.id}: status "pilih", zernioPostId null, waiting null. Ikut skill autopost-zernio.`;
@@ -1327,7 +1333,7 @@ table.bulk .seg button { padding: 5px 11px; }
     if (act === "ap-new") { if (view !== "jadual") go("jadual"); newAp(); return true; }
     if (t.dataset.apSend) { apSendKind(t.dataset.apSend, t); return true; }
     if (!apDraft) return false;
-    if (t.dataset.apMulti) { const s = new Set(apDraft.zAccounts || []); s.has(t.dataset.apMulti) ? s.delete(t.dataset.apMulti) : s.add(t.dataset.apMulti); apDraft.zAccounts = [...s]; renderApDrawer(); return true; }
+    if (t.dataset.apMulti) { const id = t.dataset.apMulti, w = wsOfAcc(id)?.ws; let s = new Set(apDraft.zAccounts || []); if (!s.has(id) && [...s].some((x) => wsOfAcc(x)?.ws !== w)) { s = new Set(); toast(`Satu post guna satu akaun Zernio sahaja. Ditukar ke ${w}.`); } s.has(id) ? s.delete(id) : s.add(id); apDraft.zAccounts = [...s]; renderApDrawer(); return true; }
     if (t.dataset.apPick !== undefined) { const i = +t.dataset.apPick; apDraft.pick = i; apDraft.caption = (apDraft.captions || [])[i] || ""; renderApDrawer(); return true; }
     if (act === "ap-save") { commitAp(); return true; }
     if (act === "ap-close") { apDraft = null; renderApDrawer(); renderApBoard(); return true; }
@@ -1603,10 +1609,11 @@ table.bulk .seg button { padding: 5px 11px; }
     const times = apTimes(), start = $("#f-ap-start").value || ymd(new Date());
     if (apMode === "auto" && !times.length) { toast("Isi slot masa dulu"); $("#f-ap-times").focus(); return; }
     saveBulkForm();
+    const wsSel = zWs().find((w) => w.id === $("#f-ap-ws")?.value) || zWs().find((w) => w.active && (w.accounts || []).length);
     const how = apMode === "auto"
       ? `Mod TERUS JADUAL (aku dah sahkan): tulis 3 caption, pilih yang paling sesuai (set pick + caption), isi postAt ikut slot ${times.join(", ")} mula ${start} (waktu Malaysia, langkau slot yang dah lepas atau dah dipakai, ikut susunan nama fail), kemudian posts_create_post setiap satu dan set status "jadual", zernioPostId, waiting null.`
       : `Mod PILIH: tulis 3 caption setiap video (captions, status "pilih", waiting null). Isi postAt ikut slot ${times.join(", ") || "-"} mula ${start} sebagai cadangan. JANGAN jadualkan.`;
-    const text = `[Agent Studio · Jadual Post · Import ${isPc ? "folder PC" : "folder Drive"}]\nSumber: ${src}\nKonteks: ${note || "-"}\nUntuk setiap video dalam folder yang belum ada dalam autopost (semak link / path), tambah dokumen autopost {title: nama fail, link: ${isPc ? "path penuh fail" : "link fail"}, source: "${isPc ? "pc" : "drive"}", note: konteks, status "baru", zAccounts: semua akaun settings/main.zernio, captions [], pick null, caption "", postAt "", waiting "caption", created}. Tengok setiap video. ${how} Ikut skill autopost-zernio. Balas ringkas.`;
+    const text = `[Agent Studio · Jadual Post · Import ${isPc ? "folder PC" : "folder Drive"}]\nSumber: ${src}\nKonteks: ${note || "-"}\nUntuk setiap video dalam folder yang belum ada dalam autopost (semak link / path), tambah dokumen autopost {title: nama fail, link: ${isPc ? "path penuh fail" : "link fail"}, source: "${isPc ? "pc" : "drive"}", note: konteks, status "baru", zAccounts: akaun ${wsSel ? wsSel.name : "-"} [${wsSel ? (wsSel.accounts || []).map((a) => a.id).join(", ") : ""}] (${wsSel && wsSel.via === "api" ? "guna API key" : "guna connector"}), captions [], pick null, caption "", postAt "", waiting "caption", created}. Tengok setiap video. ${how} Ikut skill autopost-zernio. Balas ringkas.`;
     if (await sendAp(text, $("#ap-import"), $("#ap-import-btn"))) { $("#f-ap-folder").value = ""; $("#ap-import-note").textContent = "Dihantar. Video muncul dalam jadual di bawah bila Claude siap."; toast(apMode === "auto" ? "Diminta: import & jadual terus" : "Diminta: import & caption"); }
   });
   document.addEventListener("submit", async (ev) => {
